@@ -343,12 +343,12 @@ Run all migrations across all services automatically using the provided helper s
 
 **On Windows (PowerShell):**
 ```powershell
-.\migrate_all.ps1
+.\scripts\windows\migrate_all.ps1
 ```
 
 **On Linux/macOS/Git Bash:**
 ```bash
-bash migrate_all.sh
+bash scripts/linux/migrate_all.sh
 ```
 
 Create an admin user in the Auth Service:
@@ -373,22 +373,7 @@ docker compose exec order_service python manage.py seed_demo_data
 
 ## ✅ Service Verification
 
-Run the global verification script:
-
-```bash
-bash verify_services.sh
-```
-
-The script can be used to check:
-
-- Django configuration validity
-- Missing migrations
-- Service health
-- Environment variable availability
-- Import errors
-- Basic endpoint readiness
-
-You can also check services manually:
+You can check the health of the services manually by accessing their `/health/` endpoints:
 
 ```bash
 curl http://localhost/api/auth/health/
@@ -561,12 +546,12 @@ You can automatically run the test suite across all microservices using the prov
 
 **On Windows (PowerShell):**
 ```powershell
-.\test_all.ps1
+.\scripts\windows\test_all.ps1
 ```
 
 **On Linux/macOS/Git Bash:**
 ```bash
-bash test_all.sh
+bash scripts/linux/test_all.sh
 ```
 
 ## 🤝 Contributing
