@@ -11,3 +11,4 @@ firebase-admin==6.4.0
 httpx==0.26.0
 python-jose[cryptography]==3.3.0
 -e ../../shared/craft-common
+aio-pika>=9.3.0

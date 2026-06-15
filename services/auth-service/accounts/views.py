@@ -14,7 +14,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import GenericAPIView, ListAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
@@ -38,6 +38,7 @@ from .utils import send_generated_otp_to_email
 
 
 class ResendOtp(GenericAPIView):
+    permission_classes = [AllowAny]
     serializer_class = EmailVerificationSerializer
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
@@ -84,6 +85,7 @@ class ResendOtp(GenericAPIView):
 
 
 class RegisterViewforCustomer(GenericAPIView):
+    permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
     serializer_class = CustomerRegistrationSerializer
 
@@ -104,6 +106,7 @@ class RegisterViewforCustomer(GenericAPIView):
 
 
 class RegisterViewforSupplier(GenericAPIView):
+    permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
     serializer_class = SupplierRegistrationSerializer
 
@@ -124,6 +127,7 @@ class RegisterViewforSupplier(GenericAPIView):
 
 
 class RegisterViewforDelivery(GenericAPIView):
+    permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
     serializer_class = DeliveryRegistrationSerializer
 
@@ -143,6 +147,7 @@ class RegisterViewforDelivery(GenericAPIView):
 
 
 class VerifyUserEmail(APIView):  
+    permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def post(self, request):
@@ -184,6 +189,7 @@ class VerifyUserEmail(APIView):
 
 
 class LoginUserView(GenericAPIView):
+    permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
     serializer_class = LoginSerializer
 
@@ -468,6 +474,7 @@ class FollowSupplier(APIView):
 
 
 class PasswordResetRequestView(APIView):
+    permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
     serializer_class = EmailVerificationSerializer
 
@@ -513,6 +520,7 @@ class PasswordResetRequestView(APIView):
 
 
 class CheckOTPValidity(APIView):
+    permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def post(self, request):
@@ -546,6 +554,7 @@ class CheckOTPValidity(APIView):
 
 
 class SetNewPasswordView(APIView):
+    permission_classes = [AllowAny]
     serializer_class = SetNewPasswordSerializer
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
@@ -617,18 +626,19 @@ def social_complete_view(request):
 
 
 class SocialAccountCompleteView(GenericAPIView):
+    permission_classes = [AllowAny]
     serializer_class = SocialAccountCompleteSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = complete_social_registration(**serializer.validated_data)
-        tokens = RefreshToken.for_user(user)
+        tokens = user.tokens()
         return Response({
             'message': _('Account created successfully.'),
             'email': user.email,
-            "access_token": str(tokens.access_token),
-            "refresh_token": str(tokens)
+            "access_token": tokens['access'],
+            "refresh_token": tokens['refresh']
         }, status=status.HTTP_201_CREATED)
 
 

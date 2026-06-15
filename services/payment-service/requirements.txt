@@ -14,3 +14,6 @@ stripe
 # Production servers
 gunicorn>=21.2.0
 whitenoise>=6.5.0
+
+django-admin-interface==0.28.8
+django-colorfield==0.11.0

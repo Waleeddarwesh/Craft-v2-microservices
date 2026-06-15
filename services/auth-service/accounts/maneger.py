@@ -9,6 +9,9 @@ class UserManager(BaseUserManager):
     Custom user manager for the User model.
     """
 
+    def get_by_natural_key(self, email):
+        return self.get(email__iexact=email)
+
     def email_validator(self, email):
         """
         Validates the given email.

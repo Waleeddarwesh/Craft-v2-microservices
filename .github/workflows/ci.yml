@@ -1,0 +1,45 @@
+name: Microservices CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - auth-service
+          - catalog-service
+          - order-service
+          - payment-service
+          - platform-service
+          - reporting-service
+          - ml-service
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        cd services/${{ matrix.service }}
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install -e ../../shared/craft-common
+
+    - name: Run Tests
+      run: |
+        cd services/${{ matrix.service }}
+        python manage.py test
+
+    - name: Build Docker Image
+      run: |
+        docker build -t craft-${{ matrix.service }}:latest -f services/${{ matrix.service }}/Dockerfile .

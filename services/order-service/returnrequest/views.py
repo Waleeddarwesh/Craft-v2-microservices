@@ -15,11 +15,6 @@ from .serializers import (
                           ReturnRequestDetailSerializer,
                           ReturnRequestListSerializer)
 from .services import ReturnRequestService
-from .tasks import (
-    process_supplier_approval_task,  
-    cancel_return_request_task,
-    reject_return_request_task,
-)
 
 
 class ReturnRequestViewSet(viewsets.ModelViewSet):

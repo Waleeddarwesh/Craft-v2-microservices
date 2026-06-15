@@ -31,8 +31,7 @@ from .models import (
 from .serializers import (
     CategorySerializer,
     ProductSerializer,
-    ProductDetailSerializer,
-    ProImageSerializer,
+    ProductImageSerializer,
     CollectionSerializer,
 )
 from .filters import ProductFilter
@@ -45,18 +44,16 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.select_related("category").prefetch_related(
-        "images", "colors", "sizes"
+    queryset = Product.objects.select_related("Category", "MatCategory").prefetch_related(
+        "images", "Colors", "Sizes"
     )
     filter_backends  = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class  = ProductFilter
-    search_fields    = ["name", "description", "category__name"]
-    ordering_fields  = ["price", "created_at", "name"]
-    ordering         = ["-created_at"]
+    search_fields    = ["ProductName", "ProductDescription", "Category__Title"]
+    ordering_fields  = ["UnitPrice", "Publish_Date", "ProductName"]
+    ordering         = ["-Publish_Date"]
 
     def get_serializer_class(self):
-        if self.action == "retrieve":
-            return ProductDetailSerializer
         return ProductSerializer
 
     def get_permissions(self):

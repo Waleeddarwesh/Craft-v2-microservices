@@ -19,6 +19,8 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 
 INSTALLED_APPS = [
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -27,10 +29,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'rest_framework',
+    
+    'drf_spectacular',
     'corsheaders',
     'django_filters',
     'modeltranslation',
     
+    'accounts',
     'products',
     'course',
     'internal',
@@ -127,4 +132,11 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'INFO',
     },
+}
+
+AUTH_USER_MODEL = 'accounts.User'
+
+
+SPECTACULAR_SETTINGS = {
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAuthenticated'],
 }

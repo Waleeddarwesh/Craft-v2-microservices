@@ -12,11 +12,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY shared/craft-common /shared/craft-common
 
 # Copy service requirements and install
-COPY services/auth-service/requirements.txt .
+COPY services/payment-service/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy service code
-COPY services/auth-service/ .
+COPY services/payment-service/ .
 
 # Command to run the application
 RUN python manage.py collectstatic --noinput

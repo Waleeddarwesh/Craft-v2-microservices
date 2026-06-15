@@ -56,3 +56,14 @@ class InternalUserFCMTokenView(views.APIView):
             return response.Response({"fcm_token": fcm_token})
         except User.DoesNotExist:
             return response.Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+class InternalUserStatsView(views.APIView):
+    permission_classes = [IsInternalService]
+    def get(self, request):
+        from accounts.models import User, Customer, Supplier
+        return response.Response({
+            'total_users': User.objects.count(),
+            'total_customers': Customer.objects.count(),
+            'total_suppliers': Supplier.objects.count()
+        })
+

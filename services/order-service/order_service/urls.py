@@ -1,3 +1,5 @@
+from craft_common.views import HealthCheckView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 """
 URL configuration for order_service project.
 
@@ -18,8 +20,14 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/order/', admin.site.urls),
     path('internal/orders/', include('orders.internal_urls')),
-    path('order/', include('orders.urls')),
+    path('orders/', include('orders.urls')),
     path('return/', include('returnrequest.urls')),
+
+    path('admin-api/', include('orders.admin_urls')),
+    path('health/', HealthCheckView.as_view(), name='health_check'),
+    path('orders/api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('orders/api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]
+

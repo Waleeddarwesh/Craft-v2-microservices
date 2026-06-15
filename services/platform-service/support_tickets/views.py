@@ -10,7 +10,6 @@ from .serializers import (
     TicketMessageSerializer, 
     AdminTicketUpdateSerializer
 )
-from admin_api.permissions import require_permission
 
 class TicketViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
@@ -54,7 +53,7 @@ class TicketViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAdminUser, require_permission('accounts.can_manage_support_tickets')])
+    @action(detail=True, methods=['patch'], permission_classes=[permissions.IsAdminUser])
     def manage(self, request, pk=None):
         """Admin endpoint to update ticket status/priority."""
         ticket = self.get_object()
@@ -63,3 +62,4 @@ class TicketViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

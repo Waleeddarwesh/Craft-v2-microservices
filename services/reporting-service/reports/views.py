@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.utils.translation import gettext as _
-from orders.permissions import IsSupplier
+from craft_common.auth.permissions import HasRole
 from .services import ReportService
 from .serializers import EarningReportSerializer
 
@@ -13,7 +13,7 @@ class EarningReportView(APIView):
     Accepts a 'period' query parameter ('this_month', 'this_year', 'this_day').
     Also accepts a 'month' (in YYYY-MM format) for specific month reports.
     """
-    permission_classes = [IsAuthenticated, IsSupplier]
+    permission_classes = [IsAuthenticated, HasRole("supplier")]
 
     def get(self, request, *args, **kwargs):
         supplier_user = request.user
@@ -55,7 +55,7 @@ class SupplierAnalyticsView(APIView):
     """
     Provides aggregated analytics for the authenticated supplier.
     """
-    permission_classes = [IsAuthenticated, IsSupplier]
+    permission_classes = [IsAuthenticated, HasRole("supplier")]
 
     def get(self, request, *args, **kwargs):
         supplier_user = request.user

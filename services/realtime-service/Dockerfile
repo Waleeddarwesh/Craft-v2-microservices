@@ -18,5 +18,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy service code
 COPY services/realtime-service/ .
 
-# Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", \"8008\"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8008"]

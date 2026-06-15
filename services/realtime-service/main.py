@@ -19,13 +19,15 @@ app.add_middleware(
 )
 
 from api_chat import chat_router
-from api_notifications import notif_router
+from api_notifications import notif_router, admin_notif_router
 from api_websockets import ws_router
 
 app.include_router(chat_router)
 app.include_router(notif_router)
+app.include_router(admin_notif_router)
 app.include_router(ws_router)
 
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "realtime-service"}
+

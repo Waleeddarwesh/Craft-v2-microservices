@@ -1,3 +1,5 @@
+from craft_common.views import HealthCheckView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 """
 URL configuration for reporting_service project.
 
@@ -15,8 +17,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/reporting/', admin.site.urls),
+    path('admin-api/', include('admin_api.urls')),
+
+    path('health/', HealthCheckView.as_view(), name='health_check'),
+    path('reports/api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('reports/api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]

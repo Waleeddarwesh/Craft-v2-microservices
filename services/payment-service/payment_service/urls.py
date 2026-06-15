@@ -1,3 +1,5 @@
+from craft_common.views import HealthCheckView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 """
 URL configuration for payment_service project.
 
@@ -18,7 +20,13 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/payment/', admin.site.urls),
     path('internal/payments/', include('payment.internal_urls')),
     path('payment/', include('payment.urls')),
+
+    path('admin-api/', include('payment.admin_urls')),
+    path('health/', HealthCheckView.as_view(), name='health_check'),
+    path('payment/api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('payment/api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]
+

@@ -19,13 +19,13 @@ def create_temp_user(strategy, details, backend, user=None, *args, **kwargs):
             user = User.objects.get(email__iexact=email)
             
             # User exists, so we log them in and provide tokens
-            tokens = RefreshToken.for_user(user)
+            tokens = user.tokens()
             strategy.session_set("social_data", {
                 "is_new": False,
                 "email": user.email,
                 "first_name": user.first_name,
-                "access_token": str(tokens.access_token),
-                "refresh_token": str(tokens)
+                "access_token": tokens['access'],
+                "refresh_token": tokens['refresh']
             })
 
         except User.DoesNotExist:

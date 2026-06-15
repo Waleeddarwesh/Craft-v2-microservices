@@ -3,7 +3,7 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.utils.translation import gettext as _
 from .models import User, OneTimePassword
-from .tasks import send_formatted_email
+
 # from notifications.services import create_notification_for_user
 
 
@@ -33,28 +33,20 @@ def send_generated_otp_to_email(email, request):
 
     from_email = settings.DEFAULT_FROM_EMAIL
 
-    try:
-        send_formatted_email.delay(
-            subject=subject,
-            body=email_body,
-            from_email=from_email,
-            recipient_list=email  
-        )
-    except Exception:
-        # Fallback if Celery is not running
-        email_message = EmailMessage(
-            subject=subject,
-            body=email_body,
-            from_email=from_email,
-            to=[email]
-        )
-        email_message.send()
+    # Fallback if Celery is not running
+    email_message = EmailMessage(
+        subject=subject,
+        body=email_body,
+        from_email=from_email,
+        to=[email]
+    )
+    email_message.send()
 
     # Create an in-app notification
-    create_notification_for_user(
-        user=user,
-        message=_("Your verification passcode has been sent to your email.")
-    )
+    # create_notification_for_user(
+    #     user=user,
+    #     message=_("Your verification passcode has been sent to your email.")
+    # )
 
 
 def send_normal_email(data):
@@ -70,21 +62,13 @@ def send_normal_email(data):
 
     from_email = settings.DEFAULT_FROM_EMAIL
 
-    try:
-        send_formatted_email.delay(
-            subject=subject,
-            body=body,
-            from_email=from_email,
-            recipient_list=recipient  
-        )
-    except Exception:
-        email_message = EmailMessage(
-            subject=subject,
-            body=body,
-            from_email=from_email,
-            to=[recipient]
-        )
-        email_message.send()
+    email_message = EmailMessage(
+        subject=subject,
+        body=body,
+        from_email=from_email,
+        to=[recipient]
+    )
+    email_message.send()
 
 
 class Google:

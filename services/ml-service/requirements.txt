@@ -13,3 +13,4 @@ numpy
 
 
 apscheduler
+pydantic-settings>=2.0.0

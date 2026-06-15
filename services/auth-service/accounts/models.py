@@ -65,9 +65,28 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def tokens(self):
         refresh = RefreshToken.for_user(self)
+        
+        # Inject roles into the token payload so that other microservices can use HasRole
+        roles = []
+        if self.is_superuser or getattr(self, 'is_staff', False):
+            roles.append('admin')
+        if getattr(self, 'is_supplier', False):
+            roles.append('supplier')
+        if getattr(self, 'is_delivery', False):
+            roles.append('delivery')
+        if getattr(self, 'is_customer', False) or not roles:
+            roles.append('customer')
+            
+        refresh['roles'] = roles
+        
+        # IMPORTANT: Also set roles on the access token explicitly.
+        # simplejwt does NOT propagate refresh claims to access_token automatically.
+        access = refresh.access_token
+        access['roles'] = roles
+        
         return {
             "refresh": str(refresh),
-            "access": str(refresh.access_token)
+            "access": str(access)
         }
 
     def __str__(self):

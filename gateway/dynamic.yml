@@ -12,9 +12,7 @@ http:
         accessControlAllowHeaders:
           - "*"
         accessControlAllowOriginList:
-          - "http://localhost:8000"
-          - "https://craft.up.railway.app"
-          - "https://crafteg.up.railway.app"
+          - "*"
         accessControlMaxAge: 100
         addVaryHeader: true
     rate-limit-anon:
@@ -27,18 +25,17 @@ http:
         burst: 200
 
   routers:
-    monolith_router:
+    frontend_router:
       rule: "PathPrefix(`/`)"
-      service: monolith_service
+      service: frontend_service
       entryPoints:
         - web
       middlewares:
         - cors-headers
-        - rate-limit-anon # Apply anon limit by default; user limit can be added to specific routers later
 
     health_router:
-      rule: "PathPrefix(`/health/`)"
-      service: monolith_service # For now, points to monolith. Later can point to an aggregator
+      rule: "PathPrefix(`/health/`) || PathPrefix(`/api/docs/`) || PathPrefix(`/api/schema/`)"
+      service: reporting_service
       entryPoints:
         - web
 
@@ -57,6 +54,7 @@ http:
         - web
       middlewares:
         - cors-headers
+        - rate-limit-user
 
     catalog_router:
       rule: "PathPrefix(`/product/`) || PathPrefix(`/course/`)"
@@ -65,14 +63,16 @@ http:
         - web
       middlewares:
         - cors-headers
+        - rate-limit-user
 
     order_router:
-      rule: "PathPrefix(`/order/`) || PathPrefix(`/cart/`) || PathPrefix(`/return/`)"
+      rule: "PathPrefix(`/orders/`) || PathPrefix(`/cart/`) || PathPrefix(`/return/`)"
       service: order_service
       entryPoints:
         - web
       middlewares:
         - cors-headers
+        - rate-limit-user
 
     payment_router:
       rule: "PathPrefix(`/payment/`)"
@@ -81,6 +81,7 @@ http:
         - web
       middlewares:
         - cors-headers
+        - rate-limit-user
 
     platform_router:
       rule: "PathPrefix(`/review/`) || PathPrefix(`/disputes/`) || PathPrefix(`/support/`) || PathPrefix(`/audit/`)"
@@ -89,6 +90,7 @@ http:
         - web
       middlewares:
         - cors-headers
+        - rate-limit-user
 
     ml_router:
       rule: "PathPrefix(`/recommendations/`)"
@@ -97,20 +99,63 @@ http:
         - web
       middlewares:
         - cors-headers
+        - rate-limit-user
 
     reporting_router:
-      rule: "PathPrefix(`/reports/`) || PathPrefix(`/admin-api/`)"
+      rule: "PathPrefix(`/reports/`)"
       service: reporting_service
+      entryPoints:
+        - web
+      middlewares:
+        - cors-headers
+        - rate-limit-user
+
+    # Unified Admin Service Routers
+    admin_api_router:
+      rule: "PathPrefix(`/admin-api/`)"
+      service: admin_service
+      priority: 150
+      entryPoints:
+        - web
+      middlewares:
+        - cors-headers
+        - rate-limit-user
+        
+    dashboard_router:
+      rule: "PathPrefix(`/dashboard/`)"
+      service: admin_service
+      priority: 150
+      entryPoints:
+        - web
+        
+    docs_router:
+      rule: "PathPrefix(`/docs/`)"
+      service: admin_service
+      priority: 150
+      entryPoints:
+        - web
+        
+    admin_router:
+      rule: "PathPrefix(`/admin/`)"
+      service: admin_service
+      priority: 150
+      entryPoints:
+        - web
+
+    django_static_router:
+      rule: "PathPrefix(`/static/admin/`) || PathPrefix(`/static/rest_framework/`) || PathPrefix(`/static/drf-spectacular/`) || PathPrefix(`/static/admin_interface/`) || PathPrefix(`/static/colorfield/`) || PathPrefix(`/static/drf-yasg/`) || PathPrefix(`/static/rest_framework_swagger/`) || PathPrefix(`/static/admin_custom/`) || PathPrefix(`/media/`)"
+      service: admin_service
+      priority: 200
       entryPoints:
         - web
       middlewares:
         - cors-headers
 
   services:
-    monolith_service:
+    frontend_service:
       loadBalancer:
         servers:
-          - url: "http://django:8000"
+          - url: "http://frontend:80"
 
     realtime_service:
       loadBalancer:
@@ -151,3 +196,8 @@ http:
       loadBalancer:
         servers:
           - url: "http://reporting_service:8007"
+
+    admin_service:
+      loadBalancer:
+        servers:
+          - url: "http://admin_service:8000"

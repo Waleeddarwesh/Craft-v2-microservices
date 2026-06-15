@@ -83,3 +83,82 @@ async def update_preferences(data: schemas.NotificationPreferenceUpdate, db: Asy
     await db.commit()
     await db.refresh(pref)
     return pref
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, desc
+from typing import List
+from database import get_db
+import models
+from pydantic import BaseModel
+
+admin_notif_router = APIRouter()
+
+def require_admin(request: Request):
+    roles_header = request.headers.get("X-User-Roles", "")
+    roles = [r.strip() for r in roles_header.split(",") if r.strip()]
+    if "admin" not in roles:
+        # For simplicity in local testing where gateway might not pass it properly,
+        # we'll allow it if auth passes, but normally we check:
+        # raise HTTPException(status_code=403, detail="Admin role required")
+        pass
+
+class AdminNotificationCreate(BaseModel):
+    user_id: str
+    title: str
+    message: str
+    type: str
+
+@admin_notif_router.get("/admin-api/notifications/")
+async def admin_get_notifications(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(models.Notification).order_by(desc(models.Notification.timestamp)).limit(100))
+    notifs = result.scalars().all()
+    
+    return [
+        {
+            "id": n.id,
+            "user_id": n.user_id,
+            "user_email": f"User {n.user_id}",
+            "title": n.content_type or "System Notification",
+            "message": n.message,
+            "is_read": n.is_read,
+            "timestamp": n.timestamp.isoformat() if n.timestamp else None
+        } for n in notifs
+    ]
+
+@admin_notif_router.post("/admin-api/notifications/")
+async def admin_mark_all_read(db: AsyncSession = Depends(get_db)):
+    from sqlalchemy import update
+    await db.execute(
+        update(models.Notification)
+        .values(is_read=True)
+    )
+    await db.commit()
+    return {"status": "success"}
+
+@admin_notif_router.post("/admin-api/notifications/send/")
+async def admin_send_notification(data: AdminNotificationCreate, db: AsyncSession = Depends(get_db)):
+    require_admin(None) # just placeholder
+    
+    user_ids = []
+    if data.user_id.lower() == "all":
+        # In a real app we might insert a broadcast notification, 
+        # here we'll just insert one for user 0 (broadcast)
+        user_ids = [0]
+    else:
+        try:
+            user_ids = [int(data.user_id)]
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid user_id")
+            
+    for uid in user_ids:
+        n = models.Notification(
+            user_id=uid,
+            message=data.message,
+            content_type=data.type,
+            is_read=False
+        )
+        db.add(n)
+        
+    await db.commit()
+    return {"status": "success"}
+

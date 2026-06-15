@@ -43,7 +43,8 @@ class ProductSerializer(serializers.ModelSerializer):
                   "ProductName", 
                   "ProductDescription", 
                   "QuantityPerUnit", 
-                  "Supplier", 
+                  "supplier_id", 
+                  "supplier_name",
                   "UnitPrice", 
                   "UnitWeight", 
                   "Stock",
@@ -61,14 +62,16 @@ class ProductSerializer(serializers.ModelSerializer):
                   "uploaded_Sizes",  
                   "Rating",]
         
-        read_only_fields = ['Supplier']
+        read_only_fields = ['supplier_id', 'supplier_name']
 
 
     def create(self, validated_data):
         user = self.context['request'].user
-        if not user.is_authenticated or not user.is_supplier:
-            raise AuthenticationFailed(_("User is not a supplier."))
-        validated_data['Supplier'] = user.supplier 
+        if not user.is_authenticated:
+            raise AuthenticationFailed(_("User is not authenticated."))
+        
+        # In microservices, supplier ID is passed via request/headers, 
+        # so perform_create in the view handles injecting supplier_id. 
         uploaded_images = validated_data.pop('uploaded_images', [])
         uploaded_Colors = validated_data.pop('uploaded_Colors', [])
         uploaded_Sizes = validated_data.pop('uploaded_Sizes',[]) 
@@ -102,12 +105,15 @@ class PostersSerializer(serializers.ModelSerializer):
 
 class TrendingProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
-    supplier_full_name = serializers.CharField(source='Supplier.user.get_full_name', read_only=True)
-    supplier_photo = serializers.ImageField(source='Supplier.SupplierPhoto', read_only=True)
+    supplier_full_name = serializers.CharField(source='supplier_name', read_only=True)
+    supplier_photo = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ['id', 'images', 'ProductName', 'UnitPrice', 'supplier_full_name', 'supplier_photo']
+
+    def get_supplier_photo(self, obj):
+        return None
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -307,16 +313,8 @@ class LatestCollectionSerializer(serializers.ModelSerializer):
                     return first_image.image.url  # Return the URL of the image
         return None  # Return None if no image is available
     def get_supplier_full_name(self, obj):
-        # Get the full name of the supplier who owns the collection
-        supplier = obj.supplier
-        if supplier and supplier.user:
-            return f"{supplier.user.first_name} {supplier.user.last_name}"
-        return None
+        # Microservice architecture: we don't have direct access to accounts DB.
+        return f"Supplier {obj.supplier_id}" if obj.supplier_id else None
 
     def get_supplier_photo(self, obj):
-    # Ensure the supplier exists and has a SupplierPhoto
-        supplier = obj.supplier
-        if supplier and supplier.SupplierPhoto:
-            # Access the actual file's URL
-            return supplier.SupplierPhoto.url if supplier.SupplierPhoto else None
         return None

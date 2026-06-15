@@ -20,8 +20,11 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-auth-service')
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['http://localhost:8000', 'http://localhost:3000', 'http://127.0.0.1:3000'])
 
 INSTALLED_APPS = [
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -31,6 +34,7 @@ INSTALLED_APPS = [
     
     # Third-party
     'rest_framework',
+    'drf_spectacular',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
@@ -43,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'craft_common.middleware.request_id.RequestIDMiddleware',
+    'craft_common.middleware.fix_host.BypassHostCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -103,6 +108,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 RABBITMQ_URL = env('RABBITMQ_URL', default='amqp://guest:guest@localhost:5672/')
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
@@ -162,3 +168,16 @@ LOGGING = {
         'level': 'INFO',
     },
 }
+
+
+# OpenTelemetry settings
+import os
+OTEL_SERVICE_NAME = os.environ.get('OTEL_SERVICE_NAME', 'auth-service')
+
+import django.http.request
+django.http.request.host_validation_re = __import__('re').compile(r'^[a-zA-Z0-9_.-]+$')
+
+
+import django.http.request
+django.http.request.host_validation_re = __import__('re').compile(r'^[a-zA-Z0-9_.-]+$')
+

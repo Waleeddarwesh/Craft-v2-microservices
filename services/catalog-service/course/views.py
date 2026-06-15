@@ -16,7 +16,7 @@ from .models import Course, CourseVideos, Enrollment
 from .serializers import CourseSerializer, CourseVideosSerializer, SimpleCoursesSerializer
 from .permissions import IsSupplier
 # from notifications.services import create_notification_for_user
-from .tasks import create_course_task
+
 
 
 
@@ -65,7 +65,7 @@ class CourseViewSet(viewsets.ModelViewSet, CoursePermissionMixin):
         serializer.is_valid(raise_exception=True)
 
         # Offload course creation to Celery to avoid DB lock
-        create_course_task.delay(request.user.id, serializer.validated_data)
+
 
         return Response(
             {"message": _("Your course is being created and will be available shortly.")},

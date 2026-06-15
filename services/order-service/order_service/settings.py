@@ -34,11 +34,14 @@ SECRET_KEY = 'django-insecure-+37xo54z!$ndg-3#66nyd_f14l3qv)t)+5t9n1m&3=ilqk&vz)
 DEBUG = True
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['http://localhost:8000', 'http://localhost:3000', 'http://127.0.0.1:3000'])
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,6 +51,8 @@ INSTALLED_APPS = [
     
     # Third party
     'rest_framework',
+    'accounts',
+    'drf_spectacular',
     'corsheaders',
     
     # Local apps
@@ -56,6 +61,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'craft_common.middleware.fix_host.BypassHostCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -90,13 +96,19 @@ WSGI_APPLICATION = 'order_service.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
+if env('DATABASE_URL', default=None):
+    DATABASES = {
+        'default': env.db('DATABASE_URL')
+    }
+    DATABASES['default']['OPTIONS'] = {'options': '-c search_path=order_service,public'}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -139,3 +151,36 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Internal Microservice Routing
+CATALOG_SERVICE_INTERNAL_URL = env('CATALOG_SERVICE_INTERNAL_URL', default='http://catalog_service:8002/internal/products')
+PAYMENT_SERVICE_INTERNAL_URL = env('PAYMENT_SERVICE_INTERNAL_URL', default='http://payment_service:8004/internal/payments/initiate/')
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'craft_common.auth.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+
+# OpenTelemetry settings
+import os
+OTEL_SERVICE_NAME = os.environ.get('OTEL_SERVICE_NAME', 'order-service')
+
+JWT_PUBLIC_KEY = env('JWT_PUBLIC_KEY', default='').replace('\\n', '\n')
+
+import django.http.request
+django.http.request.host_validation_re = __import__('re').compile(r'^[a-zA-Z0-9_.-]+$')
+
+
+AUTH_USER_MODEL = 'accounts.User'
+
+
+SPECTACULAR_SETTINGS = {
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAuthenticated'],
+}
