@@ -9,6 +9,21 @@ on:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: adminpassword
+          POSTGRES_DB: microservices_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     strategy:
       matrix:
         service:
@@ -36,9 +51,15 @@ jobs:
         pip install -e ../../shared/craft-common
 
     - name: Run Tests
+      env:
+        POSTGRES_DB: microservices_db
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: adminpassword
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
       run: |
         cd services/${{ matrix.service }}
-        python manage.py test
+        if [ -f manage.py ]; then python manage.py test; fi
 
     - name: Build Docker Image
       run: |
