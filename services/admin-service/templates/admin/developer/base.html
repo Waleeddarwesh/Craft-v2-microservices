@@ -26,7 +26,7 @@
     <aside class="w-64 bg-surface backdrop-blur-md flex flex-col border-r border-surface-border relative z-20 shadow-xl">
         <div class="h-16 flex items-center px-6 border-b border-surface-border">
             <div class="flex items-center gap-3 text-primary font-bold text-lg">
-                <i class="ph-fill ph-code block text-2xl"></i>
+                <img src="{% static 'admin_custom/logo.jpg' %}" alt="Craft Logo" class="h-8 w-8 rounded object-cover shadow-sm">
                 Developer Portal
             </div>
         </div>
@@ -56,7 +56,7 @@
                 <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3">Developers</div>
                 <div class="space-y-1">
                     <a href="{% url 'developer-authentication' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'authentication' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:text-gray-200 hover:bg-surface-border/50{% endif %}">
-                        <i class="ph ph-shield-key text-lg"></i> Authentication
+                        <i class="ph ph-shield-check text-lg"></i> Authentication
                     </a>
                     <a href="{% url 'developer-api-keys' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'api-keys' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:text-gray-200 hover:bg-surface-border/50{% endif %}">
                         <i class="ph ph-key text-lg"></i> API Keys
