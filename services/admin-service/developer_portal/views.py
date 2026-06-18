@@ -106,6 +106,7 @@ def overview(request):
         'status_overall': system_status['overall'],
         'services': SERVICES,
         'recent_keys': DeveloperAPIKey.objects.filter(owner=request.user, is_active=True).order_by('-created_at')[:3],
+        'latest_updates': ChangelogEntry.objects.order_by('-published_date', '-id')[:3],
         'active_tab': 'overview'
     }
     return render(request, 'admin/developer/overview.html', context)
