@@ -105,6 +105,7 @@ LOCAL_APPS = [
     'audit_logs',
     'chatapp',
     'course',
+    'developer_portal',
     'disputes',
     'notifications',
     'orders',

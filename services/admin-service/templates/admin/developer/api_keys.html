@@ -1,0 +1,321 @@
+{% extends "admin/developer/base.html" %}
+
+{% block content %}
+<div class="p-8 max-w-6xl mx-auto space-y-8">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">API Keys</h1>
+            <p class="text-gray-400">Manage your application credentials and access tokens for API authentication.</p>
+        </div>
+        <button id="btn-generate-key" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-lg shadow-primary/20">
+            <i class="ph ph-plus text-lg"></i> Generate New Key
+        </button>
+    </div>
+
+    <div class="bg-surface border border-surface-border rounded-xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-white">Active Keys</h2>
+            <div class="text-sm text-gray-400">Showing {{ keys|length }} keys</div>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface-border/30 text-gray-400 text-xs uppercase tracking-wider">
+                        <th class="px-6 py-3 font-medium">Name</th>
+                        <th class="px-6 py-3 font-medium">Prefix</th>
+                        <th class="px-6 py-3 font-medium">Environment</th>
+                        <th class="px-6 py-3 font-medium">Created</th>
+                        <th class="px-6 py-3 font-medium">Last Used</th>
+                        <th class="px-6 py-3 font-medium text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-border">
+                    {% for key in keys %}
+                    <tr class="hover:bg-surface-border/10 transition-colors {% if not key.is_active %}opacity-50{% endif %}">
+                        <td class="px-6 py-4">
+                            <div class="font-medium text-white flex items-center gap-2">
+                                {{ key.name }}
+                                {% if key.is_active %}
+                                <span class="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">Active</span>
+                                {% else %}
+                                <span class="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">Revoked</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 font-mono text-sm text-gray-300">
+                            {{ key.key_prefix }}...
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if key.environment == 'live' %}
+                            <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-1 rounded text-xs font-medium">Live</span>
+                            {% else %}
+                            <span class="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-1 rounded text-xs font-medium">Test</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-400">{{ key.created_at|date:"M d, Y" }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-400">
+                            {% if key.last_used_at %}
+                                {{ key.last_used_at|timesince }} ago
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                {% if key.is_active %}
+                                <button class="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded transition-colors btn-revoke" data-id="{{ key.id }}" title="Revoke Key">
+                                    <i class="ph ph-trash text-lg"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center text-gray-400">
+                            <i class="ph ph-key text-3xl mb-2"></i>
+                            <p>No API keys generated yet.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Generate Key Modal -->
+<div id="api-key-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="api-key-modal-backdrop"></div>
+    <div class="relative bg-surface border border-surface-border rounded-xl shadow-2xl w-full max-w-md p-6 transform scale-95 opacity-0 transition-all duration-200" id="api-key-modal-content">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-white">Generate New Key</h3>
+            <button id="close-modal" class="text-gray-400 hover:text-white transition-colors">
+                <i class="ph ph-x text-xl"></i>
+            </button>
+        </div>
+        <form id="key-form" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Key Name</label>
+                <input type="text" id="key-name" required placeholder="e.g. Production Web App" class="w-full bg-bg border border-surface-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Environment</label>
+                <select id="key-environment" class="w-full bg-bg border border-surface-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                    <option value="test">Test</option>
+                    <option value="live">Live</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Scopes</label>
+                <div class="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                    <label class="flex items-center gap-2 text-sm text-gray-300">
+                        <input type="checkbox" value="products:read" class="scope-checkbox rounded border-surface-border bg-bg text-primary focus:ring-primary">
+                        products:read
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-300">
+                        <input type="checkbox" value="orders:read" class="scope-checkbox rounded border-surface-border bg-bg text-primary focus:ring-primary">
+                        orders:read
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-300">
+                        <input type="checkbox" value="orders:write" class="scope-checkbox rounded border-surface-border bg-bg text-primary focus:ring-primary">
+                        orders:write
+                    </label>
+                </div>
+            </div>
+            <div class="pt-4 flex justify-end gap-3">
+                <button type="button" id="cancel-modal" class="px-4 py-2 text-gray-300 hover:text-white transition-colors font-medium">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors font-medium shadow-lg shadow-primary/20 flex items-center gap-2">
+                    <span id="generate-text">Generate</span>
+                    <i class="ph ph-spinner animate-spin hidden" id="generate-spinner"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="success-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="success-modal-backdrop"></div>
+    <div class="relative bg-surface border border-surface-border rounded-xl shadow-2xl w-full max-w-lg p-6 transform scale-95 opacity-0 transition-all duration-200" id="success-modal-content">
+        <div class="mb-6 text-center">
+            <div class="w-12 h-12 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph ph-check text-2xl font-bold"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">API Key Generated!</h3>
+            <p class="text-sm text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 p-3 rounded-lg text-left">
+                <i class="ph ph-warning-circle mr-1"></i>
+                Please copy this key and store it securely. For security reasons, <strong>we will never show it to you again.</strong>
+            </p>
+        </div>
+        <div class="mb-6">
+            <div class="flex items-center gap-2 bg-bg border border-surface-border rounded-lg p-1">
+                <input type="text" id="new-full-key" readonly class="w-full bg-transparent border-none text-white font-mono text-sm px-3 py-2 focus:outline-none" value="">
+                <button id="btn-copy-key" class="p-2 bg-surface hover:bg-surface-border text-gray-300 rounded transition-colors flex items-center gap-2 whitespace-nowrap">
+                    <i class="ph ph-copy"></i> <span id="copy-text">Copy</span>
+                </button>
+            </div>
+        </div>
+        <div class="flex justify-center">
+            <button type="button" id="close-success-modal" class="px-6 py-2 bg-surface border border-surface-border hover:bg-surface-border text-white rounded-lg transition-colors font-medium">Done</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // CSRF helper
+        const getCookie = (name) => {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        };
+
+        const csrfToken = getCookie('csrftoken');
+
+        // Modal Elements
+        const modal = document.getElementById('api-key-modal');
+        const modalContent = document.getElementById('api-key-modal-content');
+        const btnOpen = document.getElementById('btn-generate-key');
+        const btnClose = document.getElementById('close-modal');
+        const btnCancel = document.getElementById('cancel-modal');
+        const backdrop = document.getElementById('api-key-modal-backdrop');
+        const form = document.getElementById('key-form');
+
+        const successModal = document.getElementById('success-modal');
+        const successModalContent = document.getElementById('success-modal-content');
+        const btnCloseSuccess = document.getElementById('close-success-modal');
+
+        const openModal = (el, contentEl) => {
+            el.classList.remove('hidden');
+            el.classList.add('flex');
+            setTimeout(() => {
+                contentEl.classList.remove('scale-95', 'opacity-0');
+                contentEl.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        };
+
+        const closeModal = (el, contentEl) => {
+            contentEl.classList.remove('scale-100', 'opacity-100');
+            contentEl.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                el.classList.remove('flex');
+                el.classList.add('hidden');
+            }, 200);
+        };
+
+        btnOpen.addEventListener('click', () => openModal(modal, modalContent));
+        btnClose.addEventListener('click', () => closeModal(modal, modalContent));
+        btnCancel.addEventListener('click', () => closeModal(modal, modalContent));
+        backdrop.addEventListener('click', () => closeModal(modal, modalContent));
+
+        btnCloseSuccess.addEventListener('click', () => {
+            closeModal(successModal, successModalContent);
+            window.location.reload();
+        });
+
+        // Copy button
+        document.getElementById('btn-copy-key').addEventListener('click', async () => {
+            const keyInput = document.getElementById('new-full-key');
+            try {
+                await navigator.clipboard.writeText(keyInput.value);
+                const copyText = document.getElementById('copy-text');
+                copyText.innerText = 'Copied!';
+                setTimeout(() => copyText.innerText = 'Copy', 2000);
+            } catch (err) {
+                console.error('Failed to copy', err);
+            }
+        });
+
+        // Generate Key Form Submit
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('key-name').value;
+            const environment = document.getElementById('key-environment').value;
+            const scopes = Array.from(document.querySelectorAll('.scope-checkbox:checked')).map(cb => cb.value);
+
+            const btnText = document.getElementById('generate-text');
+            const spinner = document.getElementById('generate-spinner');
+            
+            btnText.innerText = 'Generating...';
+            spinner.classList.remove('hidden');
+            
+            try {
+                const response = await fetch('/developer/api-keys/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ name, environment, scopes })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    closeModal(modal, modalContent);
+                    document.getElementById('new-full-key').value = data.full_key;
+                    setTimeout(() => openModal(successModal, successModalContent), 300);
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Request failed');
+            } finally {
+                btnText.innerText = 'Generate';
+                spinner.classList.add('hidden');
+            }
+        });
+
+        // Revoke logic
+        document.querySelectorAll('.btn-revoke').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                if(!confirm('Are you sure you want to revoke this API key? This action cannot be undone and any application using it will lose access.')) return;
+                
+                const btnEl = e.currentTarget;
+                const keyId = btnEl.getAttribute('data-id');
+                btnEl.disabled = true;
+                btnEl.classList.add('opacity-50');
+
+                try {
+                    const response = await fetch(`/developer/api-keys/${keyId}/revoke/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        }
+                    });
+
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        const data = await response.json();
+                        alert('Error revoking key: ' + data.error);
+                        btnEl.disabled = false;
+                        btnEl.classList.remove('opacity-50');
+                    }
+                } catch(err) {
+                    alert('Request failed');
+                    btnEl.disabled = false;
+                    btnEl.classList.remove('opacity-50');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

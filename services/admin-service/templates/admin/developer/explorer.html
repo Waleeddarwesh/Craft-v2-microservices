@@ -1,0 +1,215 @@
+{% extends "admin/developer/base.html" %}
+
+{% block extra_head %}
+<!-- Swagger UI CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.css">
+<style>
+    /* Scope all swagger UI styles so they don't break our base tailwind layout */
+    #swagger-ui-container {
+        height: 100%;
+        width: 100%;
+    }
+    
+    /* Embed Swagger natively into our layout */
+    .swagger-ui .wrapper { max-width: 100% !important; padding: 0 !important; }
+    .swagger-ui .topbar { display: none !important; } /* Hide their topbar entirely */
+    .swagger-ui .info { margin: 20px 0 !important; }
+    
+    /* Dark Theme Core matching Craft */
+    .swagger-ui { font-family: 'Inter', sans-serif !important; color: #e6edf3 !important; }
+    .swagger-ui .info .title, .swagger-ui .info h1, .swagger-ui .info h2, .swagger-ui .info h3, .swagger-ui .info h4, .swagger-ui .info h5 { color: #fff !important; }
+    .swagger-ui .info p, .swagger-ui .info li { color: #8b949e !important; }
+    .swagger-ui .info .url, .swagger-ui .info .base-url { display: none !important; } /* Hidden as requested */
+    .swagger-ui a.nostyle, .swagger-ui .opblock-tag, .swagger-ui .scheme-container .schemes-title { color: #fff !important; }
+    
+    .swagger-ui .scheme-container { background: transparent !important; box-shadow: none !important; border-bottom: 1px solid #30363d !important; padding: 10px 0 20px 0 !important; }
+    
+    .swagger-ui .opblock { background: #151b23 !important; border: 1px solid #30363d !important; border-radius: 8px !important; box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important; margin-bottom: 12px !important; }
+    .swagger-ui .opblock:hover { border-color: #484f58 !important; }
+    .swagger-ui .opblock .opblock-summary-method { border-radius: 4px !important; font-weight: 600 !important; }
+    
+    /* Method Colors */
+    .swagger-ui .opblock.opblock-get { background: rgba(59, 130, 246, 0.05) !important; border-color: rgba(59, 130, 246, 0.2) !important; }
+    .swagger-ui .opblock.opblock-post { background: rgba(127, 176, 79, 0.05) !important; border-color: rgba(127, 176, 79, 0.2) !important; }
+    .swagger-ui .opblock.opblock-put { background: rgba(245, 158, 11, 0.05) !important; border-color: rgba(245, 158, 11, 0.2) !important; }
+    .swagger-ui .opblock.opblock-delete { background: rgba(239, 68, 68, 0.05) !important; border-color: rgba(239, 68, 68, 0.2) !important; }
+    .swagger-ui .opblock.opblock-patch { background: rgba(168, 85, 247, 0.05) !important; border-color: rgba(168, 85, 247, 0.2) !important; }
+    
+    .swagger-ui .opblock-body pre.microlight { background: #0d1117 !important; border: 1px solid #30363d !important; border-radius: 6px !important; }
+    .swagger-ui table thead tr th, .swagger-ui table thead tr td { color: #fff !important; border-bottom: 1px solid #30363d !important; }
+    .swagger-ui .parameter__name, .swagger-ui .parameter__type { color: #fff !important; }
+    .swagger-ui input[type=text], .swagger-ui textarea { background: #0d1117 !important; border: 1px solid #30363d !important; color: #fff !important; border-radius: 6px !important; }
+    .swagger-ui input[type=text]:focus { border-color: #7fb04f !important; outline: none !important; }
+    .swagger-ui select { background: #151b23 !important; color: #fff !important; border: 1px solid #30363d !important; border-radius: 6px !important; }
+    .swagger-ui .btn { color: #fff !important; border-color: #30363d !important; background: #151b23 !important; border-radius: 6px !important; }
+    .swagger-ui .btn.execute { background-color: #7fb04f !important; border-color: #7fb04f !important; color: white !important; }
+    .swagger-ui svg:not(.locked) { fill: #8b949e !important; }
+
+    /* Fix dark text in opblock body */
+    .swagger-ui .opblock .opblock-section-header { 
+        background: rgba(255, 255, 255, 0.02) !important; 
+        box-shadow: none !important; 
+        border-top: 1px solid #30363d !important;
+        border-bottom: 1px solid #30363d !important; 
+        padding: 12px 20px !important;
+    }
+    .swagger-ui .opblock .opblock-section-header h4 { color: #e6edf3 !important; font-weight: 600 !important; }
+    .swagger-ui .responses-inner h4, .swagger-ui .responses-inner h5 { color: #e6edf3 !important; }
+    .swagger-ui table tbody tr td { color: #8b949e !important; border-top: 1px solid #30363d !important; padding: 12px 0 !important; }
+    .swagger-ui table thead tr th { padding: 12px 0 !important; color: #8b949e !important; font-size: 12px !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; }
+    .swagger-ui .opblock-body .markdown p { color: #8b949e !important; }
+    .swagger-ui .response-col_status, .swagger-ui .response-col_description, .swagger-ui .response-col_links { color: #8b949e !important; }
+    .swagger-ui .opblock-body pre { color: #e6edf3 !important; background: #0d1117 !important; border: 1px solid #30363d !important; border-radius: 6px !important; padding: 16px !important; }
+    .swagger-ui .parameter__empty_statut { color: #8b949e !important; padding: 16px 20px !important; font-style: italic !important; } 
+    .swagger-ui .model-title { color: #e6edf3 !important; }
+    .swagger-ui .model { color: #8b949e !important; }
+    .swagger-ui .prop-type { color: #7fb04f !important; }
+    .swagger-ui .prop-format { color: #8b949e !important; }
+    .swagger-ui .responses-wrapper { padding: 0 !important; }
+    .swagger-ui .opblock-body { padding-bottom: 16px !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="h-full flex flex-col">
+    <!-- Explorer Header / Service Selector -->
+    <div class="px-8 py-4 border-b border-surface-border bg-surface flex items-center justify-between z-10 shadow-sm shrink-0">
+        <div class="flex items-center gap-4">
+            <div class="h-10 w-10 rounded bg-primary/10 text-primary flex items-center justify-center text-xl border border-primary/20">
+                <i class="ph ph-terminal-window"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-white leading-tight">API Explorer</h1>
+                <p class="text-xs text-gray-400">Interactive testing environment</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <!-- Method Filter -->
+            <div class="flex items-center gap-2 bg-bg border border-surface-border p-1 rounded-lg" id="method-filters">
+                <button data-method="all" class="method-btn px-3 py-1 text-xs font-bold rounded bg-surface-border text-white shadow-sm transition-colors uppercase">All</button>
+                <button data-method="get" class="method-btn px-3 py-1 text-xs font-bold rounded text-gray-400 hover:text-blue-400 transition-colors uppercase">GET</button>
+                <button data-method="post" class="method-btn px-3 py-1 text-xs font-bold rounded text-gray-400 hover:text-green-400 transition-colors uppercase">POST</button>
+                <button data-method="put" class="method-btn px-3 py-1 text-xs font-bold rounded text-gray-400 hover:text-amber-400 transition-colors uppercase">PUT</button>
+                <button data-method="delete" class="method-btn px-3 py-1 text-xs font-bold rounded text-gray-400 hover:text-red-400 transition-colors uppercase">DEL</button>
+            </div>
+
+            <!-- Service Selector -->
+            <div class="flex items-center gap-3">
+                <label class="text-sm font-medium text-gray-400">Service:</label>
+                <div class="relative">
+                    <select id="service-selector" class="appearance-none bg-bg border border-surface-border text-white text-sm rounded-lg pl-3 pr-10 py-2 focus:outline-none focus:border-primary transition-colors cursor-pointer shadow-inner">
+                        {% for service in services %}
+                        <option value="{{ service.schema_url }}" {% if request.GET.service == service.slug %}selected{% endif %}>{{ service.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                        <i class="ph ph-caret-down"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded Swagger UI container -->
+    <div class="flex-1 overflow-y-auto px-8 py-4" id="swagger-scroll-container">
+        <div class="max-w-6xl mx-auto bg-surface rounded-xl border border-surface-border shadow-lg overflow-hidden">
+            <div id="swagger-ui-container" class="p-6"></div>
+        </div>
+        <div class="h-12"></div> <!-- Padding bottom -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.js"></script>
+
+<script>
+window.onload = function() {
+    
+    // Auto-inject JWT token if it exists in the global scope (set by backend middleware)
+    {% if access_token %}
+    window.CRAFT_ACCESS_TOKEN = "{{ access_token }}";
+    {% endif %}
+
+    var requestInterceptor = function(req) {
+        if (window.CRAFT_ACCESS_TOKEN) {
+            req.headers.Authorization = "Bearer " + window.CRAFT_ACCESS_TOKEN;
+        }
+        return req;
+    };
+
+    var initSwagger = function(url) {
+        window.ui = SwaggerUIBundle({
+            url: url,
+            dom_id: '#swagger-ui-container',
+            deepLinking: true,
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            layout: "BaseLayout",
+            requestInterceptor: requestInterceptor,
+            docExpansion: "list",
+            defaultModelsExpandDepth: -1, // Hide schemas by default to keep it clean
+            onComplete: function() {
+                // If we have a token, automatically authorize
+                if (window.CRAFT_ACCESS_TOKEN) {
+                    window.ui.authActions.authorize({
+                        Bearer: {
+                            name: "Bearer",
+                            schema: {
+                                type: "apiKey",
+                                in: "header",
+                                name: "Authorization"
+                            },
+                            value: window.CRAFT_ACCESS_TOKEN
+                        }
+                    });
+                }
+            }
+        });
+    };
+
+    // Initialize with selected service
+    var selector = document.getElementById('service-selector');
+    initSwagger(selector.value);
+
+    // Update swagger on change
+    selector.addEventListener('change', function(e) {
+        initSwagger(e.target.value);
+    });
+
+    // Method filtering logic
+    const methodBtns = document.querySelectorAll('.method-btn');
+    const dynamicStyle = document.createElement('style');
+    document.head.appendChild(dynamicStyle);
+
+    methodBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Update button styles
+            methodBtns.forEach(b => {
+                b.classList.remove('bg-surface-border', 'text-white', 'shadow-sm');
+                b.classList.add('text-gray-400');
+            });
+            this.classList.remove('text-gray-400');
+            this.classList.add('bg-surface-border', 'text-white', 'shadow-sm');
+
+            const method = this.getAttribute('data-method');
+            if (method === 'all') {
+                dynamicStyle.innerHTML = '';
+            } else {
+                // Hide all opblocks except the selected method
+                dynamicStyle.innerHTML = `
+                    .swagger-ui .opblock:not(.opblock-${method}) { display: none !important; }
+                `;
+            }
+        });
+    });
+};
+</script>
+{% endblock %}

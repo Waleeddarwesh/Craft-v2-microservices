@@ -1,0 +1,24 @@
+{
+  "name": "admin-service",
+  "version": "1.0.0",
+  "description": "![Python](https://img.shields.io/badge/Python-3.11-blue) ![Django](https://img.shields.io/badge/Django-5.0-green) ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-teal) ![Docker](https://img.shields.io/badge/Docker-Microservices-blue) ![Traefik](https://img.shields.io/badge/Traefik-API%20Gateway-cyan)",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "npx @tailwindcss/cli -i ./static/developer/css/input.css -o ./static/developer/css/output.css",
+    "watch:css": "npx @tailwindcss/cli -i ./static/developer/css/input.css -o ./static/developer/css/output.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.1",
+    "@tailwindcss/typography": "^0.5.20",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.1"
+  }
+}

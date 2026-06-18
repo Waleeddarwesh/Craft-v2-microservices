@@ -18,7 +18,7 @@ class IsSuperUser(permissions.BasePermission):
 schema_view = get_schema_view(
     openapi.Info(
         title="Craft API",
-        default_version='v1',
+        default_version='v2.0',
         description="API documentation for Craft application",
         terms_of_service="https://www.example.com/policies/terms/",
         contact=openapi.Contact(email="Waleeddarwesh2002@gmail.com"),
@@ -35,12 +35,15 @@ from admin_api.views import dashboard_view
 
 from django.views.generic import RedirectView
 
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import redirect, render
+from django.http import HttpResponseForbidden
+
 def check_docs_token(view_func):
     def wrapped_view(request, *args, **kwargs):
         # Allow access only if logged into Django Admin as superuser via Session
         if not request.user.is_authenticated or not request.user.is_superuser:
-            from django.http import HttpResponseForbidden
-            return HttpResponseForbidden("You must be authenticated as a superuser to access the API documentation.")
+            return redirect('/docs/login/?next=' + request.path)
             
         original_user = request.user
         # Get the response from drf_yasg
@@ -60,6 +63,7 @@ def check_docs_token(view_func):
             
             inject_js = f"""
             <script>
+            window.CRAFT_ACCESS_TOKEN = "{access_token}";
             window.addEventListener('load', function() {{
                 var injectToken = function() {{
                     if (window.ui && window.ui.authActions) {{
@@ -90,15 +94,50 @@ def check_docs_token(view_func):
         return response
     return wrapped_view
 
+from django.contrib.auth.forms import AuthenticationForm
+
+def docs_login_view(request):
+    if request.user.is_authenticated and request.user.is_superuser:
+        next_url = request.GET.get('next', '/docs/')
+        return redirect(next_url)
+
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            if user.is_superuser:
+                login(request, user)
+                next_url = request.GET.get('next', '/docs/')
+                return redirect(next_url)
+            else:
+                form.add_error(None, 'You must be a superuser to access the Developer Portal.')
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'admin/docs_login.html', {'form': form})
+
+def docs_logout_view(request):
+    logout(request)
+    return redirect('/docs/login/')
+
+from django.views.generic import TemplateView
+
 urlpatterns = [
     path('', include('django_prometheus.urls')),
     path('', RedirectView.as_view(url='/dashboard/', permanent=False), name='index'),
-    path('docs/', check_docs_token(schema_view.with_ui('swagger', cache_timeout=0)), name='schema-swagger-ui'),
+    path('admin-schema.json', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('docs/', check_docs_token(TemplateView.as_view(template_name='admin/central_docs.html')), name='schema-swagger-ui'),
+    path('docs/login/', docs_login_view, name='docs-login'),
+    path('docs/logout/', docs_logout_view, name='docs-logout'),
     path('admin/', admin.site.urls),
 
 
     # Admin API & Dashboard
     path('admin-api/', include('admin_api.urls')),
+    
+    # Craft Developer Portal
+    path('developer/', include('developer_portal.urls')),
+
     path('dashboard/', dashboard_view, {'path': 'index.html'}, name='dashboard-login'),
     path('dashboard/<path:path>', dashboard_view, name='dashboard-file'),
 

@@ -1,0 +1,439 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Craft Central API Docs</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    // FOUC Prevention & localStorage sync
+    (function(){
+      var t = localStorage.getItem('craft_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <style>
+    /* ─── DARK THEME (Default) ─── */
+    :root, [data-theme="dark"] {
+      color-scheme: dark;
+      --clr-primary:        #7fb04f;
+      --clr-primary-glow:   hsla(94, 42%, 50%, 0.22);
+      --clr-bg:             hsl(210, 12%, 7%);
+      --clr-bg-secondary:   hsl(210, 10%, 10%);
+      --clr-surface:        hsl(210, 8%, 13%);
+      --clr-surface-border: hsla(210, 10%, 28%, 0.45);
+      --clr-text:           hsl(60, 5%, 95%);
+      --clr-text-secondary: hsl(210, 8%, 58%);
+      --clr-text-inverse:   hsl(210, 12%, 7%);
+      --font-family:        'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --shadow-sm:          0 1px 3px rgba(0,0,0,0.3);
+      --glass-border:       hsla(210, 15%, 35%, 0.25);
+    }
+
+    /* ─── LIGHT THEME ─── */
+    [data-theme="light"] {
+      color-scheme: light;
+      --clr-primary:        #5a8a36;
+      --clr-primary-glow:   hsla(94, 42%, 50%, 0.12);
+      --clr-bg:             hsl(210, 25%, 96%);
+      --clr-bg-secondary:   hsl(0, 0%, 100%);
+      --clr-surface:        hsl(0, 0%, 100%);
+      --clr-surface-border: hsl(210, 15%, 88%);
+      --clr-text:           hsl(210, 30%, 15%);
+      --clr-text-secondary: hsl(210, 15%, 40%);
+      --clr-text-inverse:   hsl(0, 0%, 100%);
+      --shadow-sm:          0 1px 3px rgba(0,0,0,0.05);
+      --glass-border:       hsla(210, 15%, 85%, 0.6);
+    }
+
+    html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
+    *, *:before, *:after { box-sizing: inherit; }
+    
+    body { 
+      margin: 0; 
+      background: var(--clr-bg); 
+      color: var(--clr-text);
+      font-family: var(--font-family);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* ─── Custom Developer Portal Header ─── */
+    .portal-header {
+      background: var(--clr-surface);
+      border-bottom: 1px solid var(--clr-surface-border);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .portal-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--clr-text);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: block;
+      object-fit: cover;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .theme-toggle-btn {
+      background: transparent;
+      border: 1px solid var(--clr-surface-border);
+      color: var(--clr-text-secondary);
+      border-radius: 6px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-toggle-btn:hover {
+      background: var(--clr-bg-secondary);
+      color: var(--clr-primary);
+      border-color: var(--clr-primary);
+    }
+    .theme-toggle-btn svg { width: 18px; height: 18px; }
+    
+    [data-theme="dark"] .icon-moon { display: none; }
+    [data-theme="dark"] .icon-sun { display: block; }
+    [data-theme="light"] .icon-moon { display: block; }
+    [data-theme="light"] .icon-sun { display: none; }
+
+    .logout-btn {
+      color: var(--clr-text-secondary);
+      font-weight: 500;
+      font-size: 14px;
+      text-decoration: none;
+      padding: 8px 16px;
+      border: 1px solid var(--clr-surface-border);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover {
+      background: var(--clr-bg-secondary);
+      color: var(--clr-text);
+      border-color: var(--clr-text-secondary);
+    }
+
+    /* ─── Hide default Swagger Topbar elements ─── */
+    .swagger-ui .topbar .download-url-wrapper .download-url-input { display: none !important; }
+    .swagger-ui .topbar .download-url-wrapper .download-url-button { display: none !important; }
+    /* Hide the green Swagger logo */
+    .swagger-ui .topbar .link { display: none !important; }
+    /* Hide the Swagger built-in lightbulb/theme toggle */
+    .swagger-ui .topbar button { display: none !important; }
+    .swagger-ui .topbar svg { display: none !important; }
+    .swagger-ui .topbar img { display: none !important; }
+    /* Make topbar blend entirely */
+    .swagger-ui .topbar { 
+        background: transparent !important; 
+        border-bottom: none !important; 
+        padding: 24px 0 0 0 !important;
+    }
+    .swagger-ui .wrapper { max-width: 1200px !important; margin: 0 auto !important; }
+    
+    /* ─── Swagger UI Full Enhancements ─── */
+    .swagger-ui {
+      font-family: var(--font-family) !important;
+      color: var(--clr-text) !important;
+      background: var(--clr-bg) !important;
+    }
+    
+    /* Ensure overall layout background forces Light/Dark correctly */
+    body { background: var(--clr-bg) !important; }
+    #swagger-ui { background: var(--clr-bg) !important; }
+    
+    /* Force text colors in the info section to respect themes */
+    .swagger-ui .info .title, 
+    .swagger-ui .info h1, 
+    .swagger-ui .info h2, 
+    .swagger-ui .info h3, 
+    .swagger-ui .info h4, 
+    .swagger-ui .info h5 {
+      color: var(--clr-text) !important;
+    }
+    
+    .swagger-ui .info,
+    .swagger-ui .info p, 
+    .swagger-ui .info li, 
+    .swagger-ui .info a,
+    .swagger-ui .info .base-url,
+    .swagger-ui .info .url,
+    .swagger-ui .info span,
+    .swagger-ui .info > div {
+      color: var(--clr-text-secondary) !important;
+    }
+    
+    /* Ensure version badges have white text for contrast against their backgrounds */
+    .swagger-ui .info .title small,
+    .swagger-ui .info .title small pre {
+      color: #ffffff !important;
+    }
+    
+    /* Hide schema URL as requested */
+    .swagger-ui .info .url,
+    .swagger-ui .info .base-url {
+      display: none !important;
+    }
+    
+    /* Topbar text (Select a definition) */
+    .swagger-ui .topbar label,
+    .swagger-ui .topbar span {
+      color: var(--clr-text) !important;
+    }
+
+    /* Schemes label */
+    .swagger-ui .scheme-container .schemes-title,
+    .swagger-ui .scheme-container label {
+      color: var(--clr-text) !important;
+    }
+
+    /* Fix SVG Fills (Arrows, uncolored padlocks, etc) */
+    .swagger-ui svg:not(.locked) {
+      fill: var(--clr-text-secondary) !important;
+    }
+    .swagger-ui .opblock .opblock-summary-control svg,
+    .swagger-ui .expand-operation svg,
+    .swagger-ui .expand-methods svg {
+      fill: var(--clr-text) !important;
+    }
+
+    .swagger-ui .scheme-container {
+      background: transparent !important;
+      box-shadow: none !important;
+      border-bottom: 1px solid var(--clr-surface-border) !important;
+      padding: 16px 0 !important;
+    }
+    .swagger-ui .opblock-tag, .swagger-ui .opblock .opblock-summary-operation-id, .swagger-ui .opblock .opblock-summary-path {
+      color: var(--clr-text) !important;
+    }
+    .swagger-ui .opblock .opblock-section-header {
+      background: var(--clr-surface) !important;
+      border: 1px solid var(--clr-surface-border) !important;
+      border-radius: 8px !important;
+      margin-bottom: 12px !important;
+    }
+    
+    /* Ensure headings inside opblocks (Parameters, Responses) have correct contrast */
+    .swagger-ui .opblock .opblock-section-header h4,
+    .swagger-ui .opblock .opblock-section-header h5,
+    .swagger-ui .opblock .opblock-section-header label,
+    .swagger-ui .response-control-media-type__title,
+    .swagger-ui .responses-wrapper .opblock-section-header h4 {
+      color: var(--clr-text) !important;
+    }
+    
+    .swagger-ui .opblock-description-wrapper p, .swagger-ui .opblock-external-docs-wrapper p, .swagger-ui .opblock-title_normal p {
+      color: var(--clr-text-secondary) !important;
+    }
+    .swagger-ui table thead tr td, .swagger-ui table thead tr th {
+      color: var(--clr-text) !important;
+      border-bottom: 1px solid var(--clr-surface-border) !important;
+      padding-bottom: 12px !important;
+    }
+    .swagger-ui .response-col_status, .swagger-ui .response-col_description, .swagger-ui .parameter__name, .swagger-ui .parameter__type {
+      color: var(--clr-text) !important;
+    }
+    .swagger-ui .opblock-body pre.microlight {
+      background: var(--clr-bg-secondary) !important;
+      color: var(--clr-text) !important;
+      border: 1px solid var(--clr-surface-border) !important;
+      border-radius: 8px !important;
+    }
+    .swagger-ui .btn {
+      color: var(--clr-text) !important;
+      border-color: var(--clr-surface-border) !important;
+      border-radius: 6px !important;
+      box-shadow: var(--shadow-sm) !important;
+      font-weight: 500 !important;
+      background: var(--clr-surface) !important;
+    }
+    .swagger-ui .btn:hover { background: var(--clr-bg-secondary) !important; border-color: var(--clr-primary) !important; }
+    .swagger-ui .btn.execute {
+      background-color: var(--clr-primary) !important;
+      color: #fff !important;
+      border-color: var(--clr-primary) !important;
+    }
+    .swagger-ui .btn.execute:hover { background-color: var(--clr-primary-dark) !important; }
+    
+    .swagger-ui .opblock .opblock-summary { border-color: var(--clr-surface-border) !important; }
+    .swagger-ui .opblock {
+      background: var(--clr-surface) !important;
+      border: 1px solid var(--clr-surface-border) !important;
+      border-radius: 12px !important;
+      box-shadow: var(--shadow-sm) !important;
+      margin-bottom: 16px !important;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    .swagger-ui .opblock:hover { border-color: var(--glass-border) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important; }
+    
+    .swagger-ui .opblock.opblock-post { background: hsla(152, 60%, 48%, 0.05) !important; border-color: hsla(152, 60%, 48%, 0.2) !important; }
+    .swagger-ui .opblock.opblock-get { background: hsla(205, 75%, 55%, 0.05) !important; border-color: hsla(205, 75%, 55%, 0.2) !important; }
+    .swagger-ui .opblock.opblock-put { background: hsla(40, 90%, 55%, 0.05) !important; border-color: hsla(40, 90%, 55%, 0.2) !important; }
+    .swagger-ui .opblock.opblock-delete { background: hsla(0, 68%, 55%, 0.05) !important; border-color: hsla(0, 68%, 55%, 0.2) !important; }
+    .swagger-ui .opblock.opblock-patch { background: hsla(170, 50%, 50%, 0.05) !important; border-color: hsla(170, 50%, 50%, 0.2) !important; }
+    
+    .swagger-ui .opblock .opblock-summary-method {
+      border-radius: 6px !important;
+      text-shadow: none !important;
+      font-weight: 600 !important;
+      min-width: 80px !important;
+    }
+    
+    /* ─── Premium Form Inputs ─── */
+    .swagger-ui input[type=text], .swagger-ui input[type=password], .swagger-ui input[type=search], .swagger-ui textarea {
+      background: var(--clr-bg-secondary) !important;
+      color: var(--clr-text) !important;
+      border: 1px solid var(--clr-surface-border) !important;
+      border-radius: 8px !important;
+      padding: 10px 14px !important;
+      transition: all 0.2s ease !important;
+      outline: none !important;
+    }
+    .swagger-ui input[type=text]:focus, .swagger-ui input[type=password]:focus, .swagger-ui input[type=search]:focus, .swagger-ui textarea:focus {
+      border-color: var(--clr-primary) !important;
+      box-shadow: 0 0 0 2px var(--clr-primary-glow) !important;
+    }
+
+    /* ─── Premium Dropdown Styling ─── */
+    .swagger-ui select {
+      background: var(--clr-surface) !important;
+      color: var(--clr-text) !important;
+      border: 1px solid var(--clr-surface-border) !important;
+      border-radius: 8px !important;
+      padding: 10px 40px 10px 16px !important;
+      font-size: 14px !important;
+      font-weight: 500 !important;
+      cursor: pointer !important;
+      appearance: none !important;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 14px center !important;
+      background-size: 16px !important;
+      transition: all 0.2s ease !important;
+      outline: none !important;
+      box-shadow: var(--shadow-sm) !important;
+    }
+    .swagger-ui select:hover, .swagger-ui select:focus {
+      border-color: var(--clr-primary) !important;
+      box-shadow: 0 0 0 2px var(--clr-primary-glow) !important;
+    }
+
+    .swagger-ui .dialog-ux .modal-ux {
+      background: var(--clr-surface) !important;
+      border: 1px solid var(--clr-surface-border) !important;
+      border-radius: 12px !important;
+    }
+    .swagger-ui .dialog-ux .modal-ux-content h4, .swagger-ui .dialog-ux .modal-ux-header h3 { color: var(--clr-text) !important; }
+    .swagger-ui .tab li { color: var(--clr-text) !important; }
+    .swagger-ui .responses-inner h4, .swagger-ui .responses-inner h5 { color: var(--clr-text) !important; }
+    .swagger-ui .model, .swagger-ui .model-title { color: var(--clr-text) !important; }
+    .swagger-ui section.models {
+      border: 1px solid var(--clr-surface-border) !important;
+      background: var(--clr-surface) !important;
+      border-radius: 12px !important;
+    }
+    .swagger-ui section.models h4 { color: var(--clr-text) !important; }
+    
+    /* ─── Text selection highlight ─── */
+    ::selection { background: var(--clr-primary-glow); color: var(--clr-text); }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Topbar -->
+  <header class="portal-header">
+    <div class="portal-brand">
+      <img src="{% static 'admin_custom/logo.jpg' %}" alt="Craft Logo" class="brand-icon">
+      Craft Developer Portal
+    </div>
+    <div class="header-actions">
+      <!-- Theme Toggle Button -->
+      <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+        <!-- Sun Icon -->
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <!-- Moon Icon -->
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+      
+      <a href="{% url 'docs-logout' %}" class="logout-btn">End Session</a>
+    </div>
+  </header>
+
+  <div id="swagger-ui"></div>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+  <script>
+    // Theme Toggling Logic
+    function toggleTheme() {
+      var current = document.documentElement.getAttribute('data-theme') || 'dark';
+      var next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('craft_theme', next);
+    }
+
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        urls: [
+          { name: "Admin Service", url: "/admin-schema.json?format=openapi&v=2" },
+          { name: "Catalog & Video Service", url: "/product/api/schema/?v=2" },
+          { name: "Order Service", url: "/orders/api/schema/?v=2" },
+          { name: "Payment Service", url: "/payment/api/schema/?v=2" },
+          { name: "Platform Service", url: "/review/api/schema/?v=2" },
+          { name: "Reporting Service", url: "/reports/api/schema/?v=2" }
+        ],
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
+        persistAuthorization: true,
+        requestInterceptor: function(req) {
+          if (window.CRAFT_ACCESS_TOKEN) {
+            req.headers.Authorization = "Bearer " + window.CRAFT_ACCESS_TOKEN;
+          }
+          return req;
+        }
+      });
+      window.ui = ui;
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #7fb04f;
+  --color-primary-dark: hsl(94, 42%, 36%);
+  --color-surface: hsla(210, 12%, 14%, 0.65);
+  --color-surface-border: hsla(210, 15%, 35%, 0.25);
+  --color-bg: hsl(210, 12%, 7%);
+}
+
+@layer utilities {
+    .glass-effect {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+}

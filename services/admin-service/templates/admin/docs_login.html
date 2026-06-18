@@ -1,0 +1,274 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Portal Login | Craft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+    <style>
+        :root {
+            /* ─── Exact Dashboard Design Tokens ─── */
+            --clr-primary:        #7fb04f;
+            --clr-primary-dark:   hsl(94, 42%, 36%);
+            --clr-primary-glow:   hsla(94, 42%, 50%, 0.22);
+            --clr-accent-glow:    hsla(42, 85%, 55%, 0.18);
+            
+            --clr-bg:             hsl(210, 12%, 7%);
+            --clr-bg-secondary:   hsl(210, 10%, 10%);
+            
+            --glass-bg:           hsla(210, 12%, 14%, 0.65);
+            --glass-border:       hsla(210, 15%, 35%, 0.25);
+            
+            --clr-text:           hsl(60, 5%, 95%);
+            --clr-text-secondary: hsl(210, 8%, 58%);
+            
+            --clr-danger:         hsl(0, 68%, 55%);
+            --clr-danger-bg:      hsla(0, 68%, 55%, 0.12);
+            
+            --shadow-glow:        0 0 30px var(--clr-primary-glow);
+            --radius-md:          8px;
+            --radius-lg:          12px;
+            --radius-2xl:         20px;
+            
+            --fs-sm:              0.8125rem;
+            --fs-base:            0.9375rem;
+            --fs-xl:              1.5rem;
+            
+            --fw-semibold:        600;
+            --fw-bold:            700;
+            
+            --space-1:            0.25rem;
+            --space-2:            0.5rem;
+            --space-3:            0.75rem;
+            --space-4:            1rem;
+            --space-5:            1.25rem;
+            --space-8:            2rem;
+            --space-10:           2.5rem;
+            
+            --transition-base:    200ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--clr-bg);
+            position: relative;
+            overflow: hidden;
+            color: var(--clr-text);
+        }
+
+        .login-page::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--clr-primary-glow) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            pointer-events: none;
+        }
+
+        .login-page::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--clr-accent-glow) 0%, transparent 70%);
+            bottom: -200px;
+            left: -200px;
+            pointer-events: none;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-10);
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp .6s ease-out;
+        }
+
+        .login-brand {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .login-brand-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--space-4);
+            border-radius: var(--radius-lg);
+            background: var(--clr-bg-secondary);
+            display: block;
+            border: 1px solid var(--glass-border);
+            object-fit: cover;
+        }
+
+        .login-brand h1 {
+            font-size: var(--fs-xl);
+            font-weight: var(--fw-bold);
+            margin-bottom: var(--space-1);
+            color: var(--clr-primary);
+        }
+
+        .login-brand p {
+            font-size: var(--fs-sm);
+            color: var(--clr-text-secondary);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-5);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .form-label {
+            font-size: var(--fs-sm);
+            color: var(--clr-text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--clr-bg-secondary);
+            padding: var(--space-4) var(--space-5);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--clr-text);
+            font-size: var(--fs-base);
+            transition: all var(--transition-base);
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--clr-primary);
+            box-shadow: 0 0 0 2px var(--clr-primary-glow);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: var(--space-4);
+            background: var(--clr-primary);
+            color: white;
+            font-size: var(--fs-base);
+            font-weight: var(--fw-semibold);
+            border: none;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            margin-top: var(--space-2);
+        }
+
+        .login-btn:hover {
+            background: var(--clr-primary-dark);
+            box-shadow: var(--shadow-glow);
+            transform: translateY(-1px);
+        }
+
+        .login-error {
+            background: var(--clr-danger-bg);
+            color: var(--clr-danger);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-md);
+            font-size: var(--fs-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            animation: fadeInUp .3s ease-out;
+            margin-bottom: var(--space-5);
+            border: 1px solid hsla(0, 68%, 55%, 0.3);
+        }
+
+        .login-error ul {
+            list-style: none;
+            margin-left: var(--space-2);
+        }
+
+        .footer-text {
+            text-align: center;
+            font-size: var(--fs-sm);
+            color: var(--clr-text-secondary);
+            margin-top: var(--space-8);
+        }
+
+    </style>
+</head>
+<body class="login-page">
+
+    <div class="login-card">
+        <div class="login-brand">
+            <img src="{% static 'admin_custom/logo.jpg' %}" alt="Craft" class="login-brand-logo">
+            <h1>Developer Portal</h1>
+            <p>Authenticate to access Craft API Docs</p>
+        </div>
+
+        {% if form.errors %}
+            <div class="login-error">
+                <ul>
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'docs-login' %}?next={{ request.GET.next|default:'/docs/' }}" class="login-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_username" class="form-label">Username</label>
+                <input type="text" name="username" id="id_username" class="form-input" required autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password" class="form-label">Password</label>
+                <input type="password" name="password" id="id_password" class="form-input" required>
+            </div>
+            
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+
+        <div class="footer-text">
+            &copy; 2026 Craft Microservices
+        </div>
+    </div>
+
+</body>
+</html>

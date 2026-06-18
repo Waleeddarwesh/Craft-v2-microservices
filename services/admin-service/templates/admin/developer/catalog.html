@@ -1,0 +1,122 @@
+{% extends "admin/developer/base.html" %}
+
+{% block content %}
+<div class="p-8 max-w-7xl mx-auto">
+    
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">API Catalog</h1>
+            <p class="text-gray-400">Discover and explore all available Craft microservices and their APIs.</p>
+        </div>
+        
+        <!-- Filters and Search -->
+        <div class="flex items-center gap-4">
+            <div class="relative">
+                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="catalog-search" placeholder="Search services..." class="bg-surface border border-surface-border rounded-lg pl-10 pr-4 py-1.5 text-sm text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64 transition-all">
+            </div>
+            <div class="flex items-center gap-2 bg-surface border border-surface-border p-1 rounded-lg" id="catalog-filters">
+                <button data-filter="all" class="filter-btn px-4 py-1.5 text-sm font-medium rounded bg-surface-border text-white shadow-sm transition-colors">All</button>
+                <button data-filter="public" class="filter-btn px-4 py-1.5 text-sm font-medium rounded text-gray-400 hover:text-white transition-colors">Public</button>
+                <button data-filter="admin" class="filter-btn px-4 py-1.5 text-sm font-medium rounded text-gray-400 hover:text-white transition-colors">Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="catalog-grid">
+        {% for service in services %}
+        <div class="service-card bg-surface border border-surface-border rounded-xl p-6 flex flex-col hover:border-primary/50 hover:shadow-lg hover:-translate-y-1 transition-all group" data-category="{% if service.slug == 'admin' or service.slug == 'reporting' %}admin{% else %}public{% endif %}">
+            
+            <div class="flex justify-between items-start mb-4">
+                <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-surface-border to-bg border border-surface-border flex items-center justify-center text-2xl text-gray-300 group-hover:text-primary transition-colors shadow-inner">
+                    {% if service.slug == 'catalog-video' %}<i class="ph ph-video-camera"></i>
+                    {% elif service.slug == 'orders' %}<i class="ph ph-shopping-cart"></i>
+                    {% elif service.slug == 'payments' %}<i class="ph ph-credit-card"></i>
+                    {% elif service.slug == 'platform' %}<i class="ph ph-globe"></i>
+                    {% elif service.slug == 'reporting' %}<i class="ph ph-chart-line-up"></i>
+                    {% else %}<i class="ph ph-hard-drives"></i>{% endif %}
+                </div>
+                
+                <span class="bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-md text-xs font-bold font-mono">
+                    {{ service.version }}
+                </span>
+            </div>
+            
+            <h3 class="text-lg font-bold text-white mb-2 group-hover:text-primary transition-colors">{{ service.name }}</h3>
+            <p class="text-sm text-gray-400 mb-6 flex-1 line-clamp-3">{{ service.description }}</p>
+            
+            <div class="mt-auto space-y-4">
+                <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center gap-1.5">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </span>
+                        <span class="text-gray-300 font-medium capitalize">{{ service.status }}</span>
+                    </div>
+                    <div class="text-gray-500 font-medium">
+                        <span class="text-gray-300 font-mono">{{ service.endpoint_count }}</span> endpoints
+                    </div>
+                </div>
+                
+                <div class="pt-4 border-t border-surface-border flex gap-3">
+                    <a href="{% url 'developer-explorer' %}?service={{ service.slug }}" class="flex-1 text-center bg-surface-border hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
+                        Explore APIs
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const serviceCards = document.querySelectorAll('.service-card');
+        const searchInput = document.getElementById('catalog-search');
+        
+        let currentFilter = 'all';
+        let currentSearch = '';
+
+        const filterCards = () => {
+            serviceCards.forEach(card => {
+                const category = card.getAttribute('data-category');
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const desc = card.querySelector('p').textContent.toLowerCase();
+                
+                const matchesFilter = (currentFilter === 'all' || category === currentFilter);
+                const matchesSearch = (currentSearch === '' || title.includes(currentSearch) || desc.includes(currentSearch));
+                
+                if (matchesFilter && matchesSearch) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        };
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-surface-border', 'text-white', 'shadow-sm');
+                    b.classList.add('text-gray-400');
+                });
+                btn.classList.remove('text-gray-400');
+                btn.classList.add('bg-surface-border', 'text-white', 'shadow-sm');
+
+                currentFilter = btn.getAttribute('data-filter');
+                filterCards();
+            });
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            currentSearch = e.target.value.toLowerCase();
+            filterCards();
+        });
+    });
+</script>
+{% endblock %}
