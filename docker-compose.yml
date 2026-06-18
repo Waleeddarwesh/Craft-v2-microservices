@@ -123,6 +123,29 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  catalog_worker:
+    networks:
+      default:
+        aliases:
+          - catalog-worker
+    build:
+      context: .
+      dockerfile: ./services/catalog-service/Dockerfile
+    command: celery -A catalog_service worker -l info
+    environment:
+      - OTEL_SERVICE_NAME=catalog_worker
+      - DJANGO_SETTINGS_MODULE=catalog_service.settings
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
   order_service:
     networks:
       default:

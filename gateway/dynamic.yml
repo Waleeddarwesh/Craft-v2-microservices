@@ -112,7 +112,7 @@ http:
 
     # Unified Admin Service Routers
     admin_api_router:
-      rule: "PathPrefix(`/admin-api/`)"
+      rule: "PathPrefix(`/admin-api/`) || PathPrefix(`/admin-schema.json`)"
       service: admin_service
       priority: 150
       entryPoints:
@@ -135,6 +135,13 @@ http:
       entryPoints:
         - web
         
+    developer_router:
+      rule: "PathPrefix(`/developer/`)"
+      service: admin_service
+      priority: 150
+      entryPoints:
+        - web
+        
     admin_router:
       rule: "PathPrefix(`/admin/`)"
       service: admin_service
@@ -143,7 +150,7 @@ http:
         - web
 
     django_static_router:
-      rule: "PathPrefix(`/static/admin/`) || PathPrefix(`/static/rest_framework/`) || PathPrefix(`/static/drf-spectacular/`) || PathPrefix(`/static/admin_interface/`) || PathPrefix(`/static/colorfield/`) || PathPrefix(`/static/drf-yasg/`) || PathPrefix(`/static/rest_framework_swagger/`) || PathPrefix(`/static/admin_custom/`) || PathPrefix(`/media/`)"
+      rule: "PathPrefix(`/static/admin/`) || PathPrefix(`/static/developer/`) || PathPrefix(`/static/rest_framework/`) || PathPrefix(`/static/drf-spectacular/`) || PathPrefix(`/static/admin_interface/`) || PathPrefix(`/static/colorfield/`) || PathPrefix(`/static/drf-yasg/`) || PathPrefix(`/static/rest_framework_swagger/`) || PathPrefix(`/static/admin_custom/`) || PathPrefix(`/media/`)"
       service: admin_service
       priority: 200
       entryPoints:

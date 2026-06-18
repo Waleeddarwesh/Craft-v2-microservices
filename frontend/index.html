@@ -48,7 +48,7 @@
         // Check if already logged in
         const tokens = JSON.parse(localStorage.getItem('craft_tokens') || 'null');
         if (tokens && tokens.access) {
-            window.location.href = 'app.html';
+            window.location.href = '/app.html';
         }
 
         const form = document.getElementById('login-form');
@@ -68,7 +68,7 @@
             try {
                 const result = await Auth.login(email, password);
                 if (result.success) {
-                    window.location.href = 'app.html';
+                    window.location.href = '/app.html';
                 } else {
                     errorDiv.textContent = result.error || 'Invalid credentials. Please try again.';
                     errorDiv.classList.remove('hidden');
