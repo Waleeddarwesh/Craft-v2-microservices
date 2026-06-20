@@ -40,7 +40,10 @@ def send_generated_otp_to_email(email, request):
         from_email=from_email,
         to=[email]
     )
-    email_message.send()
+    try:
+        email_message.send()
+    except Exception as e:
+        print(f"Failed to send email: {e}")
 
     # Create an in-app notification
     # create_notification_for_user(
@@ -68,7 +71,10 @@ def send_normal_email(data):
         from_email=from_email,
         to=[recipient]
     )
-    email_message.send()
+    try:
+        email_message.send()
+    except Exception as e:
+        print(f"Failed to send email: {e}")
 
 
 class Google:

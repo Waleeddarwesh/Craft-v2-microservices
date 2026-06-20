@@ -31,7 +31,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Order.objects.filter(user_id=self.request.user_id)
+        return Order.objects.filter(user_id=self.request.user.id)
 
     def create(self, request, *args, **kwargs):
         """
@@ -48,7 +48,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        order = serializer.save(user_id=request.user_id)
+        order = serializer.save(user_id=request.user.id)
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=["post"])
@@ -69,11 +69,11 @@ class CartViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Cart.objects.filter(user_id=self.request.user_id)
+        return Cart.objects.filter(user_id=self.request.user.id)
 
     def get_or_create_cart(self):
         cart, _ = Cart.objects.get_or_create(
-            user_id=self.request.user_id
+            user_id=self.request.user.id
         )
         return cart
 
@@ -91,7 +91,7 @@ class CartViewSet(viewsets.ModelViewSet):
         cart = self.get_or_create_cart()
         serializer = CartItemsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(cart=cart)
+        serializer.save(CartID=cart)
         return Response(CartSerializer(cart).data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["post"])
@@ -106,4 +106,7 @@ class WishlistViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Wishlist.objects.filter(user_id=self.request.user_id)
+        return Wishlist.objects.filter(user_id=self.request.user.id)
+
+    def perform_create(self, serializer):
+        serializer.save(user_id=self.request.user.id)

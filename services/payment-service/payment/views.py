@@ -53,7 +53,7 @@ class CreateCheckoutSessionView(APIView):
         order = order_response.json()
 
         # Validate ownership
-        if order["user_id"] != request.user_id:
+        if order["user_id"] != request.user.id:
             return Response(
                 {"detail": "Forbidden."}, status=status.HTTP_403_FORBIDDEN
             )
@@ -75,7 +75,7 @@ class CreateCheckoutSessionView(APIView):
             payment_method_types=["card"],
             line_items=line_items,
             mode="payment",
-            metadata={"order_id": str(order_id), "user_id": str(request.user_id)},
+            metadata={"order_id": str(order_id), "user_id": str(request.user.id)},
             success_url=settings.STRIPE_SUCCESS_URL,
             cancel_url=settings.STRIPE_CANCEL_URL,
             idempotency_key=f"checkout-{order_id}",  # guard against double-charge
@@ -187,7 +187,7 @@ class PaymentHistoryView(APIView):
 
     def get(self, request):
         payments = PaymentHistory.objects.filter(
-            user_id=request.user_id
-        ).order_by("-created_at")
+            user_id=request.user.id
+        ).order_by("-date")
         serializer = PaymentHistorySerializer(payments, many=True)
         return Response(serializer.data)

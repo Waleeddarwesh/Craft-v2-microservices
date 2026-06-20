@@ -46,8 +46,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         review = serializer.save(
-            reviewer_id=request.user_id,
-            reviewer_name=request.user_name,  # denormalized from JWT header
+            user_id=request.user.id,
+            user_name=request.headers.get("X-User-Name", "Unknown User"),  # denormalized from JWT header
         )
         return Response(ReviewSerializer(review).data, status=status.HTTP_201_CREATED)
 
@@ -81,6 +81,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"])
     def my_reviews(self, request):
         """Return reviews submitted by the currently authenticated user."""
-        reviews = Review.objects.filter(reviewer_id=request.user_id).order_by("-created_at")
+        reviews = Review.objects.filter(user_id=request.user.id).order_by("-created_at")
         serializer = self.get_serializer(reviews, many=True)
         return Response(serializer.data)

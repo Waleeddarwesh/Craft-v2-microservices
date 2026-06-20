@@ -70,7 +70,7 @@ const Sidebar = (() => {
     function render(container) {
         const current = Router.getCurrentRoute();
         let html = `
-            <div class="sidebar-brand">
+            <div class="sidebar-brand" onclick="Router.navigate('#overview')" style="cursor: pointer;">
                 <img src="logo.jpg" alt="Craft" class="sidebar-brand-logo">
                 <span class="sidebar-brand-text">${window.t('Craft Dashboard')}</span>
             </div>

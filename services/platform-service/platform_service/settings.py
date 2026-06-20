@@ -149,9 +149,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Craft API',
-    'DESCRIPTION': 'API documentation for Craft application',
-    'VERSION': '1.0.0',
+    'TITLE': 'Platform Service API',
+    'DESCRIPTION': 'API documentation for Platform Service',
+    'VERSION': 'v2.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -186,16 +186,7 @@ django.http.request.host_validation_re = __import__('re').compile(r'^[a-zA-Z0-9_
 AUTH_USER_MODEL = 'accounts.User'
 
 
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'Craft API',
-    'DESCRIPTION': 'API documentation for Craft application',
-    'VERSION': 'v2.0',
-    'TOS': 'https://www.example.com/policies/terms/',
-    'CONTACT': {'email': 'Waleeddarwesh2002@gmail.com'},
-    'LICENSE': {'name': 'BSD License'},
-    'SERVE_INCLUDE_SCHEMA': False,
-    'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAuthenticated'],
-}
+
 
 # Enable django-prometheus DB metrics
 if 'default' in DATABASES:

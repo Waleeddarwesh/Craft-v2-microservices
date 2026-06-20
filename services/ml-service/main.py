@@ -18,8 +18,9 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down ML service...")
 
 app = FastAPI(
-    title="ML Service", 
-    version="1.0", 
+    title="ML Service API", 
+    description="API documentation for ML Service",
+    version="v2.0", 
     lifespan=lifespan,
     openapi_url="/recommendations/openapi.json",
     docs_url="/recommendations/docs",

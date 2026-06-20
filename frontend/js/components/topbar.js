@@ -33,19 +33,14 @@ const Topbar = (() => {
     }
 
     function render(container) {
-        const user = Auth.getUser() || { full_name: 'Admin', email: 'admin@craft.com' };
-        const initials = user.full_name ? user.full_name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'A';
-        
         const identUser = window.UserIdentity && window.UserIdentity.user ? window.UserIdentity.user : null;
+        const user = identUser || Auth.getUser() || { full_name: 'Admin', email: 'admin@craft.com', first_name: 'Admin', last_name: '' };
+        const fullName = user.full_name || [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Admin';
+        const initials = fullName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
         let roleName = window.t('Administrator');
         if (identUser) {
             if (identUser.role_name) {
-                // If the backend provided a role_name (e.g. Sales, Operations, Admin)
-                // Appending Administrator suffix if it's not already Admin to match the old monolith style
                 roleName = identUser.role_name;
-                if (roleName !== 'Admin' && roleName !== 'Administrator') {
-                    roleName = `${roleName} ${window.t('Administrator')}`;
-                }
             } else if (identUser.is_superuser) roleName = window.t('Administrator');
             else if (identUser.is_supplier) roleName = window.t('Supplier');
             else if (identUser.is_delivery) roleName = window.t('Delivery Partner');
@@ -77,15 +72,30 @@ const Topbar = (() => {
                 <div class="dropdown" id="profile-dropdown">
                     <div class="topbar-profile" onclick="document.getElementById('profile-dropdown').classList.toggle('open')">
                         <div class="topbar-profile-info">
-                            <div class="topbar-profile-name">${user.full_name || 'Admin'}</div>
+                            <div class="topbar-profile-name">${fullName}</div>
                             <div class="topbar-profile-role">${roleName}</div>
                         </div>
-                        <div class="avatar">${initials}</div>
+                        <div class="avatar" style="overflow:hidden">${user.profile_picture ? `<img src="${user.profile_picture}" style="width:100%;height:100%;object-fit:cover;">` : initials}</div>
                     </div>
                     <div class="dropdown-menu">
+                        <div style="padding: 12px 16px; border-bottom: 1px solid var(--clr-border); display: flex; align-items: center; gap: 12px;">
+                            <div class="avatar" style="width: 40px; height: 40px; flex-shrink: 0; overflow:hidden">${user.profile_picture ? `<img src="${user.profile_picture}" style="width:100%;height:100%;object-fit:cover;">` : initials}</div>
+                            <div style="overflow: hidden;">
+                                <div style="font-size: 14px; font-weight: 600; color: var(--clr-text); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fullName}</div>
+                                <div style="font-size: 12px; color: var(--clr-text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.email || 'admin@craft.com'}</div>
+                            </div>
+                        </div>
                         <div class="dropdown-item" onclick="Router.navigate('#reports')">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                             ${window.t('Reports')}
+                        </div>
+                        <div class="dropdown-item" onclick="window.location.href='/admin/profile-settings/'">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            ${window.t('Account Settings')}
+                        </div>
+                        <div class="dropdown-item" onclick="window.location.href='/developer/'">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                            ${window.t('Developer Portal')}
                         </div>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" onclick="Auth.logout()" style="color:var(--clr-danger)">
