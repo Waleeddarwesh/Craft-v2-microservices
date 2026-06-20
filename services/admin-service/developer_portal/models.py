@@ -12,7 +12,7 @@ class APIService(models.Model):
     
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
-    version = models.CharField(max_length=20, default="v1.0")
+    version = models.CharField(max_length=20, default="v2.0")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="healthy")
     description = models.CharField(max_length=255)
     schema_url = models.CharField(max_length=255)

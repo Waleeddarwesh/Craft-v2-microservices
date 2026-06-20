@@ -113,7 +113,7 @@ flowchart TD
 
 | Service | Technology | Main Responsibility | Port |
 |---|---|---|---|
-| **Admin Service** | Django | Centralized Admin Panel and Secure API Documentation | `8000` |
+| **Admin Service** | Django | Centralized Admin Panel, Craft Developer Portal, API Catalog, and Webhooks | `8000` |
 | **Auth Service** | Django + DRF | Users, JWT authentication, profiles, RBAC, permissions | `8001` |
 | **Catalog Service** | Django + DRF | Products, categories, materials, inventory, search, filtering | `8002` |
 | **Order Service** | Django + DRF | Cart, checkout, orders, shipping workflow, returns | `8003` |
@@ -484,14 +484,24 @@ Examples:
 
 ---
 
-## 🧪 API Documentation
+## 🧪 Craft Developer Portal & API Documentation
 
-Each service can expose independent API documentation.
+Craft v2.0 features a centralized **Developer Portal** (hosted by the Admin Service) which serves as the single source of truth for integrating with the platform.
+
+Key Features:
+- **API Catalog**: Discover all available microservices and their endpoints.
+- **API Explorer**: Interactive Swagger UI with auto-injected JWT authentication.
+- **Getting Started & Auth Guides**: Documentation for JWT, API Keys, and OAuth 2.0.
+- **API Keys & Webhooks**: Generate developer API keys and manage webhook endpoints.
+- **System Status & Changelog**: Real-time health metrics and platform updates.
 
 Suggested documentation URLs:
 
 ```text
-http://localhost/docs/ (Secure Centralized API Documentation - requires Admin login)
+http://localhost:8000/developer/overview/ (Craft Developer Portal Dashboard)
+http://localhost:8000/developer/catalog/ (API Catalog)
+http://localhost:8000/developer/explorer/ (Interactive API Explorer)
+http://localhost:8000/docs/login/ (Centralized Admin Panel Login)
 http://localhost/api/auth/docs/
 http://localhost/api/catalog/docs/
 http://localhost/api/orders/docs/

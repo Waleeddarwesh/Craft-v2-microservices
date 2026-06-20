@@ -4,106 +4,132 @@
 <!-- Swagger UI CSS -->
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.8/swagger-ui.css">
 <style>
-    /* Scope all swagger UI styles so they don't break our base tailwind layout */
-    #swagger-ui-container {
-        height: 100%;
-        width: 100%;
-    }
-    
     /* Embed Swagger natively into our layout */
-    .swagger-ui .wrapper { max-width: 100% !important; padding: 0 !important; }
+    .swagger-ui .wrapper { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
     .swagger-ui .topbar { display: none !important; } /* Hide their topbar entirely */
     .swagger-ui .info { margin: 20px 0 !important; }
-    
-    /* Dark Theme Core matching Craft */
-    .swagger-ui { font-family: 'Inter', sans-serif !important; color: #e6edf3 !important; }
-    .swagger-ui .info .title, .swagger-ui .info h1, .swagger-ui .info h2, .swagger-ui .info h3, .swagger-ui .info h4, .swagger-ui .info h5 { color: #fff !important; }
-    .swagger-ui .info p, .swagger-ui .info li { color: #8b949e !important; }
-    .swagger-ui .info .url, .swagger-ui .info .base-url { display: none !important; } /* Hidden as requested */
-    .swagger-ui a.nostyle, .swagger-ui .opblock-tag, .swagger-ui .scheme-container .schemes-title { color: #fff !important; }
-    
-    .swagger-ui .scheme-container { background: transparent !important; box-shadow: none !important; border-bottom: 1px solid #30363d !important; padding: 10px 0 20px 0 !important; }
-    
-    .swagger-ui .opblock { background: #151b23 !important; border: 1px solid #30363d !important; border-radius: 8px !important; box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important; margin-bottom: 12px !important; }
-    .swagger-ui .opblock:hover { border-color: #484f58 !important; }
-    .swagger-ui .opblock .opblock-summary-method { border-radius: 4px !important; font-weight: 600 !important; }
-    
-    /* Method Colors */
-    .swagger-ui .opblock.opblock-get { background: rgba(59, 130, 246, 0.05) !important; border-color: rgba(59, 130, 246, 0.2) !important; }
-    .swagger-ui .opblock.opblock-post { background: rgba(127, 176, 79, 0.05) !important; border-color: rgba(127, 176, 79, 0.2) !important; }
-    .swagger-ui .opblock.opblock-put { background: rgba(245, 158, 11, 0.05) !important; border-color: rgba(245, 158, 11, 0.2) !important; }
-    .swagger-ui .opblock.opblock-delete { background: rgba(239, 68, 68, 0.05) !important; border-color: rgba(239, 68, 68, 0.2) !important; }
-    .swagger-ui .opblock.opblock-patch { background: rgba(168, 85, 247, 0.05) !important; border-color: rgba(168, 85, 247, 0.2) !important; }
-    
-    .swagger-ui .opblock-body pre.microlight { background: #0d1117 !important; border: 1px solid #30363d !important; border-radius: 6px !important; }
-    .swagger-ui table thead tr th, .swagger-ui table thead tr td { color: #fff !important; border-bottom: 1px solid #30363d !important; }
-    .swagger-ui .parameter__name, .swagger-ui .parameter__type { color: #fff !important; }
-    .swagger-ui input[type=text], .swagger-ui textarea { background: #0d1117 !important; border: 1px solid #30363d !important; color: #fff !important; border-radius: 6px !important; }
-    .swagger-ui input[type=text]:focus { border-color: #7fb04f !important; outline: none !important; }
-    .swagger-ui select { background: #151b23 !important; color: #fff !important; border: 1px solid #30363d !important; border-radius: 6px !important; }
-    .swagger-ui .btn { color: #fff !important; border-color: #30363d !important; background: #151b23 !important; border-radius: 6px !important; }
-    .swagger-ui .btn.execute { background-color: #7fb04f !important; border-color: #7fb04f !important; color: white !important; }
-    .swagger-ui svg:not(.locked) { fill: #8b949e !important; }
+    .swagger-ui .information-container { margin: 0 !important; padding: 0 !important; }
+    .swagger-ui .info .url, .swagger-ui .info .base-url { display: none !important; }
+    .swagger-ui { font-family: 'Inter', sans-serif !important; }
 
-    /* Fix dark text in opblock body */
-    .swagger-ui .opblock .opblock-section-header { 
-        background: rgba(255, 255, 255, 0.02) !important; 
+    /* ===== Light Mode Swagger Refinements ===== */
+    html:not(.dark) .swagger-ui { color: #1f2937 !important; }
+    html:not(.dark) .swagger-ui .info .title { color: #111827 !important; }
+    html:not(.dark) .swagger-ui .info p, html:not(.dark) .swagger-ui .info li { color: #6b7280 !important; }
+    html:not(.dark) .swagger-ui .opblock { border-radius: 8px !important; margin-bottom: 12px !important; }
+    html:not(.dark) .swagger-ui .scheme-container { background: transparent !important; box-shadow: none !important; border-bottom: 1px solid #e5e7eb !important; padding: 10px 0 20px 0 !important; }
+    html:not(.dark) .swagger-ui .btn.execute { background-color: #7fb04f !important; border-color: #7fb04f !important; color: white !important; }
+    html:not(.dark) .swagger-ui input[type=text]:focus { border-color: #7fb04f !important; outline: none !important; }
+    html:not(.dark) .swagger-ui .opblock .opblock-summary-method { border-radius: 4px !important; font-weight: 600 !important; }
+
+    /* ===== Dark Mode Swagger Theme ===== */
+    html.dark .swagger-ui { color: #e6edf3 !important; }
+    html.dark .swagger-ui .info .title, html.dark .swagger-ui .info h1, html.dark .swagger-ui .info h2, html.dark .swagger-ui .info h3 { color: #fff !important; }
+    html.dark .swagger-ui .info p, html.dark .swagger-ui .info li { color: #8b949e !important; }
+    html.dark .swagger-ui a.nostyle, html.dark .swagger-ui .opblock-tag { color: #fff !important; }
+    
+    html.dark .swagger-ui .scheme-container { background: transparent !important; box-shadow: none !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; padding: 10px 0 20px 0 !important; }
+    
+    html.dark .swagger-ui .opblock { background: rgba(255,255,255,0.02) !important; border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 12px !important; box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.15) !important; margin-bottom: 16px !important; transition: all 0.2s ease-in-out; overflow: hidden; }
+    html.dark .swagger-ui .opblock:hover { border-color: rgba(255,255,255,0.12) !important; box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.2) !important; transform: translateY(-1px); }
+    html.dark .swagger-ui .opblock .opblock-summary { padding: 12px 16px !important; }
+    html.dark .swagger-ui .opblock .opblock-summary-method { border-radius: 6px !important; font-weight: 700 !important; font-size: 13px !important; min-width: 70px !important; padding: 6px 12px !important; text-align: center; }
+    html.dark .swagger-ui .opblock .opblock-summary-path { font-size: 15px !important; font-weight: 500 !important; color: #f3f4f6 !important; }
+    html.dark .swagger-ui .opblock .opblock-summary-description { font-size: 13px !important; color: #9ca3af !important; }
+    
+    /* Method Colors (dark) - richer tones with soft backgrounds */
+    html.dark .swagger-ui .opblock.opblock-get { background: rgba(59, 130, 246, 0.03) !important; border-color: rgba(59, 130, 246, 0.15) !important; }
+    html.dark .swagger-ui .opblock.opblock-post { background: rgba(16, 185, 129, 0.03) !important; border-color: rgba(16, 185, 129, 0.15) !important; }
+    html.dark .swagger-ui .opblock.opblock-put { background: rgba(245, 158, 11, 0.03) !important; border-color: rgba(245, 158, 11, 0.15) !important; }
+    html.dark .swagger-ui .opblock.opblock-delete { background: rgba(239, 68, 68, 0.03) !important; border-color: rgba(239, 68, 68, 0.15) !important; }
+    html.dark .swagger-ui .opblock.opblock-patch { background: rgba(168, 85, 247, 0.03) !important; border-color: rgba(168, 85, 247, 0.15) !important; }
+    
+    html.dark .swagger-ui .opblock-body pre.microlight { background: rgba(0,0,0,0.3) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 8px !important; }
+    html.dark .swagger-ui table thead tr th { border-bottom: 1px solid rgba(255,255,255,0.08) !important; color: #9ca3af !important; font-size: 12px !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; padding: 16px 0 !important; }
+    html.dark .swagger-ui table tbody tr td { color: #d1d5db !important; border-top: 1px solid rgba(255,255,255,0.04) !important; padding: 16px 0 !important; }
+    html.dark .swagger-ui .parameter__name { color: #f3f4f6 !important; font-weight: 600 !important; font-size: 13px !important; }
+    html.dark .swagger-ui .parameter__type { color: #9ca3af !important; font-size: 12px !important; }
+    html.dark .swagger-ui input[type=text], html.dark .swagger-ui textarea { background: rgba(0,0,0,0.2) !important; border: 1px solid rgba(255,255,255,0.12) !important; color: #f3f4f6 !important; border-radius: 8px !important; padding: 8px 12px !important; transition: all 0.2s ease; }
+    html.dark .swagger-ui input[type=text]:focus, html.dark .swagger-ui textarea:focus { border-color: #7fb04f !important; outline: none !important; box-shadow: 0 0 0 3px rgba(127,176,79,0.15) !important; background: rgba(0,0,0,0.4) !important; }
+    html.dark .swagger-ui select { background: rgba(255,255,255,0.05) !important; color: #f3f4f6 !important; border: 1px solid rgba(255,255,255,0.12) !important; border-radius: 8px !important; padding: 8px 12px !important; }
+    html.dark .swagger-ui .btn { color: #f3f4f6 !important; border: 1px solid rgba(255,255,255,0.12) !important; background: rgba(255,255,255,0.05) !important; border-radius: 8px !important; font-weight: 600 !important; padding: 6px 16px !important; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important; }
+    html.dark .swagger-ui .btn:hover { background: rgba(255,255,255,0.1) !important; border-color: rgba(255,255,255,0.2) !important; }
+    html.dark .swagger-ui .btn.execute { background: linear-gradient(180deg, #8bc357 0%, #7fb04f 100%) !important; border: none !important; color: white !important; box-shadow: 0 2px 4px rgba(127,176,79,0.3), inset 0 1px 0 rgba(255,255,255,0.2) !important; }
+    html.dark .swagger-ui .btn.execute:hover { background: linear-gradient(180deg, #96cb65 0%, #8bc357 100%) !important; box-shadow: 0 4px 6px rgba(127,176,79,0.4), inset 0 1px 0 rgba(255,255,255,0.3) !important; transform: translateY(-1px); }
+    html.dark .swagger-ui svg:not(.locked) { fill: #9ca3af !important; }
+
+    /* Cleaner inner sections */
+    html.dark .swagger-ui .opblock .opblock-section-header { 
+        background: transparent !important; 
         box-shadow: none !important; 
-        border-top: 1px solid #30363d !important;
-        border-bottom: 1px solid #30363d !important; 
-        padding: 12px 20px !important;
+        border-top: none !important;
+        border-bottom: 1px solid rgba(255,255,255,0.06) !important; 
+        padding: 16px 20px !important;
     }
-    .swagger-ui .opblock .opblock-section-header h4 { color: #e6edf3 !important; font-weight: 600 !important; }
-    .swagger-ui .responses-inner h4, .swagger-ui .responses-inner h5 { color: #e6edf3 !important; }
-    .swagger-ui table tbody tr td { color: #8b949e !important; border-top: 1px solid #30363d !important; padding: 12px 0 !important; }
-    .swagger-ui table thead tr th { padding: 12px 0 !important; color: #8b949e !important; font-size: 12px !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; }
-    .swagger-ui .opblock-body .markdown p { color: #8b949e !important; }
-    .swagger-ui .response-col_status, .swagger-ui .response-col_description, .swagger-ui .response-col_links { color: #8b949e !important; }
-    .swagger-ui .opblock-body pre { color: #e6edf3 !important; background: #0d1117 !important; border: 1px solid #30363d !important; border-radius: 6px !important; padding: 16px !important; }
-    .swagger-ui .parameter__empty_statut { color: #8b949e !important; padding: 16px 20px !important; font-style: italic !important; } 
-    .swagger-ui .model-title { color: #e6edf3 !important; }
-    .swagger-ui .model { color: #8b949e !important; }
-    .swagger-ui .prop-type { color: #7fb04f !important; }
-    .swagger-ui .prop-format { color: #8b949e !important; }
-    .swagger-ui .responses-wrapper { padding: 0 !important; }
-    .swagger-ui .opblock-body { padding-bottom: 16px !important; }
+    html.dark .swagger-ui .opblock .opblock-section-header h4 { color: #f3f4f6 !important; font-weight: 600 !important; font-size: 15px !important; }
+    html.dark .swagger-ui .responses-inner h4, html.dark .swagger-ui .responses-inner h5 { color: #f3f4f6 !important; font-weight: 600 !important; }
+    html.dark .swagger-ui .opblock-body .markdown p { color: #9ca3af !important; line-height: 1.6 !important; }
+    html.dark .swagger-ui .response-col_status { color: #f3f4f6 !important; font-weight: 600 !important; font-size: 14px !important; }
+    html.dark .swagger-ui .response-col_description { color: #d1d5db !important; }
+    html.dark .swagger-ui .opblock-body pre { color: #e5e7eb !important; background: rgba(0,0,0,0.3) !important; border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 8px !important; padding: 16px !important; font-size: 13px !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important; }
+    html.dark .swagger-ui .model-title { color: #f3f4f6 !important; }
+    html.dark .swagger-ui .model { color: #9ca3af !important; }
+    html.dark .swagger-ui .prop-type { color: #7fb04f !important; }
+    html.dark .swagger-ui .prop-format { color: #9ca3af !important; }
+    html.dark .swagger-ui .responses-wrapper { padding: 0 !important; }
+    html.dark .swagger-ui .opblock-body { padding-bottom: 16px !important; }
+
+    /* Authorization Modal Dark Mode */
+    html.dark .swagger-ui .dialog-ux .modal-ux { background: hsla(210, 12%, 14%, 0.95) !important; border: 1px solid rgba(255,255,255,0.1) !important; box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important; border-radius: 12px !important; backdrop-filter: blur(10px); }
+    html.dark .swagger-ui .dialog-ux .modal-ux-header { border-bottom: 1px solid rgba(255,255,255,0.06) !important; }
+    html.dark .swagger-ui .dialog-ux .modal-ux-header h3 { color: #f3f4f6 !important; font-weight: 600 !important; }
+    html.dark .swagger-ui .dialog-ux .modal-ux-content h4 { color: #f3f4f6 !important; font-weight: 600 !important; }
+    html.dark .swagger-ui .dialog-ux .modal-ux-content p { color: #9ca3af !important; }
+    html.dark .swagger-ui .dialog-ux .auth-container { border-bottom: 1px solid rgba(255,255,255,0.06) !important; margin-bottom: 10px !important; padding-bottom: 10px !important; }
+    html.dark .swagger-ui .dialog-ux .auth-container input[type=text], html.dark .swagger-ui .dialog-ux .auth-container input[type=password] { background: rgba(0,0,0,0.3) !important; border: 1px solid rgba(255,255,255,0.12) !important; color: #f3f4f6 !important; border-radius: 8px !important; padding: 8px 12px !important; width: 100% !important; margin-top: 5px !important; }
+    html.dark .swagger-ui .dialog-ux .auth-container input[type=text]:focus, html.dark .swagger-ui .dialog-ux .auth-container input[type=password]:focus { border-color: #7fb04f !important; outline: none !important; box-shadow: 0 0 0 3px rgba(127,176,79,0.15) !important; }
+    html.dark .swagger-ui .dialog-ux .auth-btn-wrapper .btn { border-radius: 8px !important; font-weight: 600 !important; padding: 6px 16px !important; }
+    html.dark .swagger-ui .dialog-ux .auth-btn-wrapper .btn-done { color: #9ca3af !important; border-color: rgba(255,255,255,0.12) !important; background: transparent !important; }
+    html.dark .swagger-ui .dialog-ux .auth-btn-wrapper .btn-done:hover { background: rgba(255,255,255,0.05) !important; color: #f3f4f6 !important; }
+    html.dark .swagger-ui .dialog-ux .modal-ux-header .close-modal { fill: #9ca3af !important; transition: fill 0.2s; }
+    html.dark .swagger-ui .dialog-ux .modal-ux-header .close-modal:hover { fill: #f3f4f6 !important; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="h-full flex flex-col">
+<div class="relative">
     <!-- Explorer Header / Service Selector -->
-    <div class="px-8 py-4 border-b border-surface-border bg-surface flex items-center justify-between z-10 shadow-sm shrink-0">
+    <div class="px-8 py-4 border-b border-gray-200 dark:border-surface-border bg-white dark:bg-surface flex items-center justify-between z-40 shadow-sm shrink-0 sticky top-0">
         <div class="flex items-center gap-4">
             <div class="h-10 w-10 rounded bg-primary/10 text-primary flex items-center justify-center text-xl border border-primary/20">
                 <i class="ph ph-terminal-window"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold text-white leading-tight">API Explorer</h1>
-                <p class="text-xs text-gray-400">Interactive testing environment</p>
+                <h1 class="text-xl font-bold text-gray-900 dark:text-white leading-tight">API Explorer</h1>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Interactive testing environment</p>
             </div>
         </div>
         
         <div class="flex items-center gap-6">
             <!-- Method Filter -->
-            <div class="flex items-center gap-2 bg-bg border border-surface-border p-1 rounded-lg" id="method-filters">
-                <button data-method="all" class="method-btn px-3 py-1 text-xs font-bold rounded bg-surface-border text-white shadow-sm transition-colors uppercase">All</button>
-                <button data-method="get" class="method-btn px-3 py-1 text-xs font-bold rounded text-gray-400 hover:text-blue-400 transition-colors uppercase">GET</button>
-                <button data-method="post" class="method-btn px-3 py-1 text-xs font-bold rounded text-gray-400 hover:text-green-400 transition-colors uppercase">POST</button>
-                <button data-method="put" class="method-btn px-3 py-1 text-xs font-bold rounded text-gray-400 hover:text-amber-400 transition-colors uppercase">PUT</button>
-                <button data-method="delete" class="method-btn px-3 py-1 text-xs font-bold rounded text-gray-400 hover:text-red-400 transition-colors uppercase">DEL</button>
-            </div>
+            <div class="flex items-center gap-2 bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border p-1 rounded-lg" id="method-filters">
+                <button data-method="all" class="active method-btn px-3 py-1 text-xs font-bold rounded transition-colors uppercase text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-surface-border/50 hover:text-gray-900 dark:hover:text-white [&.active]:bg-white dark:[&.active]:bg-surface-border [&.active]:shadow-sm [&.active]:text-gray-900 dark:[&.active]:text-white">All</button>
+                <button data-method="get" class="method-btn px-3 py-1 text-xs font-bold rounded transition-colors uppercase text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 [&.active]:bg-white dark:[&.active]:bg-surface-border [&.active]:shadow-sm [&.active]:text-blue-600 dark:[&.active]:text-blue-400">GET</button>
+                <button data-method="post" class="method-btn px-3 py-1 text-xs font-bold rounded transition-colors uppercase text-gray-600 dark:text-gray-400 hover:bg-green-50 dark:hover:bg-green-500/10 hover:text-green-600 dark:hover:text-green-400 [&.active]:bg-white dark:[&.active]:bg-surface-border [&.active]:shadow-sm [&.active]:text-green-600 dark:[&.active]:text-green-400">POST</button>
+                <button data-method="put" class="method-btn px-3 py-1 text-xs font-bold rounded transition-colors uppercase text-gray-600 dark:text-gray-400 hover:bg-yellow-50 dark:hover:bg-yellow-500/10 hover:text-yellow-600 dark:hover:text-yellow-400 [&.active]:bg-white dark:[&.active]:bg-surface-border [&.active]:shadow-sm [&.active]:text-yellow-600 dark:[&.active]:text-yellow-400">PUT</button>
+                <button data-method="delete" class="method-btn px-3 py-1 text-xs font-bold rounded transition-colors uppercase text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 [&.active]:bg-white dark:[&.active]:bg-surface-border [&.active]:shadow-sm [&.active]:text-red-600 dark:[&.active]:text-red-400">DEL</button>
+            </div>        </div>
 
             <!-- Service Selector -->
             <div class="flex items-center gap-3">
-                <label class="text-sm font-medium text-gray-400">Service:</label>
+                <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Service:</label>
                 <div class="relative">
-                    <select id="service-selector" class="appearance-none bg-bg border border-surface-border text-white text-sm rounded-lg pl-3 pr-10 py-2 focus:outline-none focus:border-primary transition-colors cursor-pointer shadow-inner">
+                    <select id="service-selector" class="appearance-none bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border text-gray-900 dark:text-white text-sm rounded-lg pl-3 pr-10 py-2 focus:outline-none focus:border-primary transition-colors cursor-pointer shadow-inner">
                         {% for service in services %}
                         <option value="{{ service.schema_url }}" {% if request.GET.service == service.slug %}selected{% endif %}>{{ service.name }}</option>
                         {% endfor %}
                     </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 dark:text-gray-400">
                         <i class="ph ph-caret-down"></i>
                     </div>
                 </div>
@@ -112,8 +138,8 @@
     </div>
 
     <!-- Embedded Swagger UI container -->
-    <div class="flex-1 overflow-y-auto px-8 py-4" id="swagger-scroll-container">
-        <div class="max-w-6xl mx-auto bg-surface rounded-xl border border-surface-border shadow-lg overflow-hidden">
+    <div class="px-8 py-8" id="swagger-scroll-container">
+        <div class="max-w-6xl mx-auto bg-white dark:bg-surface rounded-xl border border-gray-200 dark:border-surface-border shadow-lg overflow-hidden">
             <div id="swagger-ui-container" class="p-6"></div>
         </div>
         <div class="h-12"></div> <!-- Padding bottom -->
@@ -196,12 +222,8 @@ window.onload = function() {
     methodBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             // Update button styles
-            methodBtns.forEach(b => {
-                b.classList.remove('bg-surface-border', 'text-white', 'shadow-sm');
-                b.classList.add('text-gray-400');
-            });
-            this.classList.remove('text-gray-400');
-            this.classList.add('bg-surface-border', 'text-white', 'shadow-sm');
+            methodBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
 
             const method = this.getAttribute('data-method');
             if (method === 'all') {

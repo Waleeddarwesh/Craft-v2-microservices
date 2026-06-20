@@ -1,0 +1,112 @@
+/* Craft Developer Portal - Custom Styles */
+/* This file provides additional styles beyond Tailwind utilities */
+
+/* ===== Base & Typography ===== */
+* {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ===== Scrollbar Styles ===== */
+.dark ::-webkit-scrollbar-thumb {
+    background: #30363d;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #484f58;
+}
+::-webkit-scrollbar-thumb {
+    background: #c1c8d0;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #a0a8b4;
+}
+
+/* ===== Smooth Theme Transition ===== */
+html,
+html *,
+html *::before,
+html *::after {
+    transition: background-color 0.2s ease,
+                border-color 0.2s ease,
+                color 0.15s ease,
+                box-shadow 0.2s ease;
+}
+
+/* Disable transitions during initial load to prevent flash */
+html.no-transition,
+html.no-transition *,
+html.no-transition *::before,
+html.no-transition *::after {
+    transition: none !important;
+}
+
+/* ===== Glass Effect ===== */
+.glass-effect {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* ===== Light Mode Specific ===== */
+html:not(.dark) .hero-gradient {
+    background: linear-gradient(135deg, rgba(127, 176, 79, 0.08) 0%, rgba(240, 245, 255, 1) 100%);
+}
+html.dark .hero-gradient {
+    background: linear-gradient(135deg, rgba(127, 176, 79, 0.2) 0%, hsl(210, 12%, 7%) 100%);
+}
+
+/* ===== Sidebar ===== */
+.sidebar-link {
+    position: relative;
+    overflow: hidden;
+}
+.sidebar-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 0 4px 4px 0;
+    background: transparent;
+    transition: background 0.2s ease;
+}
+.sidebar-link.active::before {
+    background: #7fb04f;
+}
+
+/* ===== Card Hover Glow ===== */
+.stat-card {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+    box-shadow: 0 0 20px rgba(127, 176, 79, 0.08);
+}
+
+/* ===== Notification Badge Pulse ===== */
+@keyframes badge-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+.notification-badge {
+    animation: badge-pulse 2s ease-in-out infinite;
+}
+
+/* ===== Code Blocks ===== */
+code, pre {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+/* ===== Focus Ring ===== */
+*:focus-visible {
+    outline: 2px solid #7fb04f;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ===== Prose (Markdown) Typography ===== */
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6, .prose strong {
+    color: #111827;
+}
+
+html.dark .prose h1, html.dark .prose h2, html.dark .prose h3, html.dark .prose h4, html.dark .prose h5, html.dark .prose h6, html.dark .prose strong {
+    color: #f3f4f6;
+}

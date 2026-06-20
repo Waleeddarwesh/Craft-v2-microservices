@@ -93,6 +93,7 @@ THIRD_PARTY_APPS = [
     'django_filters',
     'django_prometheus',
     'drf_yasg',
+    'drf_spectacular',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'social_django',
@@ -137,6 +138,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_prometheus.middleware.PrometheusAfterMiddleware',
+    'accounts.middleware.ForcePasswordChangeMiddleware',
 ]
 
 
@@ -196,11 +198,20 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_THROTTLE_RATES': {
         'anon': '1000/min' if TESTING else '10/min',
         'user': '10000/min' if TESTING else '100/min',
         'auth': '1000/min' if TESTING else '5/min'
     }
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Admin Service API',
+    'DESCRIPTION': 'API documentation for Admin Service',
+    'VERSION': 'v2.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAuthenticated'],
 }
 
 private_key_env = env('JWT_PRIVATE_KEY', default='')

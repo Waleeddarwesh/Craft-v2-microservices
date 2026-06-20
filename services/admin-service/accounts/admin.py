@@ -6,6 +6,24 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ('email', 'first_name', 'last_name')
     list_filter = ('is_staff', 'is_active', 'is_verified', 'is_customer', 'is_supplier', 'is_delivery')
     ordering = ('email',)
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'PhoneNO', 'profile_picture', 'Balance')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_verified', 'groups', 'user_permissions')}),
+        ('Role flags', {'fields': ('is_customer', 'is_supplier', 'is_delivery')}),
+        ('Security & Auth', {
+            'classes': ('collapse',),
+            'fields': ('auth_provider', 'fcm_token', 'must_change_password', 'failed_login_attempts', 'locked_until')
+        }),
+        ('Important dates', {
+            'classes': ('collapse',),
+            'fields': ('last_login', 'date_joined', 'last_password_reset_request')
+        }),
+    )
+    readonly_fields = (
+        'last_login', 'date_joined', 'fcm_token', 'auth_provider', 
+        'failed_login_attempts', 'locked_until', 'last_password_reset_request'
+    )
 
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('user',)
@@ -15,7 +33,7 @@ class PaymentCardAdmin(admin.ModelAdmin):
     list_display = ('user', 'card_type', 'masked_number_display', 'expiry_month', 'expiry_year', 'is_default')
     search_fields = ('user__email', 'user__first_name', 'user__last_name', 'card_number')
     list_filter = ('card_type', 'is_default')
-    readonly_fields = ('created_at',)
+    readonly_fields = ('card_number', 'cvv', 'expiry_month', 'expiry_year', 'created_at')
 
     def masked_number_display(self, obj):
         return obj.masked_number
@@ -31,7 +49,7 @@ class SupplierAdmin(admin.ModelAdmin):
         (None, {'fields': ('user', 'accepted_supplier')}),
         ('Info', {'fields': ('CategoryTitle', 'ExperienceYears')}),
         ('Stats', {'fields': ('Rating', 'Orders', 'FollowersNo')}),
-        ('Media & Documents', {'fields': ('Logo', 'SupplierPhoto', 'SupplierCover', 'SupplierContract', 'SupplierIdentity')})
+        ('Media & Documents', {'fields': ('Logo', 'SupplierCover', 'SupplierContract', 'SupplierIdentity')})
     )
 
 class DeliveryAdmin(admin.ModelAdmin):
@@ -44,7 +62,7 @@ class DeliveryAdmin(admin.ModelAdmin):
         (None, {'fields': ('user', 'accepted_delivery')}),
         ('Vehicle Info', {'fields': ('VehicleModel', 'VehicleColor', 'plateNO')}),
         ('Location & Stats', {'fields': ('governorate', 'ExperienceYears', 'Rating', 'Orders')}),
-        ('Documents', {'fields': ('DeliveryPhoto', 'DeliveryContract', 'DeliveryIdentity')})
+        ('Documents', {'fields': ('DeliveryContract', 'DeliveryIdentity')})
     )
 
 class AddressAdmin(admin.ModelAdmin):
@@ -79,6 +97,7 @@ class FollowAdmin(admin.ModelAdmin):
 class OneTimePasswordAdmin(admin.ModelAdmin):
     list_display = ('user', 'otp')
     search_fields = ('user__email', 'user__first_name', 'user__last_name', 'otp')
+    readonly_fields = ('otp',)
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Customer, CustomerAdmin)

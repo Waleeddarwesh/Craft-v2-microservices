@@ -14,12 +14,8 @@ def send_chat_notification_task(sender_id, recipient_id, message, conversation_i
         sender = User.objects.get(id=sender_id)
         conversation = Conversation.objects.get(id=conversation_id)
         sender_photo = None
-        if hasattr(sender, 'customer') and sender.customer.CustomerPhoto:
-            sender_photo = sender.customer.CustomerPhoto
-        elif hasattr(sender, 'supplier') and sender.supplier.SupplierPhoto:
-            sender_photo = sender.supplier.SupplierPhoto
-        elif hasattr(sender, 'delivery') and sender.delivery.DeliveryPhoto:
-            sender_photo = sender.delivery.DeliveryPhoto
+        if sender.profile_picture:
+            sender_photo = sender.profile_picture.url if hasattr(sender.profile_picture, 'url') else sender.profile_picture
 
         create_notification_for_user(
             user=recipient,

@@ -5,71 +5,71 @@
     <div class="flex flex-col lg:flex-row gap-8 items-start">
         
         <!-- Main Content -->
-        <div class="flex-1 bg-surface border border-surface-border rounded-xl p-8 shadow-sm">
-            <div class="border-b border-surface-border pb-6 mb-8 flex items-center gap-4">
+        <div class="flex-1 bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl p-8 shadow-sm">
+            <div class="border-b border-gray-200 dark:border-surface-border pb-6 mb-8 flex items-center gap-4">
                 <div class="h-12 w-12 rounded bg-primary/10 text-primary flex items-center justify-center text-2xl border border-primary/20">
                     <i class="ph ph-shield-check"></i>
                 </div>
                 <div>
-                    <h1 class="text-3xl font-bold text-white mb-1">Authentication Guide</h1>
-                    <p class="text-gray-400">Learn how to securely authenticate your requests to the Craft APIs.</p>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">Authentication Guide</h1>
+                    <p class="text-gray-600 dark:text-gray-400">Learn how to securely authenticate your requests to the Craft APIs.</p>
                 </div>
             </div>
 
             <div class="space-y-12">
                 <section id="overview" class="scroll-mt-24">
-                    <h2 class="text-xl font-semibold text-white mb-4">Overview</h2>
-                    <p class="text-gray-300 leading-relaxed mb-4">
-                        The Craft API uses JSON Web Tokens (JWT) or API Keys for authentication. All API requests must be made over <strong class="text-white">HTTPS</strong>. Calls made over plain HTTP will fail. API requests without authentication will also fail with a <code class="bg-bg border border-surface-border px-1.5 py-0.5 rounded text-sm text-red-400">401 Unauthorized</code> error.
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Overview</h2>
+                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                        The Craft API uses JSON Web Tokens (JWT) or API Keys for authentication. All API requests must be made over <strong class="text-gray-900 dark:text-white">HTTPS</strong>. Calls made over plain HTTP will fail. API requests without authentication will also fail with a <code class="bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border px-1.5 py-0.5 rounded text-sm text-red-400">401 Unauthorized</code> error.
                     </p>
                 </section>
 
                 <section id="bearer-token" class="scroll-mt-24">
-                    <h2 class="text-xl font-semibold text-white mb-4">Bearer Token</h2>
-                    <p class="text-gray-300 leading-relaxed mb-4">
-                        Include your API key or JWT token in the <code class="bg-bg border border-surface-border px-1.5 py-0.5 rounded text-sm text-white">Authorization</code> header of your HTTP requests. Our API expects the <code class="bg-bg border border-surface-border px-1.5 py-0.5 rounded text-sm text-white">X-Craft-API-Key</code> or standard Bearer format.
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Bearer Token</h2>
+                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                        Include your API key or JWT token in the <code class="bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border px-1.5 py-0.5 rounded text-sm text-gray-900 dark:text-white">Authorization</code> header of your HTTP requests. Our API expects the <code class="bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border px-1.5 py-0.5 rounded text-sm text-gray-900 dark:text-white">X-Craft-API-Key</code> or standard Bearer format.
                     </p>
-                    <div class="relative group bg-bg border border-surface-border rounded-lg">
-                        <div class="flex justify-between items-center border-b border-surface-border px-4 py-2 bg-surface-border/20 rounded-t-lg">
-                            <span class="text-xs font-mono text-gray-400 uppercase tracking-wider">Header Format</span>
-                            <button class="btn-copy text-gray-500 hover:text-white transition-colors flex items-center gap-1 text-xs" data-copy="Authorization: Bearer <your_access_token>">
+                    <div class="relative group bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg">
+                        <div class="flex justify-between items-center border-b border-gray-200 dark:border-surface-border px-4 py-2 bg-white dark:bg-surface-border/20 rounded-t-lg">
+                            <span class="text-xs font-mono text-gray-600 dark:text-gray-400 uppercase tracking-wider">Header Format</span>
+                            <button class="btn-copy text-gray-500 hover:text-gray-900 dark:text-white transition-colors flex items-center gap-1 text-xs" data-copy="Authorization: Bearer <your_access_token>">
                                 <i class="ph ph-copy"></i> <span>Copy</span>
                             </button>
                         </div>
-                        <div class="p-4 font-mono text-sm text-gray-300 overflow-x-auto">
+                        <div class="p-4 font-mono text-sm text-gray-700 dark:text-gray-300 overflow-x-auto">
                             <pre><code>Authorization: Bearer &lt;your_access_token&gt;</code></pre>
                         </div>
                     </div>
                 </section>
 
                 <section id="example-request" class="scroll-mt-24">
-                    <h2 class="text-xl font-semibold text-white mb-4">Example Request</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Example Request</h2>
                     
                     <!-- Code Tabs -->
-                    <div class="bg-bg border border-surface-border rounded-lg overflow-hidden">
-                        <div class="flex border-b border-surface-border bg-surface-border/20">
+                    <div class="bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg overflow-hidden">
+                        <div class="flex border-b border-gray-200 dark:border-surface-border bg-white dark:bg-surface-border/20">
                             <button class="code-tab-btn px-4 py-2 text-sm font-medium text-primary border-b-2 border-primary" data-target="tab-curl">cURL</button>
-                            <button class="code-tab-btn px-4 py-2 text-sm font-medium text-gray-400 hover:text-white border-b-2 border-transparent" data-target="tab-python">Python</button>
-                            <button class="code-tab-btn px-4 py-2 text-sm font-medium text-gray-400 hover:text-white border-b-2 border-transparent" data-target="tab-js">JavaScript</button>
+                            <button class="code-tab-btn px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white border-b-2 border-transparent" data-target="tab-python">Python</button>
+                            <button class="code-tab-btn px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white border-b-2 border-transparent" data-target="tab-js">JavaScript</button>
                         </div>
                         
                         <!-- cURL -->
                         <div id="tab-curl" class="code-tab-content relative group">
-                            <button class="btn-copy absolute top-3 right-3 text-gray-500 hover:text-white transition-colors flex items-center gap-1 text-xs bg-bg/80 backdrop-blur px-2 py-1 rounded border border-surface-border" data-copy='curl -X GET "https://api.craft.com/orders/v2/" \
+                            <button class="btn-copy absolute top-3 right-3 text-gray-500 hover:text-gray-900 dark:text-white transition-colors flex items-center gap-1 text-xs bg-gray-50 dark:bg-bg/80 backdrop-blur px-2 py-1 rounded border border-gray-200 dark:border-surface-border" data-copy='curl -X GET "https://api.craft.com/orders/v2/" \
   -H "X-Craft-API-Key: ck_live_YOUR_KEY_HERE" \
   -H "Content-Type: application/json"'>
                                 <i class="ph ph-copy"></i> <span>Copy</span>
                             </button>
                             <div class="p-4 font-mono text-sm overflow-x-auto">
-<pre><code class="text-gray-300"><span class="text-primary">curl</span> -X GET "https://api.craft.com/orders/v2/" \
-  -H <span class="text-yellow-300">"X-Craft-API-Key: ck_live_YOUR_KEY_HERE"</span> \
-  -H <span class="text-yellow-300">"Content-Type: application/json"</span></code></pre>
+<pre><code class="text-gray-700 dark:text-gray-300"><span class="text-primary">curl</span> -X GET "https://api.craft.com/orders/v2/" \
+  -H <span class="text-yellow-600 dark:text-yellow-300">"X-Craft-API-Key: ck_live_YOUR_KEY_HERE"</span> \
+  -H <span class="text-yellow-600 dark:text-yellow-300">"Content-Type: application/json"</span></code></pre>
                             </div>
                         </div>
 
                         <!-- Python -->
                         <div id="tab-python" class="code-tab-content relative group hidden">
-                            <button class="btn-copy absolute top-3 right-3 text-gray-500 hover:text-white transition-colors flex items-center gap-1 text-xs bg-bg/80 backdrop-blur px-2 py-1 rounded border border-surface-border" data-copy='import requests
+                            <button class="btn-copy absolute top-3 right-3 text-gray-500 hover:text-gray-900 dark:text-white transition-colors flex items-center gap-1 text-xs bg-gray-50 dark:bg-bg/80 backdrop-blur px-2 py-1 rounded border border-gray-200 dark:border-surface-border" data-copy='import requests
 
 url = "https://api.craft.com/orders/v2/"
 headers = {
@@ -82,22 +82,22 @@ print(response.json())'>
                                 <i class="ph ph-copy"></i> <span>Copy</span>
                             </button>
                             <div class="p-4 font-mono text-sm overflow-x-auto">
-<pre><code class="text-gray-300"><span class="text-purple-400">import</span> requests
+<pre><code class="text-gray-700 dark:text-gray-300"><span class="text-purple-600 dark:text-purple-400">import</span> requests
 
-url = <span class="text-yellow-300">"https://api.craft.com/orders/v2/"</span>
+url = <span class="text-yellow-600 dark:text-yellow-300">"https://api.craft.com/orders/v2/"</span>
 headers = {
-    <span class="text-yellow-300">"X-Craft-API-Key"</span>: <span class="text-yellow-300">"ck_live_YOUR_KEY_HERE"</span>,
-    <span class="text-yellow-300">"Content-Type"</span>: <span class="text-yellow-300">"application/json"</span>
+    <span class="text-yellow-600 dark:text-yellow-300">"X-Craft-API-Key"</span>: <span class="text-yellow-600 dark:text-yellow-300">"ck_live_YOUR_KEY_HERE"</span>,
+    <span class="text-yellow-600 dark:text-yellow-300">"Content-Type"</span>: <span class="text-yellow-600 dark:text-yellow-300">"application/json"</span>
 }
 
 response = requests.get(url, headers=headers)
-<span class="text-purple-400">print</span>(response.json())</code></pre>
+<span class="text-purple-600 dark:text-purple-400">print</span>(response.json())</code></pre>
                             </div>
                         </div>
 
                         <!-- JS -->
                         <div id="tab-js" class="code-tab-content relative group hidden">
-                            <button class="btn-copy absolute top-3 right-3 text-gray-500 hover:text-white transition-colors flex items-center gap-1 text-xs bg-bg/80 backdrop-blur px-2 py-1 rounded border border-surface-border" data-copy='fetch("https://api.craft.com/orders/v2/", {
+                            <button class="btn-copy absolute top-3 right-3 text-gray-500 hover:text-gray-900 dark:text-white transition-colors flex items-center gap-1 text-xs bg-gray-50 dark:bg-bg/80 backdrop-blur px-2 py-1 rounded border border-gray-200 dark:border-surface-border" data-copy='fetch("https://api.craft.com/orders/v2/", {
   headers: {
     "X-Craft-API-Key": "ck_live_YOUR_KEY_HERE",
     "Content-Type": "application/json"
@@ -108,32 +108,32 @@ response = requests.get(url, headers=headers)
                                 <i class="ph ph-copy"></i> <span>Copy</span>
                             </button>
                             <div class="p-4 font-mono text-sm overflow-x-auto">
-<pre><code class="text-gray-300"><span class="text-purple-400">fetch</span>(<span class="text-yellow-300">"https://api.craft.com/orders/v2/"</span>, {
+<pre><code class="text-gray-700 dark:text-gray-300"><span class="text-purple-600 dark:text-purple-400">fetch</span>(<span class="text-yellow-600 dark:text-yellow-300">"https://api.craft.com/orders/v2/"</span>, {
   headers: {
-    <span class="text-yellow-300">"X-Craft-API-Key"</span>: <span class="text-yellow-300">"ck_live_YOUR_KEY_HERE"</span>,
-    <span class="text-yellow-300">"Content-Type"</span>: <span class="text-yellow-300">"application/json"</span>
+    <span class="text-yellow-600 dark:text-yellow-300">"X-Craft-API-Key"</span>: <span class="text-yellow-600 dark:text-yellow-300">"ck_live_YOUR_KEY_HERE"</span>,
+    <span class="text-yellow-600 dark:text-yellow-300">"Content-Type"</span>: <span class="text-yellow-600 dark:text-yellow-300">"application/json"</span>
   }
 })
 .then(response => response.json())
-.then(data => <span class="text-purple-400">console</span>.log(data));</code></pre>
+.then(data => <span class="text-purple-600 dark:text-purple-400">console</span>.log(data));</code></pre>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <section id="oauth2" class="scroll-mt-24">
-                    <div class="bg-surface-border/10 border border-surface-border rounded-lg p-6">
-                        <h2 class="text-xl font-semibold text-white mb-4">OAuth 2.0 Integration</h2>
-                        <p class="text-gray-300 leading-relaxed mb-4">
+                    <div class="bg-white dark:bg-surface-border/10 border border-gray-200 dark:border-surface-border rounded-lg p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">OAuth 2.0 Integration</h2>
+                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                             For user-facing applications, use the OAuth 2.0 authorization code flow to obtain access tokens on behalf of users.
                         </p>
                         <div class="flex flex-col gap-3">
-                            <div class="flex items-center justify-between p-3 bg-bg border border-surface-border rounded-lg">
-                                <span class="text-gray-400 text-sm font-medium">Authorization URL</span>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg">
+                                <span class="text-gray-600 dark:text-gray-400 text-sm font-medium">Authorization URL</span>
                                 <code class="text-sm text-primary font-mono">https://api.craft.com/oauth/authorize</code>
                             </div>
-                            <div class="flex items-center justify-between p-3 bg-bg border border-surface-border rounded-lg">
-                                <span class="text-gray-400 text-sm font-medium">Token URL</span>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg">
+                                <span class="text-gray-600 dark:text-gray-400 text-sm font-medium">Token URL</span>
                                 <code class="text-sm text-primary font-mono">https://api.craft.com/oauth/token</code>
                             </div>
                         </div>
@@ -141,20 +141,20 @@ response = requests.get(url, headers=headers)
                 </section>
 
                 <section id="errors" class="scroll-mt-24">
-                    <h2 class="text-xl font-semibold text-white mb-4">Common Errors</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Common Errors</h2>
                     <div class="space-y-4">
-                        <div class="bg-bg border border-surface-border rounded-lg p-4">
-                            <h4 class="text-red-400 font-medium mb-1">401 Unauthorized</h4>
-                            <p class="text-sm text-gray-400 mb-2">The API key is missing, invalid, or expired.</p>
-                            <pre class="bg-black/50 p-2 rounded text-xs text-gray-300 font-mono"><code>{
+                        <div class="bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg p-4">
+                            <h4 class="text-red-600 dark:text-red-400 font-medium mb-1">401 Unauthorized</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">The API key is missing, invalid, or expired.</p>
+                            <pre class="bg-gray-100 dark:bg-black/50 border border-gray-200 dark:border-surface-border p-2 rounded text-xs text-gray-800 dark:text-gray-300 font-mono"><code>{
   "error": "authentication_failed",
   "message": "Invalid or expired API key provided."
 }</code></pre>
                         </div>
-                        <div class="bg-bg border border-surface-border rounded-lg p-4">
-                            <h4 class="text-orange-400 font-medium mb-1">403 Forbidden</h4>
-                            <p class="text-sm text-gray-400 mb-2">The authenticated key does not have the required scopes.</p>
-                            <pre class="bg-black/50 p-2 rounded text-xs text-gray-300 font-mono"><code>{
+                        <div class="bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg p-4">
+                            <h4 class="text-orange-600 dark:text-orange-400 font-medium mb-1">403 Forbidden</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">The authenticated key does not have the required scopes.</p>
+                            <pre class="bg-gray-100 dark:bg-black/50 border border-gray-200 dark:border-surface-border p-2 rounded text-xs text-gray-800 dark:text-gray-300 font-mono"><code>{
   "error": "insufficient_permissions",
   "message": "Key requires 'orders:write' scope."
 }</code></pre>
@@ -166,9 +166,9 @@ response = requests.get(url, headers=headers)
 
         <!-- Right Side TOC -->
         <div class="w-full lg:w-64 shrink-0 hidden lg:block">
-            <div class="sticky top-8 bg-surface border border-surface-border rounded-xl p-6 shadow-sm">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">On this page</h3>
-                <ul class="space-y-3 text-sm text-gray-300">
+            <div class="sticky top-8 bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl p-6 shadow-sm">
+                <h3 class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-4">On this page</h3>
+                <ul class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
                     <li><a href="#overview" class="hover:text-primary transition-colors flex items-center gap-2"><i class="ph ph-caret-right text-xs text-gray-500"></i> Overview</a></li>
                     <li><a href="#bearer-token" class="hover:text-primary transition-colors flex items-center gap-2"><i class="ph ph-caret-right text-xs text-gray-500"></i> Bearer Token</a></li>
                     <li><a href="#example-request" class="hover:text-primary transition-colors flex items-center gap-2"><i class="ph ph-caret-right text-xs text-gray-500"></i> Example Request</a></li>
@@ -196,11 +196,11 @@ response = requests.get(url, headers=headers)
                 // Reset buttons
                 tabBtns.forEach(b => {
                     b.classList.remove('text-primary', 'border-primary');
-                    b.classList.add('text-gray-400', 'border-transparent');
+                    b.classList.add('text-gray-600 dark:text-gray-400', 'border-transparent');
                 });
                 // Activate clicked
                 btn.classList.add('text-primary', 'border-primary');
-                btn.classList.remove('text-gray-400', 'border-transparent');
+                btn.classList.remove('text-gray-600 dark:text-gray-400', 'border-transparent');
 
                 // Hide all contents
                 tabContents.forEach(content => content.classList.add('hidden'));

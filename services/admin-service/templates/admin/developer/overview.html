@@ -4,16 +4,16 @@
 <div class="p-8 max-w-7xl mx-auto space-y-8">
     
     <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-primary/20 to-bg border border-primary/20 rounded-2xl p-8 relative overflow-hidden">
+    <div class="hero-gradient border border-primary/20 rounded-2xl p-8 relative overflow-hidden">
         <div class="relative z-10">
-            <h1 class="text-4xl font-bold text-white mb-3 tracking-tight">Craft Developer Portal</h1>
-            <p class="text-gray-400 text-lg max-w-2xl">Build powerful integrations with Craft APIs. Explore our comprehensive services, read the documentation, and start innovating today.</p>
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">Craft Developer Portal</h1>
+            <p class="text-gray-600 dark:text-gray-400 text-lg max-w-2xl">Build powerful integrations with Craft APIs. Explore our comprehensive services, read the documentation, and start innovating today.</p>
             
             <div class="mt-8 flex gap-4">
                 <a href="{% url 'developer-getting-started' %}" class="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-lg font-semibold transition-all shadow-[0_0_15px_rgba(127,176,79,0.3)]">
                     Start Building
                 </a>
-                <a href="{% url 'developer-catalog' %}" class="bg-surface hover:bg-surface-border text-white border border-surface-border px-6 py-2.5 rounded-lg font-semibold transition-all">
+                <a href="{% url 'developer-catalog' %}" class="bg-white dark:bg-surface hover:bg-gray-100 dark:hover:bg-surface-border text-gray-900 dark:text-white border border-gray-200 dark:border-surface-border px-6 py-2.5 rounded-lg font-semibold transition-all">
                     Explore APIs
                 </a>
             </div>
@@ -24,37 +24,37 @@
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-surface border border-surface-border rounded-xl p-5 flex items-center gap-4 hover:border-primary/50 transition-colors">
+        <div class="stat-card bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl p-5 flex items-center gap-4 hover:border-primary/50 dark:hover:border-primary/50 transition-colors">
             <div class="h-12 w-12 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-2xl">
                 <i class="ph ph-plugs"></i>
             </div>
             <div>
-                <div class="text-sm text-gray-400 font-medium">Total Services</div>
-                <div class="text-2xl font-bold text-white">{{ total_services }}</div>
+                <div class="text-sm text-gray-600 dark:text-gray-400 font-medium">Total Services</div>
+                <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ total_services }}</div>
             </div>
         </div>
         
-        <div class="bg-surface border border-surface-border rounded-xl p-5 flex items-center gap-4 hover:border-primary/50 transition-colors">
+        <div class="stat-card bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl p-5 flex items-center gap-4 hover:border-primary/50 dark:hover:border-primary/50 transition-colors">
             <div class="h-12 w-12 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xl">
                 <i class="ph ph-key"></i>
             </div>
             <div>
-                <div class="text-sm text-gray-400 font-medium">Active API Keys</div>
-                <div class="text-2xl font-bold text-white">{{ active_keys }}</div>
+                <div class="text-sm text-gray-600 dark:text-gray-400 font-medium">Active API Keys</div>
+                <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ active_keys }}</div>
             </div>
         </div>
 
-        <div class="bg-surface border border-surface-border rounded-xl p-5 flex items-center gap-4 hover:border-primary/50 transition-colors">
+        <div class="stat-card bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl p-5 flex items-center gap-4 hover:border-primary/50 dark:hover:border-primary/50 transition-colors">
             <div class="h-12 w-12 rounded-lg bg-green-500/10 text-green-400 flex items-center justify-center text-2xl">
                 <i class="ph ph-paper-plane-tilt"></i>
             </div>
             <div>
-                <div class="text-sm text-gray-400 font-medium">Webhook Success Rate</div>
-                <div class="text-2xl font-bold text-white">{{ webhook_success_rate }}</div>
+                <div class="text-sm text-gray-600 dark:text-gray-400 font-medium">Webhook Success Rate</div>
+                <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ webhook_success_rate }}</div>
             </div>
         </div>
 
-        <div class="bg-surface border border-surface-border rounded-xl p-5 flex items-center gap-4 hover:border-primary/50 transition-colors">
+        <div class="stat-card bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl p-5 flex items-center gap-4 hover:border-primary/50 dark:hover:border-primary/50 transition-colors">
             {% if status_overall == 'operational' %}
             <div class="h-12 w-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-2xl">
                 <i class="ph ph-check-circle"></i>
@@ -70,7 +70,7 @@
             {% endif %}
             
             <div>
-                <div class="text-sm text-gray-400 font-medium">System Status</div>
+                <div class="text-sm text-gray-600 dark:text-gray-400 font-medium">System Status</div>
                 <div class="flex items-center gap-2 mt-1">
                     {% if status_overall == 'operational' %}
                     <span class="relative flex h-2.5 w-2.5">
@@ -91,35 +91,35 @@
     <!-- Quick Start -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-4">
-            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <i class="ph ph-lightning text-primary"></i> Quick Start
             </h2>
-            <div class="bg-surface border border-surface-border rounded-xl p-6">
-                <ol class="relative border-l border-surface-border ml-3 space-y-6">                  
+            <div class="bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl p-6">
+                <ol class="relative border-l border-gray-200 dark:border-surface-border ml-3 space-y-6">                  
                     <li class="ml-6">
-                        <span class="absolute flex items-center justify-center w-6 h-6 bg-primary rounded-full -left-3 ring-4 ring-bg text-bg font-bold text-xs">1</span>
-                        <h3 class="font-bold text-white mb-1">Generate API Key</h3>
-                        <p class="text-sm text-gray-400">Navigate to Developers > API Keys to generate your first access token.</p>
+                        <span class="absolute flex items-center justify-center w-6 h-6 bg-primary rounded-full -left-3 ring-4 ring-white dark:ring-bg text-white font-bold text-xs">1</span>
+                        <h3 class="font-bold text-gray-900 dark:text-white mb-1">Generate API Key</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Navigate to Developers > API Keys to generate your first access token.</p>
                     </li>
                     <li class="ml-6">
-                        <span class="absolute flex items-center justify-center w-6 h-6 bg-surface border border-surface-border rounded-full -left-3 ring-4 ring-bg text-gray-400 font-bold text-xs">2</span>
-                        <h3 class="font-bold text-white mb-1">Authenticate</h3>
-                        <p class="text-sm text-gray-400">Pass the token in the `Authorization` header as `Bearer <token>`.</p>
+                        <span class="absolute flex items-center justify-center w-6 h-6 bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-full -left-3 ring-4 ring-white dark:ring-bg text-gray-600 dark:text-gray-400 font-bold text-xs">2</span>
+                        <h3 class="font-bold text-gray-900 dark:text-white mb-1">Authenticate</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Pass the token in the `Authorization` header as `Bearer <token>`.</p>
                     </li>
                     <li class="ml-6">
-                        <span class="absolute flex items-center justify-center w-6 h-6 bg-surface border border-surface-border rounded-full -left-3 ring-4 ring-bg text-gray-400 font-bold text-xs">3</span>
-                        <h3 class="font-bold text-white mb-1">Make your first request</h3>
-                        <p class="text-sm text-gray-400">Use the API Explorer to test an endpoint live.</p>
+                        <span class="absolute flex items-center justify-center w-6 h-6 bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-full -left-3 ring-4 ring-white dark:ring-bg text-gray-600 dark:text-gray-400 font-bold text-xs">3</span>
+                        <h3 class="font-bold text-gray-900 dark:text-white mb-1">Make your first request</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Use the API Explorer to test an endpoint live.</p>
                     </li>
                 </ol>
             </div>
         </div>
         
         <div class="space-y-4">
-            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <i class="ph ph-book-open text-primary"></i> Latest Updates
             </h2>
-            <div class="bg-surface border border-surface-border rounded-xl p-5 space-y-4">
+            <div class="bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl p-5 space-y-4">
                 {% for entry in latest_updates %}
                 <div class="flex gap-3">
                     <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0
@@ -133,7 +133,7 @@
                             {% elif entry.entry_type == 'fix' %}text-blue-400
                             {% elif entry.entry_type == 'deprecation' %}text-red-400
                             {% else %}text-amber-400{% endif %}">{{ entry.version|default:"-" }}</div>
-                        <div class="text-sm text-white font-medium">{{ entry.title }}</div>
+                        <div class="text-sm text-gray-900 dark:text-white font-medium">{{ entry.title }}</div>
                         <div class="text-xs text-gray-500 mt-1">{{ entry.published_date|timesince }} ago</div>
                     </div>
                 </div>

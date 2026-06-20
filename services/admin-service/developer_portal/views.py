@@ -133,8 +133,13 @@ def api_status(request):
     system_status = get_system_status()
     return render(request, 'admin/developer/status.html', {
         'active_tab': 'status',
-        'system_status': system_status
+        'system_status': system_status,
+        'system_status_json': json.dumps(system_status)
     })
+
+@user_passes_test(is_superuser, login_url='/docs/login/')
+def api_status_json(request):
+    return JsonResponse(get_system_status())
 
 @user_passes_test(is_superuser, login_url='/docs/login/')
 def api_keys_page(request):
@@ -243,3 +248,51 @@ def test_webhook_view(request, pk):
         return JsonResponse({'status': 'success', 'message': 'Test event triggered.'})
     except WebhookEndpoint.DoesNotExist:
         return JsonResponse({'error': 'Webhook endpoint not found'}, status=404)
+
+@login_required
+def api_notifications(request):
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    notifications = []
+    
+    # Check failed webhooks
+    failed_deliveries = WebhookDelivery.objects.filter(
+        endpoint__owner=request.user, 
+        success=False,
+        created_at__gte=timezone.now() - timedelta(days=7)
+    ).order_by("-created_at")[:5]
+    
+    for delivery in failed_deliveries:
+        notifications.append({
+            "id": f"webhook_{delivery.id}",
+            "title": "Webhook Failed",
+            "message": f"Delivery to {delivery.endpoint.url} failed ({delivery.response_status})",
+            "type": "error",
+            "time_ago": delivery.created_at.strftime("%b %d, %H:%M"),
+            "read": False
+        })
+        
+    # Check expiring API keys
+    expiring_keys = DeveloperAPIKey.objects.filter(
+        owner=request.user,
+        is_active=True,
+        expires_at__lte=timezone.now() + timedelta(days=7)
+    )
+    
+    for key in expiring_keys:
+        days_left = (key.expires_at - timezone.now()).days
+        notifications.append({
+            "id": f"key_{key.id}",
+            "title": "API Key Expiring",
+            "message": f"Your key \"{key.name}\" will expire in {days_left} days.",
+            "type": "warning",
+            "time_ago": "Recently",
+            "read": False
+        })
+        
+    return JsonResponse({
+        "notifications": notifications,
+        "unread_count": len(notifications)
+    })
+

@@ -154,3 +154,4 @@ opentelemetry-instrumentation-django==0.46b0
 opentelemetry-instrumentation-fastapi==0.46b0
 opentelemetry-instrumentation-psycopg==0.46b0
 opentelemetry-instrumentation-requests==0.46b0
+drf-spectacular==0.27.1

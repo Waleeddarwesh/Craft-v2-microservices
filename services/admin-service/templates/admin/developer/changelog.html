@@ -2,20 +2,20 @@
 
 {% block content %}
 <div class="p-8 max-w-4xl mx-auto">
-    <div class="bg-surface border border-surface-border rounded-xl p-8 shadow-sm">
-        <div class="border-b border-surface-border pb-6 mb-8 flex justify-between items-end">
+    <div class="bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl p-8 shadow-sm">
+        <div class="border-b border-gray-200 dark:border-surface-border pb-6 mb-8 flex justify-between items-end">
             <div>
-                <h1 class="text-3xl font-bold text-white mb-2">Changelog</h1>
-                <p class="text-gray-400">Keep track of the latest updates and breaking changes.</p>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Changelog</h1>
+                <p class="text-gray-600 dark:text-gray-400">Keep track of the latest updates and breaking changes.</p>
             </div>
             <a href="/developer/status/" class="text-primary hover:text-primary-dark transition-colors font-medium text-sm">View System Status &rarr;</a>
         </div>
         
-        <div class="space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:ml-[8.5rem] md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-surface-border before:to-transparent">
+        <div class="space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:ml-[8.5rem] md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-300 dark:before:via-surface-border before:to-transparent">
             {% for entry in entries %}
             <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                 <!-- Icon -->
-                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-bg bg-surface shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 
+                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-bg bg-white dark:bg-surface shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 
                 {% if entry.entry_type == 'feature' %}text-primary
                 {% elif entry.entry_type == 'fix' %}text-blue-400
                 {% elif entry.entry_type == 'deprecation' %}text-red-400
@@ -34,22 +34,22 @@
             
             <!-- Card -->
             <div class="relative md:w-[calc(50%-2.5rem)] ml-14 md:ml-0 md:group-odd:ml-auto md:group-even:mr-auto mt-4 md:-mt-8">
-                <div class="bg-bg border border-surface-border p-5 rounded-lg shadow-sm group-hover:border-primary/30 transition-colors">
+                <div class="bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border p-5 rounded-lg shadow-sm group-hover:border-primary/30 transition-colors">
                     <div class="flex items-center gap-2 mb-2">
                         {% if entry.version %}
-                        <span class="bg-surface-border text-gray-300 px-2 py-0.5 rounded text-xs font-mono font-bold">{{ entry.version }}</span>
+                        <span class="bg-white dark:bg-surface-border text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded text-xs font-mono font-bold">{{ entry.version }}</span>
                         {% endif %}
-                        <h3 class="font-bold text-white text-lg">{{ entry.title }}</h3>
+                        <h3 class="font-bold text-gray-900 dark:text-white text-lg">{{ entry.title }}</h3>
                     </div>
-                    <div class="text-gray-400 text-sm leading-relaxed prose prose-invert max-w-none">
-                        {{ entry.description|linebreaks }}
+                    <div class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed prose dark:prose-invert max-w-none">
+                        {{ entry.description|safe }}
                     </div>
                 </div>
             </div>
             {% empty %}
             <div class="text-center py-12">
                 <i class="ph ph-clock-counter-clockwise text-4xl text-gray-500 mb-3"></i>
-                <h3 class="text-xl font-bold text-gray-300">No updates yet</h3>
+                <h3 class="text-xl font-bold text-gray-700 dark:text-gray-300">No updates yet</h3>
                 <p class="text-gray-500">Check back later for new features and improvements.</p>
             </div>
             {% endfor %}

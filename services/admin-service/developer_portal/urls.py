@@ -22,4 +22,8 @@ urlpatterns = [
 
     path("status/", views.api_status, name="developer-status"),
     path("changelog/", views.changelog, name="developer-changelog"),
+    
+    # API endpoints for UI
+    path("api/notifications/", views.api_notifications, name="developer-api-notifications"),
+    path("api/status/", views.api_status_json, name="developer-api-status"),
 ]

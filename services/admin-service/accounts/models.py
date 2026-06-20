@@ -32,6 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_customer = models.BooleanField(default=False)
     is_supplier = models.BooleanField(default=False)
     is_delivery = models.BooleanField(default=False)
+    profile_picture = models.ImageField(upload_to='admin_photos/%y/%m/%d', blank=True, null=True, verbose_name="Profile Picture")
     fcm_token = models.CharField(max_length=255, null=True, blank=True, verbose_name="FCM Token")
     last_password_reset_request = models.DateTimeField(null=True, blank=True)
     auth_provider = models.CharField(max_length=50, blank=False, null=False, default=AUTH_PROVIDERS.get('email'))
@@ -144,7 +145,6 @@ class PaymentCard(models.Model):
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    CustomerPhoto = models.ImageField(upload_to='customer_photos/%y/%m/%d', blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
@@ -152,7 +152,6 @@ class Customer(models.Model):
 
 class Supplier(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    SupplierPhoto = models.ImageField(upload_to='supplier_photos/%y/%m/%d', blank=True, null=True)
     SupplierCover = models.ImageField(upload_to='supplier_covers/%y/%m/%d', blank=True, null=True)
     CategoryTitle = models.CharField(max_length=50)
     Logo = models.ImageField(upload_to='supplier_logos/%y/%m/%d', blank=True, null=True)
@@ -181,7 +180,6 @@ class Delivery(models.Model):
         GOLD = 'gold', 'Gold'
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="delivery")
-    DeliveryPhoto = models.ImageField(upload_to='shipper_photos/%y/%m/%d')
     DeliveryContract = models.ImageField(upload_to='shipper_contracts/%y/%m/%d')
     DeliveryIdentity = models.ImageField(upload_to='shipper_identities/%y/%m/%d')
     VehicleModel = models.CharField(max_length=100)

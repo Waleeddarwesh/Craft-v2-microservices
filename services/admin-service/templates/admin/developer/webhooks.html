@@ -4,24 +4,24 @@
 <div class="p-8 max-w-6xl mx-auto space-y-8">
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-white mb-2">Webhooks</h1>
-            <p class="text-gray-400">Configure webhook endpoints to receive real-time HTTP notifications for events.</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Webhooks</h1>
+            <p class="text-gray-600 dark:text-gray-400">Configure webhook endpoints to receive real-time HTTP notifications for events.</p>
         </div>
         <button id="btn-add-webhook" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-lg shadow-primary/20">
             <i class="ph ph-plus text-lg"></i> Add Endpoint
         </button>
     </div>
 
-    <div class="bg-surface border border-surface-border rounded-xl shadow-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-white">Configured Endpoints</h2>
-            <div class="text-sm text-gray-400">Showing {{ endpoints|length }} endpoints</div>
+    <div class="bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-surface-border flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Configured Endpoints</h2>
+            <div class="text-sm text-gray-600 dark:text-gray-400">Showing {{ endpoints|length }} endpoints</div>
         </div>
         
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-surface-border/30 text-gray-400 text-xs uppercase tracking-wider">
+                    <tr class="bg-white dark:bg-surface-border/30 text-gray-600 dark:text-gray-400 text-xs uppercase tracking-wider">
                         <th class="px-6 py-3 font-medium">URL & Description</th>
                         <th class="px-6 py-3 font-medium">Events</th>
                         <th class="px-6 py-3 font-medium">Status</th>
@@ -29,17 +29,17 @@
                         <th class="px-6 py-3 font-medium text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-surface-border">
+                <tbody class="divide-y divide-gray-200 dark:divide-surface-border">
                     {% for endpoint in endpoints %}
-                    <tr class="hover:bg-surface-border/10 transition-colors">
+                    <tr class="hover:bg-white dark:bg-surface-border/10 transition-colors">
                         <td class="px-6 py-4">
-                            <div class="font-medium text-white mb-1">{{ endpoint.url }}</div>
-                            <div class="text-xs text-gray-400">{{ endpoint.description|default:"No description" }}</div>
+                            <div class="font-medium text-gray-900 dark:text-white mb-1">{{ endpoint.url }}</div>
+                            <div class="text-xs text-gray-600 dark:text-gray-400">{{ endpoint.description|default:"No description" }}</div>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex flex-wrap gap-1 max-w-[200px]">
                                 {% for event in endpoint.events %}
-                                <span class="bg-surface-border/30 text-gray-300 border border-surface-border px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">{{ event }}</span>
+                                <span class="bg-white dark:bg-surface-border/30 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-surface-border px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">{{ event }}</span>
                                 {% endfor %}
                             </div>
                         </td>
@@ -50,7 +50,7 @@
                                 Active
                             </span>
                             {% else %}
-                            <span class="flex items-center gap-1.5 text-gray-400 text-sm font-medium">
+                            <span class="flex items-center gap-1.5 text-gray-600 dark:text-gray-400 text-sm font-medium">
                                 <span class="w-2 h-2 rounded-full bg-gray-500"></span>
                                 Disabled
                             </span>
@@ -67,7 +67,7 @@
                                     <div class="text-xs text-gray-500">{{ latest.created_at|timesince }} ago</div>
                                 {% endwith %}
                             {% else %}
-                                <div class="text-sm text-gray-400 mb-0.5">Waiting for events...</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400 mb-0.5">Waiting for events...</div>
                                 <div class="text-xs text-gray-500">No deliveries yet</div>
                             {% endif %}
                         </td>
@@ -84,7 +84,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+                        <td colspan="5" class="px-6 py-8 text-center text-gray-600 dark:text-gray-400">
                             <i class="ph ph-plugs-connected text-3xl mb-2"></i>
                             <p>No webhook endpoints configured yet.</p>
                         </td>
@@ -102,41 +102,41 @@
 <!-- Add Webhook Modal -->
 <div id="webhook-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="webhook-modal-backdrop"></div>
-    <div class="relative bg-surface border border-surface-border rounded-xl shadow-2xl w-full max-w-lg p-6 transform scale-95 opacity-0 transition-all duration-200" id="webhook-modal-content">
+    <div class="relative bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl shadow-2xl w-full max-w-lg p-6 transform scale-95 opacity-0 transition-all duration-200" id="webhook-modal-content">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-white">Add Webhook Endpoint</h3>
-            <button id="close-modal" class="text-gray-400 hover:text-white transition-colors">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Add Webhook Endpoint</h3>
+            <button id="close-modal" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors">
                 <i class="ph ph-x text-xl"></i>
             </button>
         </div>
         <form id="webhook-form" class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Endpoint URL</label>
-                <input type="url" id="webhook-url" required placeholder="https://your-domain.com/webhooks" class="w-full bg-bg border border-surface-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Endpoint URL</label>
+                <input type="url" id="webhook-url" required placeholder="https://your-domain.com/webhooks" class="w-full bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Description (Optional)</label>
-                <input type="text" id="webhook-desc" placeholder="Production Stripe listener" class="w-full bg-bg border border-surface-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description (Optional)</label>
+                <input type="text" id="webhook-desc" placeholder="Production Stripe listener" class="w-full bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">Events</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Events</label>
                 <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-                    <label class="flex items-center gap-2 text-sm text-gray-300">
-                        <input type="checkbox" value="*" class="event-checkbox rounded border-surface-border bg-bg text-primary focus:ring-primary">
+                    <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                        <input type="checkbox" value="*" class="event-checkbox rounded border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-bg text-primary focus:ring-primary">
                         Send me everything
                     </label>
-                    <label class="flex items-center gap-2 text-sm text-gray-300">
-                        <input type="checkbox" value="order.created" class="event-checkbox rounded border-surface-border bg-bg text-primary focus:ring-primary">
+                    <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                        <input type="checkbox" value="order.created" class="event-checkbox rounded border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-bg text-primary focus:ring-primary">
                         order.created
                     </label>
-                    <label class="flex items-center gap-2 text-sm text-gray-300">
-                        <input type="checkbox" value="payment.succeeded" class="event-checkbox rounded border-surface-border bg-bg text-primary focus:ring-primary">
+                    <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                        <input type="checkbox" value="payment.succeeded" class="event-checkbox rounded border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-bg text-primary focus:ring-primary">
                         payment.succeeded
                     </label>
                 </div>
             </div>
-            <div class="pt-4 flex justify-end gap-3 border-t border-surface-border mt-4">
-                <button type="button" id="cancel-modal" class="px-4 py-2 text-gray-300 hover:text-white transition-colors font-medium">Cancel</button>
+            <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-surface-border mt-4">
+                <button type="button" id="cancel-modal" class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white transition-colors font-medium">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors font-medium shadow-lg shadow-primary/20 flex items-center gap-2">
                     <span id="save-text">Add Endpoint</span>
                     <i class="ph ph-spinner animate-spin hidden" id="save-spinner"></i>
@@ -149,19 +149,19 @@
 <!-- Webhook Success Modal -->
 <div id="success-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="success-modal-backdrop"></div>
-    <div class="relative bg-surface border border-surface-border rounded-xl shadow-2xl w-full max-w-lg p-6 transform scale-95 opacity-0 transition-all duration-200" id="success-modal-content">
+    <div class="relative bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl shadow-2xl w-full max-w-lg p-6 transform scale-95 opacity-0 transition-all duration-200" id="success-modal-content">
         <div class="mb-6 text-center">
             <div class="w-12 h-12 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class="ph ph-check text-2xl font-bold"></i>
             </div>
-            <h3 class="text-xl font-bold text-white mb-2">Endpoint Created!</h3>
-            <p class="text-sm text-gray-300 mb-4">Your webhook endpoint has been successfully configured. Please copy the signing secret below to verify payloads.</p>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Endpoint Created!</h3>
+            <p class="text-sm text-gray-700 dark:text-gray-300 mb-4">Your webhook endpoint has been successfully configured. Please copy the signing secret below to verify payloads.</p>
         </div>
         <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-300 mb-1">Webhook Secret</label>
-            <div class="flex items-center gap-2 bg-bg border border-surface-border rounded-lg p-1">
-                <input type="text" id="webhook-secret" readonly class="w-full bg-transparent border-none text-white font-mono text-sm px-3 py-2 focus:outline-none" value="">
-                <button id="btn-copy-secret" class="p-2 bg-surface hover:bg-surface-border text-gray-300 rounded transition-colors flex items-center gap-2 whitespace-nowrap">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Webhook Secret</label>
+            <div class="flex items-center gap-2 bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg p-1">
+                <input type="text" id="webhook-secret" readonly class="w-full bg-transparent border-none text-gray-900 dark:text-white font-mono text-sm px-3 py-2 focus:outline-none" value="">
+                <button id="btn-copy-secret" class="p-2 bg-white dark:bg-surface hover:bg-white dark:bg-surface-border text-gray-700 dark:text-gray-300 rounded transition-colors flex items-center gap-2 whitespace-nowrap">
                     <i class="ph ph-copy"></i> <span id="copy-text">Copy</span>
                 </button>
             </div>

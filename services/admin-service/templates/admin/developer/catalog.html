@@ -5,20 +5,20 @@
     
     <div class="flex items-end justify-between mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-white mb-2">API Catalog</h1>
-            <p class="text-gray-400">Discover and explore all available Craft microservices and their APIs.</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">API Catalog</h1>
+            <p class="text-gray-600 dark:text-gray-400">Discover and explore all available Craft microservices and their APIs.</p>
         </div>
         
         <!-- Filters and Search -->
         <div class="flex items-center gap-4">
             <div class="relative">
-                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input type="text" id="catalog-search" placeholder="Search services..." class="bg-surface border border-surface-border rounded-lg pl-10 pr-4 py-1.5 text-sm text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64 transition-all">
+                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-400"></i>
+                <input type="text" id="catalog-search" placeholder="Search services..." class="bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-lg pl-10 pr-4 py-1.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64 transition-all">
             </div>
-            <div class="flex items-center gap-2 bg-surface border border-surface-border p-1 rounded-lg" id="catalog-filters">
-                <button data-filter="all" class="filter-btn px-4 py-1.5 text-sm font-medium rounded bg-surface-border text-white shadow-sm transition-colors">All</button>
-                <button data-filter="public" class="filter-btn px-4 py-1.5 text-sm font-medium rounded text-gray-400 hover:text-white transition-colors">Public</button>
-                <button data-filter="admin" class="filter-btn px-4 py-1.5 text-sm font-medium rounded text-gray-400 hover:text-white transition-colors">Admin</button>
+            <div class="flex items-center gap-2 bg-white dark:bg-surface border border-gray-200 dark:border-surface-border p-1 rounded-lg" id="catalog-filters">
+                <button data-filter="all" class="filter-btn px-4 py-1.5 text-sm font-medium rounded bg-white dark:bg-surface-border text-gray-900 dark:text-white shadow-sm transition-colors">All</button>
+                <button data-filter="public" class="filter-btn px-4 py-1.5 text-sm font-medium rounded text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-surface-border/50 transition-colors">Public</button>
+                <button data-filter="admin" class="filter-btn px-4 py-1.5 text-sm font-medium rounded text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-surface-border/50 transition-colors">Admin</button>
             </div>
         </div>
     </div>
@@ -26,10 +26,10 @@
     <!-- Service Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="catalog-grid">
         {% for service in services %}
-        <div class="service-card bg-surface border border-surface-border rounded-xl p-6 flex flex-col hover:border-primary/50 hover:shadow-lg hover:-translate-y-1 transition-all group" data-category="{% if service.slug == 'admin' or service.slug == 'reporting' %}admin{% else %}public{% endif %}">
+        <div class="service-card bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl p-6 flex flex-col hover:border-primary/50 hover:shadow-lg hover:-translate-y-1 transition-all group" data-category="{% if service.slug == 'admin-api' or service.slug == 'reporting' %}admin{% else %}public{% endif %}">
             
             <div class="flex justify-between items-start mb-4">
-                <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-surface-border to-bg border border-surface-border flex items-center justify-center text-2xl text-gray-300 group-hover:text-primary transition-colors shadow-inner">
+                <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-surface-border dark:to-bg border border-gray-200 dark:border-surface-border flex items-center justify-center text-2xl text-gray-700 dark:text-gray-300 group-hover:text-primary transition-colors shadow-inner">
                     {% if service.slug == 'catalog-video' %}<i class="ph ph-video-camera"></i>
                     {% elif service.slug == 'orders' %}<i class="ph ph-shopping-cart"></i>
                     {% elif service.slug == 'payments' %}<i class="ph ph-credit-card"></i>
@@ -43,8 +43,8 @@
                 </span>
             </div>
             
-            <h3 class="text-lg font-bold text-white mb-2 group-hover:text-primary transition-colors">{{ service.name }}</h3>
-            <p class="text-sm text-gray-400 mb-6 flex-1 line-clamp-3">{{ service.description }}</p>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary transition-colors">{{ service.name }}</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-6 flex-1 line-clamp-3">{{ service.description }}</p>
             
             <div class="mt-auto space-y-4">
                 <div class="flex items-center justify-between text-sm">
@@ -53,15 +53,15 @@
                           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                           <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                         </span>
-                        <span class="text-gray-300 font-medium capitalize">{{ service.status }}</span>
+                        <span class="text-gray-700 dark:text-gray-300 font-medium capitalize">{{ service.status }}</span>
                     </div>
                     <div class="text-gray-500 font-medium">
-                        <span class="text-gray-300 font-mono">{{ service.endpoint_count }}</span> endpoints
+                        <span class="text-gray-700 dark:text-gray-300 font-mono">{{ service.endpoint_count }}</span> endpoints
                     </div>
                 </div>
                 
-                <div class="pt-4 border-t border-surface-border flex gap-3">
-                    <a href="{% url 'developer-explorer' %}?service={{ service.slug }}" class="flex-1 text-center bg-surface-border hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
+                <div class="pt-4 border-t border-gray-200 dark:border-surface-border flex gap-3">
+                    <a href="{% url 'developer-explorer' %}?service={{ service.slug }}" class="flex-1 text-center bg-white dark:bg-surface-border hover:bg-gray-700 text-gray-900 dark:text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
                         Explore APIs
                     </a>
                 </div>
@@ -102,11 +102,11 @@
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 filterBtns.forEach(b => {
-                    b.classList.remove('bg-surface-border', 'text-white', 'shadow-sm');
-                    b.classList.add('text-gray-400');
+                    b.classList.remove('bg-white', 'dark:bg-surface-border', 'text-gray-900', 'dark:text-white', 'shadow-sm');
+                    b.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-surface-border/50');
                 });
-                btn.classList.remove('text-gray-400');
-                btn.classList.add('bg-surface-border', 'text-white', 'shadow-sm');
+                btn.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-surface-border/50');
+                btn.classList.add('bg-white', 'dark:bg-surface-border', 'text-gray-900', 'dark:text-white', 'shadow-sm');
 
                 currentFilter = btn.getAttribute('data-filter');
                 filterCards();

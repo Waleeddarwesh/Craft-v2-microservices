@@ -4,24 +4,24 @@
 <div class="p-8 max-w-6xl mx-auto space-y-8">
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-white mb-2">API Keys</h1>
-            <p class="text-gray-400">Manage your application credentials and access tokens for API authentication.</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">API Keys</h1>
+            <p class="text-gray-600 dark:text-gray-400">Manage your application credentials and access tokens for API authentication.</p>
         </div>
         <button id="btn-generate-key" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-lg shadow-primary/20">
             <i class="ph ph-plus text-lg"></i> Generate New Key
         </button>
     </div>
 
-    <div class="bg-surface border border-surface-border rounded-xl shadow-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-white">Active Keys</h2>
-            <div class="text-sm text-gray-400">Showing {{ keys|length }} keys</div>
+    <div class="bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-surface-border flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Active Keys</h2>
+            <div class="text-sm text-gray-600 dark:text-gray-400">Showing {{ keys|length }} keys</div>
         </div>
         
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-surface-border/30 text-gray-400 text-xs uppercase tracking-wider">
+                    <tr class="bg-white dark:bg-surface-border/30 text-gray-600 dark:text-gray-400 text-xs uppercase tracking-wider">
                         <th class="px-6 py-3 font-medium">Name</th>
                         <th class="px-6 py-3 font-medium">Prefix</th>
                         <th class="px-6 py-3 font-medium">Environment</th>
@@ -30,11 +30,11 @@
                         <th class="px-6 py-3 font-medium text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-surface-border">
+                <tbody class="divide-y divide-gray-200 dark:divide-surface-border">
                     {% for key in keys %}
-                    <tr class="hover:bg-surface-border/10 transition-colors {% if not key.is_active %}opacity-50{% endif %}">
+                    <tr class="hover:bg-white dark:bg-surface-border/10 transition-colors {% if not key.is_active %}opacity-50{% endif %}">
                         <td class="px-6 py-4">
-                            <div class="font-medium text-white flex items-center gap-2">
+                            <div class="font-medium text-gray-900 dark:text-white flex items-center gap-2">
                                 {{ key.name }}
                                 {% if key.is_active %}
                                 <span class="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">Active</span>
@@ -43,7 +43,7 @@
                                 {% endif %}
                             </div>
                         </td>
-                        <td class="px-6 py-4 font-mono text-sm text-gray-300">
+                        <td class="px-6 py-4 font-mono text-sm text-gray-700 dark:text-gray-300">
                             {% if key.environment == 'live' %}sk_live_{% else %}sk_test_{% endif %}********************{{ key.key_prefix|slice:"-4:" }}
                         </td>
                         <td class="px-6 py-4">
@@ -53,8 +53,8 @@
                             <span class="border border-yellow-500/50 text-yellow-500 px-2 py-0.5 rounded text-xs font-medium">Test</span>
                             {% endif %}
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-400">{{ key.created_at|date:"M d, Y" }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-400">
+                        <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{{ key.created_at|date:"M d, Y" }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                             {% if key.last_used_at %}
                                 {{ key.last_used_at|timesince }} ago
                             {% else %}
@@ -62,8 +62,8 @@
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <div class="flex items-center justify-end gap-3 text-gray-400">
-                                <button class="hover:text-white transition-colors btn-copy-prefix" data-prefix="{{ key.key_prefix }}" title="Copy Key ID">
+                            <div class="flex items-center justify-end gap-3 text-gray-600 dark:text-gray-400">
+                                <button class="hover:text-gray-900 dark:text-white transition-colors btn-copy-prefix" data-prefix="{{ key.key_prefix }}" title="Copy Key ID">
                                     <i class="ph ph-copy text-lg"></i>
                                 </button>
                                 {% if key.is_active %}
@@ -76,7 +76,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="px-6 py-8 text-center text-gray-400">
+                        <td colspan="6" class="px-6 py-8 text-center text-gray-600 dark:text-gray-400">
                             <i class="ph ph-key text-3xl mb-2"></i>
                             <p>No API keys generated yet.</p>
                         </td>
@@ -94,45 +94,45 @@
 <!-- Generate Key Modal -->
 <div id="api-key-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="api-key-modal-backdrop"></div>
-    <div class="relative bg-surface border border-surface-border rounded-xl shadow-2xl w-full max-w-md p-6 transform scale-95 opacity-0 transition-all duration-200" id="api-key-modal-content">
+    <div class="relative bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl shadow-2xl w-full max-w-md p-6 transform scale-95 opacity-0 transition-all duration-200" id="api-key-modal-content">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-white">Generate New Key</h3>
-            <button id="close-modal" class="text-gray-400 hover:text-white transition-colors">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Generate New Key</h3>
+            <button id="close-modal" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors">
                 <i class="ph ph-x text-xl"></i>
             </button>
         </div>
         <form id="key-form" class="space-y-4">
             {% csrf_token %}
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Key Name</label>
-                <input type="text" id="key-name" required placeholder="e.g. Production Web App" class="w-full bg-bg border border-surface-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Key Name</label>
+                <input type="text" id="key-name" required placeholder="e.g. Production Web App" class="w-full bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Environment</label>
-                <select id="key-environment" class="w-full bg-bg border border-surface-border rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Environment</label>
+                <select id="key-environment" class="w-full bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
                     <option value="test">Test</option>
                     <option value="live">Live</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">Scopes</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Scopes</label>
                 <div class="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-                    <label class="flex items-center gap-2 text-sm text-gray-300">
-                        <input type="checkbox" value="products:read" class="scope-checkbox rounded border-surface-border bg-bg text-primary focus:ring-primary">
+                    <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                        <input type="checkbox" value="products:read" class="scope-checkbox rounded border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-bg text-primary focus:ring-primary">
                         products:read
                     </label>
-                    <label class="flex items-center gap-2 text-sm text-gray-300">
-                        <input type="checkbox" value="orders:read" class="scope-checkbox rounded border-surface-border bg-bg text-primary focus:ring-primary">
+                    <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                        <input type="checkbox" value="orders:read" class="scope-checkbox rounded border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-bg text-primary focus:ring-primary">
                         orders:read
                     </label>
-                    <label class="flex items-center gap-2 text-sm text-gray-300">
-                        <input type="checkbox" value="orders:write" class="scope-checkbox rounded border-surface-border bg-bg text-primary focus:ring-primary">
+                    <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                        <input type="checkbox" value="orders:write" class="scope-checkbox rounded border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-bg text-primary focus:ring-primary">
                         orders:write
                     </label>
                 </div>
             </div>
             <div class="pt-4 flex justify-end gap-3">
-                <button type="button" id="cancel-modal" class="px-4 py-2 text-gray-300 hover:text-white transition-colors font-medium">Cancel</button>
+                <button type="button" id="cancel-modal" class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white transition-colors font-medium">Cancel</button>
                 <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors font-medium shadow-lg shadow-primary/20 flex items-center gap-2">
                     <span id="generate-text">Generate</span>
                     <i class="ph ph-spinner animate-spin hidden" id="generate-spinner"></i>
@@ -145,27 +145,27 @@
 <!-- Success Modal -->
 <div id="success-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="success-modal-backdrop"></div>
-    <div class="relative bg-surface border border-surface-border rounded-xl shadow-2xl w-full max-w-lg p-6 transform scale-95 opacity-0 transition-all duration-200" id="success-modal-content">
+    <div class="relative bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl shadow-2xl w-full max-w-lg p-6 transform scale-95 opacity-0 transition-all duration-200" id="success-modal-content">
         <div class="mb-6 text-center">
             <div class="w-12 h-12 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class="ph ph-check text-2xl font-bold"></i>
             </div>
-            <h3 class="text-xl font-bold text-white mb-2">API Key Generated!</h3>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">API Key Generated!</h3>
             <p class="text-sm text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 p-3 rounded-lg text-left">
                 <i class="ph ph-warning-circle mr-1"></i>
                 Please copy this key and store it securely. For security reasons, <strong>we will never show it to you again.</strong>
             </p>
         </div>
         <div class="mb-6">
-            <div class="flex items-center gap-2 bg-bg border border-surface-border rounded-lg p-1">
-                <input type="text" id="new-full-key" readonly class="w-full bg-transparent border-none text-white font-mono text-sm px-3 py-2 focus:outline-none" value="">
-                <button id="btn-copy-key" class="p-2 bg-surface hover:bg-surface-border text-gray-300 rounded transition-colors flex items-center gap-2 whitespace-nowrap">
+            <div class="flex items-center gap-2 bg-gray-50 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg p-1">
+                <input type="text" id="new-full-key" readonly class="w-full bg-transparent border-none text-gray-900 dark:text-white font-mono text-sm px-3 py-2 focus:outline-none" value="">
+                <button id="btn-copy-key" class="p-2 bg-white dark:bg-surface hover:bg-white dark:bg-surface-border text-gray-700 dark:text-gray-300 rounded transition-colors flex items-center gap-2 whitespace-nowrap">
                     <i class="ph ph-copy"></i> <span id="copy-text">Copy</span>
                 </button>
             </div>
         </div>
         <div class="flex justify-center">
-            <button type="button" id="close-success-modal" class="px-6 py-2 bg-surface border border-surface-border hover:bg-surface-border text-white rounded-lg transition-colors font-medium">Done</button>
+            <button type="button" id="close-success-modal" class="px-6 py-2 bg-white dark:bg-surface border border-gray-200 dark:border-surface-border hover:bg-white dark:bg-surface-border text-gray-900 dark:text-white rounded-lg transition-colors font-medium">Done</button>
         </div>
     </div>
 </div>

@@ -1,51 +1,103 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" class="dark no-transition">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Craft Developer Portal</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
     <!-- Tailwind CSS -->
-    <!-- Compiled Tailwind CSS -->
-    <link href="{% static 'developer/css/output.css' %}" rel="stylesheet">
+    <link href="{% static 'developer/css/output.css' %}?v=3.1" rel="stylesheet">
+    <link href="{% static 'developer/css/custom.css' %}?v=3.1" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #theme-btn {
+            transition: all 0.2s;
+        }
+
+        #theme-btn:hover { 
+            background: hsla(42, 85%, 55%, 0.15) !important; 
+            color: hsl(42, 85%, 55%) !important; 
+        }
+
+        #theme-btn i {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-block;
+        }
+
+        #theme-btn:hover i {
+            transform: rotate(30deg);
+        }
     </style>
     {% block extra_head %}{% endblock %}
+    <script>
+        // Theme initialization — runs before paint
+        (function () {
+            var saved = localStorage.getItem('craft-theme') || 'dark';
+            if (saved === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            // Remove no-transition class after first paint
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    document.documentElement.classList.remove('no-transition');
+                });
+            });
+        })();
+    </script>
 </head>
-<body class="bg-bg text-gray-200 flex h-screen overflow-hidden antialiased selection:bg-primary/30">
 
-    <aside class="w-64 bg-surface backdrop-blur-md flex flex-col border-r border-surface-border relative z-20 shadow-xl">
-        <div class="h-16 flex items-center px-6 border-b border-surface-border">
-            <div class="flex items-center gap-3 text-primary font-bold text-lg">
-                <img src="{% static 'admin_custom/logo.jpg' %}" alt="Craft Logo" class="h-8 w-8 rounded object-cover shadow-sm">
+<body
+    class="bg-gray-50 dark:bg-bg text-gray-800 dark:text-gray-200 flex h-screen overflow-hidden antialiased selection:bg-primary/30">
+
+    <aside
+        class="w-64 bg-white dark:bg-surface backdrop-blur-md flex flex-col border-r border-gray-200 dark:border-surface-border relative z-20 shadow-xl">
+        <div class="h-16 flex items-center px-6 border-b border-gray-200 dark:border-surface-border">
+            <a href="{% url 'developer-overview' %}"
+                class="flex items-center gap-3 text-primary font-bold text-lg hover:opacity-80 transition-opacity decoration-transparent">
+                <img src="{% static 'admin_custom/logo.jpg' %}" alt="Craft Logo"
+                    class="h-8 w-8 rounded object-cover shadow-sm">
                 Developer Portal
-            </div>
+            </a>
         </div>
 
         <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-6">
             <!-- MAIN -->
             <div>
-                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3">Main</div>
+                <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 px-3">
+                    Main</div>
                 <div class="space-y-1">
-                    <a href="{% url 'developer-overview' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'overview' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:text-gray-200 hover:bg-surface-border/50{% endif %}">
+                    <a href="{% url 'developer-overview' %}"
+                        class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'overview' %}active bg-primary/10 text-primary{% else %}text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-border/50{% endif %}">
                         <i class="ph ph-squares-four text-lg"></i> Overview
                     </a>
-                    <a href="{% url 'developer-getting-started' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'getting-started' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:text-gray-200 hover:bg-surface-border/50{% endif %}">
+                    <a href="{% url 'developer-getting-started' %}"
+                        class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'getting-started' %}active bg-primary/10 text-primary{% else %}text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-border/50{% endif %}">
                         <i class="ph ph-rocket-launch text-lg"></i> Getting Started
                     </a>
-                    <a href="{% url 'developer-catalog' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'catalog' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:text-gray-200 hover:bg-surface-border/50{% endif %}">
+                    <a href="{% url 'developer-catalog' %}"
+                        class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'catalog' %}active bg-primary/10 text-primary{% else %}text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-border/50{% endif %}">
                         <i class="ph ph-books text-lg"></i> API Catalog
                     </a>
-                    <a href="{% url 'developer-explorer' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'explorer' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:text-gray-200 hover:bg-surface-border/50{% endif %}">
+                    <a href="{% url 'developer-explorer' %}"
+                        class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'explorer' %}active bg-primary/10 text-primary{% else %}text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-border/50{% endif %}">
                         <i class="ph ph-terminal-window text-lg"></i> API Explorer
                     </a>
                 </div>
@@ -53,36 +105,44 @@
 
             <!-- DEVELOPERS -->
             <div>
-                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3">Developers</div>
+                <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 px-3">
+                    Developers</div>
                 <div class="space-y-1">
-                    <a href="{% url 'developer-authentication' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'authentication' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:text-gray-200 hover:bg-surface-border/50{% endif %}">
+                    <a href="{% url 'developer-authentication' %}"
+                        class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'authentication' %}active bg-primary/10 text-primary{% else %}text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-border/50{% endif %}">
                         <i class="ph ph-shield-check text-lg"></i> Authentication
                     </a>
-                    <a href="{% url 'developer-api-keys' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'api-keys' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:text-gray-200 hover:bg-surface-border/50{% endif %}">
+                    <a href="{% url 'developer-api-keys' %}"
+                        class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'api-keys' %}active bg-primary/10 text-primary{% else %}text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-border/50{% endif %}">
                         <i class="ph ph-key text-lg"></i> API Keys
                     </a>
-                    <a href="{% url 'developer-webhooks' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'webhooks' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:text-gray-200 hover:bg-surface-border/50{% endif %}">
+                    <a href="{% url 'developer-webhooks' %}"
+                        class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'webhooks' %}active bg-primary/10 text-primary{% else %}text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-border/50{% endif %}">
                         <i class="ph ph-plugs-connected text-lg"></i> Webhooks
                     </a>
                 </div>
             </div>
-            
+
             <!-- REFERENCE -->
             <div>
-                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3">Reference</div>
+                <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 px-3">
+                    Reference</div>
                 <div class="space-y-1">
-                    <a href="{% url 'developer-changelog' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'changelog' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:text-gray-200 hover:bg-surface-border/50{% endif %}">
+                    <a href="{% url 'developer-changelog' %}"
+                        class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'changelog' %}active bg-primary/10 text-primary{% else %}text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-border/50{% endif %}">
                         <i class="ph ph-clock-counter-clockwise text-lg"></i> Changelog
                     </a>
-                    <a href="{% url 'developer-status' %}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'status' %}bg-primary/10 text-primary{% else %}text-gray-400 hover:text-gray-200 hover:bg-surface-border/50{% endif %}">
+                    <a href="{% url 'developer-status' %}"
+                        class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {% if active_tab == 'status' %}active bg-primary/10 text-primary{% else %}text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-border/50{% endif %}">
                         <i class="ph ph-activity text-lg"></i> API Status
                     </a>
                 </div>
             </div>
         </nav>
-        
-        <div class="p-4 border-t border-surface-border">
-            <a href="{% url 'docs-logout' %}" class="flex items-center justify-center gap-2 w-full py-2 bg-surface border border-surface-border rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors">
+
+        <div class="p-4 border-t border-gray-200 dark:border-surface-border">
+            <a href="{% url 'docs-logout' %}"
+                class="flex items-center justify-center gap-2 w-full py-2 bg-gray-50 dark:bg-surface border border-gray-200 dark:border-surface-border rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors">
                 <i class="ph ph-sign-out"></i> Logout
             </a>
         </div>
@@ -91,78 +151,145 @@
     <!-- Main Content -->
     <div class="flex-1 flex flex-col min-w-0">
         <!-- Topbar -->
-        <header class="h-16 bg-surface backdrop-blur-md flex items-center justify-between px-6 border-b border-surface-border sticky top-0 z-10 shadow-sm">
+        <header
+            class="h-16 bg-white dark:bg-surface backdrop-blur-md flex items-center justify-between px-6 border-b border-gray-200 dark:border-surface-border sticky top-0 z-50 shadow-sm">
             <!-- Search -->
-            <div id="search-container" class="flex items-center gap-2 bg-bg border border-surface-border rounded-lg px-3 py-1.5 w-96 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all cursor-text">
-                <i class="ph ph-magnifying-glass text-gray-400"></i>
-                <input id="search-input" type="text" placeholder="Search docs, endpoints, services..." class="bg-transparent border-none outline-none text-sm w-full placeholder-gray-500 text-gray-200">
-                <div class="text-[10px] text-gray-500 border border-surface-border rounded px-1.5 py-0.5 bg-surface font-mono">Ctrl K</div>
+            <div id="search-container"
+                class="flex items-center gap-2 bg-gray-100 dark:bg-bg border border-gray-200 dark:border-surface-border rounded-lg px-3 py-1.5 w-96 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all cursor-text">
+                <i class="ph ph-magnifying-glass text-gray-400 dark:text-gray-400"></i>
+                <input id="search-input" type="text" placeholder="Search docs, endpoints, services..."
+                    class="bg-transparent border-none outline-none text-sm w-full placeholder-gray-400 text-gray-800 dark:text-gray-200">
+                <div
+                    class="text-[10px] text-gray-400 border border-gray-200 dark:border-surface-border rounded px-1.5 py-0.5 bg-white dark:bg-surface font-mono">
+                    Ctrl K</div>
             </div>
 
             <!-- Right items -->
             <div class="flex items-center gap-4">
-                
-                <!-- Language Dropdown -->
-                <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" @click.away="open = false" class="text-gray-400 hover:text-white transition-colors flex items-center gap-1" title="Toggle Language">
-                        <span class="text-sm font-semibold">EN</span>
-                        <i class="ph ph-caret-down text-xs"></i>
-                    </button>
-                    <div x-show="open" x-transition class="absolute right-0 mt-2 w-32 bg-surface border border-surface-border rounded-lg shadow-xl overflow-hidden z-50 py-1" style="display: none;">
-                        <button class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-surface-border hover:text-white flex items-center gap-2 transition-colors">
-                            <span class="text-primary font-bold">EN</span> English
-                        </button>
-                        <button class="w-full text-left px-4 py-2 text-sm text-gray-400 hover:bg-surface-border hover:text-white flex items-center gap-2 transition-colors">
-                            <span class="font-bold">AR</span> Arabic
-                        </button>
-                    </div>
-                </div>
 
-                <div class="h-4 w-px bg-surface-border"></div>
-                
-                <button id="theme-btn" class="text-gray-400 hover:text-primary transition-colors" title="Toggle Dark/Light Mode">
+                <button id="theme-btn"
+                    class="p-2 text-gray-500 dark:text-gray-400 hover:text-yellow-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-surface-border/30"
+                    title="Toggle Dark/Light Mode" onclick="toggleTheme()">
                     <i id="theme-icon" class="ph ph-sun text-xl"></i>
                 </button>
 
                 <!-- Notifications Dropdown -->
-                <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" @click.away="open = false" class="text-gray-400 hover:text-white transition-colors relative" title="Notifications">
+                <div x-data="{ open: false, notifications: [], unreadCount: 0 }"
+                    x-init="fetch('/developer/api/notifications/').then(r => r.json()).then(d => { notifications = d.notifications; unreadCount = d.unread_count; }).catch(() => {})"
+                    class="relative">
+                    <button @click="open = !open" @click.away="open = false"
+                        class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-surface-border/30"
+                        title="Notifications">
                         <i class="ph ph-bell text-xl"></i>
-                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-surface"></span>
+                        <span x-show="unreadCount > 0"
+                            class="notification-badge absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-surface"></span>
                     </button>
-                    <div x-show="open" x-transition class="absolute right-0 mt-2 w-72 bg-surface border border-surface-border rounded-lg shadow-xl overflow-hidden z-50" style="display: none;">
-                        <div class="px-4 py-3 border-b border-surface-border flex justify-between items-center">
-                            <span class="text-sm font-bold text-white">Notifications</span>
-                            <span class="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-bold">2 New</span>
+                    <div x-show="open" x-transition
+                        class="absolute right-0 mt-2 w-80 bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl shadow-2xl overflow-hidden z-50"
+                        style="display: none;">
+                        <div
+                            class="px-4 py-3 border-b border-gray-200 dark:border-surface-border flex justify-between items-center">
+                            <span class="text-sm font-bold text-gray-900 dark:text-white">Notifications</span>
+                            <span x-show="unreadCount > 0" x-text="unreadCount + ' New'"
+                                class="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-bold"></span>
                         </div>
                         <div class="max-h-64 overflow-y-auto">
-                            <div class="px-4 py-3 border-b border-surface-border/50 hover:bg-surface-border/20 transition-colors cursor-pointer opacity-50">
-                                <div class="text-sm font-medium text-white mb-1">Webhook Failed</div>
-                                <div class="text-xs text-red-400">Delivery to https://myapp.com/api/craft-webhook failed (500 Internal Server Error)</div>
-                                <div class="text-[10px] text-gray-500 mt-1">2 hours ago</div>
-                            </div>
-                            <div class="px-4 py-3 hover:bg-surface-border/20 transition-colors cursor-pointer">
-                                <div class="text-sm font-medium text-white mb-1">API Key Expiring</div>
-                                <div class="text-xs text-yellow-400">Your "Development Key" will expire in 3 days.</div>
-                                <div class="text-[10px] text-gray-500 mt-1">1 day ago</div>
-                            </div>
+                            <template x-if="notifications.length === 0">
+                                <div class="px-4 py-8 text-center">
+                                    <i class="ph ph-bell-slash text-3xl text-gray-300 dark:text-gray-600 mb-2"></i>
+                                    <div class="text-gray-400 dark:text-gray-500 text-sm">No new notifications</div>
+                                </div>
+                            </template>
+                            <template x-for="notif in notifications" :key="notif.id">
+                                <div class="px-4 py-3 border-b border-gray-100 dark:border-surface-border/50 hover:bg-gray-50 dark:hover:bg-surface-border/20 transition-colors cursor-pointer"
+                                    :class="notif.read ? 'opacity-50' : ''">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white mb-1"
+                                        x-text="notif.title"></div>
+                                    <div class="text-xs"
+                                        :class="notif.type === 'error' ? 'text-red-400' : 'text-yellow-400'"
+                                        x-text="notif.message"></div>
+                                    <div class="text-[10px] text-gray-400 mt-1" x-text="notif.time_ago"></div>
+                                </div>
+                            </template>
                         </div>
-                        <div class="px-4 py-2 border-t border-surface-border text-center">
-                            <a href="#" class="text-xs font-medium text-primary hover:text-primary-dark transition-colors">Mark all as read</a>
+                        <div class="px-4 py-2 border-t border-gray-200 dark:border-surface-border text-center">
+                            <a href="#" @click.prevent="notifications.forEach(n => n.read = true); unreadCount = 0;"
+                                class="text-xs font-medium text-primary hover:text-primary-dark transition-colors">Mark
+                                all as read</a>
                         </div>
                     </div>
                 </div>
 
-                <div class="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-blue-500 p-[2px] cursor-pointer" title="Profile">
-                    <div class="w-full h-full rounded-full bg-surface border border-surface-border flex items-center justify-center text-xs font-bold text-white">
-                        {{ request.user.username|make_list|first|upper }}
+                <div x-data="{ open: false }" class="relative">
+                    <div @click="open = !open" @click.away="open = false"
+                        class="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-emerald-600 p-[2px] cursor-pointer hover:shadow-lg hover:shadow-primary/20 transition-shadow"
+                        title="Profile">
+                        <div
+                            class="w-full h-full rounded-full bg-white dark:bg-surface border border-gray-200 dark:border-surface-border flex items-center justify-center text-xs font-bold text-gray-700 dark:text-white overflow-hidden">
+                            {% if request.user.profile_picture %}
+                            <img src="{{ request.user.profile_picture.url }}" class="w-full h-full object-cover">
+                            {% elif request.user.userprofile.profile_picture %}
+                            <img src="{{ request.user.userprofile.profile_picture.url }}"
+                                class="w-full h-full object-cover">
+                            {% else %}
+                            {{ request.user.username|make_list|first|upper }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div x-show="open" x-transition
+                        class="absolute right-0 mt-2 w-64 bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl shadow-2xl overflow-hidden z-50 py-1"
+                        style="display: none;">
+
+                        <!-- Account Details Header -->
+                        <div
+                            class="px-4 py-3 border-b border-gray-100 dark:border-surface-border/50 flex items-center gap-3">
+                            <div
+                                class="h-10 w-10 shrink-0 rounded-full bg-gradient-to-br from-primary to-emerald-600 p-[2px]">
+                                <div
+                                    class="w-full h-full rounded-full bg-white dark:bg-surface border border-gray-200 dark:border-surface-border flex items-center justify-center text-sm font-bold text-gray-700 dark:text-white overflow-hidden">
+                                    {% if request.user.profile_picture %}
+                                    <img src="{{ request.user.profile_picture.url }}"
+                                        class="w-full h-full object-cover">
+                                    {% elif request.user.userprofile.profile_picture %}
+                                    <img src="{{ request.user.userprofile.profile_picture.url }}"
+                                        class="w-full h-full object-cover">
+                                    {% else %}
+                                    {{ request.user.username|make_list|first|upper }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="overflow-hidden">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                    {% if request.user.first_name or request.user.last_name %}
+                                    {{ request.user.first_name }} {{ request.user.last_name }}
+                                    {% else %}
+                                    {{ request.user.username }}
+                                    {% endif %}
+                                </p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ request.user.email|default:"Admin" }}</p>
+                            </div>
+                        </div>
+
+                        <a href="{% url 'admin_profile_settings' %}"
+                            class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-surface-border/30 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 transition-colors mt-1">
+                            <i class="ph ph-gear text-lg"></i> Account Settings
+                        </a>
+                        <a href="/dashboard/"
+                            class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-surface-border/30 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 transition-colors">
+                            <i class="ph ph-chart-line-up text-lg"></i> Admin Dashboard
+                        </a>
+                        <div class="border-t border-gray-100 dark:border-surface-border/50 my-1"></div>
+                        <a href="{% url 'docs-logout' %}"
+                            class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 flex items-center gap-2 transition-colors">
+                            <i class="ph ph-sign-out text-lg"></i> Logout
+                        </a>
                     </div>
                 </div>
             </div>
         </header>
 
         <!-- Page Content -->
-        <main class="flex-1 overflow-y-auto bg-bg relative">
+        <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-bg relative">
             {% block content %}{% endblock %}
         </main>
     </div>
@@ -170,127 +297,160 @@
     <!-- Command Palette Modal -->
     <div id="cmd-palette-modal" class="fixed inset-0 z-[100] hidden flex-col items-center pt-[10vh] px-4 sm:px-6">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="cmd-palette-backdrop"></div>
-        <div class="relative w-full max-w-2xl bg-surface border border-surface-border rounded-xl shadow-2xl overflow-hidden flex flex-col transform scale-95 opacity-0 transition-all duration-200" id="cmd-palette-content">
-            
-            <div class="relative border-b border-surface-border flex items-center px-4">
+        <div class="relative w-full max-w-2xl bg-white dark:bg-surface border border-gray-200 dark:border-surface-border rounded-xl shadow-2xl overflow-hidden flex flex-col transform scale-95 opacity-0 transition-all duration-200"
+            id="cmd-palette-content">
+
+            <div class="relative border-b border-gray-200 dark:border-surface-border flex items-center px-4">
                 <i class="ph ph-magnifying-glass text-xl text-primary absolute left-4"></i>
-                <input type="text" id="cmd-search-input" placeholder="Search docs, endpoints, services..." class="w-full bg-transparent border-none py-4 pl-10 pr-12 text-white placeholder-gray-500 focus:outline-none focus:ring-0 text-lg" autocomplete="off">
-                <div class="absolute right-4 text-[10px] text-gray-500 border border-surface-border rounded px-1.5 py-0.5 bg-bg font-mono">ESC</div>
+                <input type="text" id="cmd-search-input" placeholder="Search docs, endpoints, services..."
+                    class="w-full bg-transparent border-none py-4 pl-10 pr-12 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-0 text-lg"
+                    autocomplete="off">
+                <div
+                    class="absolute right-4 text-[10px] text-gray-400 border border-gray-200 dark:border-surface-border rounded px-1.5 py-0.5 bg-gray-100 dark:bg-bg font-mono">
+                    ESC</div>
             </div>
 
             <div class="max-h-[60vh] overflow-y-auto py-2" id="cmd-search-results">
-                <!-- Static Index Results for demo -->
-                <div class="px-3 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-2 mb-1">Developer Docs</div>
-                <a href="/developer/authentication/" class="cmd-result flex items-center gap-3 px-4 py-3 hover:bg-surface-border/50 text-white transition-colors cursor-pointer group">
-                    <div class="h-8 w-8 rounded bg-primary/10 text-primary flex items-center justify-center border border-primary/20"><i class="ph ph-shield-key"></i></div>
+                <div class="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-2 mb-1">
+                    Developer Docs</div>
+                <a href="/developer/authentication/"
+                    class="cmd-result flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-surface-border/50 text-gray-900 dark:text-white transition-colors cursor-pointer group">
+                    <div
+                        class="h-8 w-8 rounded bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
+                        <i class="ph ph-shield-key"></i></div>
                     <div class="flex-1">
                         <div class="font-medium group-hover:text-primary transition-colors">Authentication Guide</div>
-                        <div class="text-xs text-gray-400">Bearer tokens, API keys, OAuth</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Bearer tokens, API keys, OAuth</div>
                     </div>
-                    <i class="ph ph-arrow-right text-gray-500 group-hover:text-primary"></i>
+                    <i class="ph ph-arrow-right text-gray-400 group-hover:text-primary"></i>
                 </a>
-                <a href="/developer/webhooks/" class="cmd-result flex items-center gap-3 px-4 py-3 hover:bg-surface-border/50 text-white transition-colors cursor-pointer group">
-                    <div class="h-8 w-8 rounded bg-primary/10 text-primary flex items-center justify-center border border-primary/20"><i class="ph ph-plugs-connected"></i></div>
+                <a href="/developer/webhooks/"
+                    class="cmd-result flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-surface-border/50 text-gray-900 dark:text-white transition-colors cursor-pointer group">
+                    <div
+                        class="h-8 w-8 rounded bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
+                        <i class="ph ph-plugs-connected"></i></div>
                     <div class="flex-1">
                         <div class="font-medium group-hover:text-primary transition-colors">Webhooks</div>
-                        <div class="text-xs text-gray-400">Real-time event delivery</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Real-time event delivery</div>
                     </div>
-                    <i class="ph ph-arrow-right text-gray-500 group-hover:text-primary"></i>
+                    <i class="ph ph-arrow-right text-gray-400 group-hover:text-primary"></i>
                 </a>
 
-                <div class="px-3 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-4 mb-1">Services</div>
-                <a href="/developer/explorer/?service=orders" class="cmd-result flex items-center gap-3 px-4 py-3 hover:bg-surface-border/50 text-white transition-colors cursor-pointer group">
-                    <div class="h-8 w-8 rounded bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20"><i class="ph ph-shopping-cart"></i></div>
+                <div class="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-4 mb-1">Services
+                </div>
+                <a href="/developer/explorer/?service=orders"
+                    class="cmd-result flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-surface-border/50 text-gray-900 dark:text-white transition-colors cursor-pointer group">
+                    <div
+                        class="h-8 w-8 rounded bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
+                        <i class="ph ph-shopping-cart"></i></div>
                     <div class="flex-1">
                         <div class="font-medium group-hover:text-blue-400 transition-colors">Orders API</div>
-                        <div class="text-xs text-gray-400">Manage customer orders</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Manage customer orders</div>
                     </div>
-                    <i class="ph ph-arrow-right text-gray-500 group-hover:text-blue-400"></i>
+                    <i class="ph ph-arrow-right text-gray-400 group-hover:text-blue-400"></i>
                 </a>
-                <a href="/developer/explorer/?service=payments" class="cmd-result flex items-center gap-3 px-4 py-3 hover:bg-surface-border/50 text-white transition-colors cursor-pointer group">
-                    <div class="h-8 w-8 rounded bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20"><i class="ph ph-credit-card"></i></div>
+                <a href="/developer/explorer/?service=payments"
+                    class="cmd-result flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-surface-border/50 text-gray-900 dark:text-white transition-colors cursor-pointer group">
+                    <div
+                        class="h-8 w-8 rounded bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
+                        <i class="ph ph-credit-card"></i></div>
                     <div class="flex-1">
                         <div class="font-medium group-hover:text-amber-400 transition-colors">Payments API</div>
-                        <div class="text-xs text-gray-400">Process refunds and transactions</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Process refunds and transactions</div>
                     </div>
-                    <i class="ph ph-arrow-right text-gray-500 group-hover:text-amber-400"></i>
+                    <i class="ph ph-arrow-right text-gray-400 group-hover:text-amber-400"></i>
                 </a>
             </div>
-            
-            <div class="px-4 py-3 bg-bg border-t border-surface-border flex items-center justify-between text-xs text-gray-500">
+
+            <div
+                class="px-4 py-3 bg-gray-50 dark:bg-bg border-t border-gray-200 dark:border-surface-border flex items-center justify-between text-xs text-gray-400">
                 <div class="flex items-center gap-4">
-                    <span class="flex items-center gap-1"><kbd class="px-1 py-0.5 rounded border border-surface-border bg-surface font-mono text-[10px]">↑</kbd> <kbd class="px-1 py-0.5 rounded border border-surface-border bg-surface font-mono text-[10px]">↓</kbd> to navigate</span>
-                    <span class="flex items-center gap-1"><kbd class="px-1 py-0.5 rounded border border-surface-border bg-surface font-mono text-[10px]">Enter</kbd> to select</span>
+                    <span class="flex items-center gap-1"><kbd
+                            class="px-1 py-0.5 rounded border border-gray-200 dark:border-surface-border bg-white dark:bg-surface font-mono text-[10px]">↑</kbd>
+                        <kbd
+                            class="px-1 py-0.5 rounded border border-gray-200 dark:border-surface-border bg-white dark:bg-surface font-mono text-[10px]">↓</kbd>
+                        to navigate</span>
+                    <span class="flex items-center gap-1"><kbd
+                            class="px-1 py-0.5 rounded border border-gray-200 dark:border-surface-border bg-white dark:bg-surface font-mono text-[10px]">Enter</kbd>
+                        to select</span>
                 </div>
                 <div>Global Search</div>
             </div>
         </div>
     </div>
 
-    <!-- Interactive Topbar Scripts -->
+    <!-- Scripts -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Theme Toggle Logic
-            const themeBtn = document.getElementById('theme-btn');
-            const themeIcon = document.getElementById('theme-icon');
-            
-            const updateThemeIcon = () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                if (currentTheme === 'dark') {
-                    themeIcon.classList.remove('ph-moon');
-                    themeIcon.classList.add('ph-sun');
-                } else {
-                    themeIcon.classList.remove('ph-sun');
-                    themeIcon.classList.add('ph-moon');
+        // ===== Theme Toggle =====
+        function toggleTheme() {
+            var doc = document.documentElement;
+            var isDark = doc.classList.contains('dark');
+            var newTheme = isDark ? 'light' : 'dark';
+
+            if (newTheme === 'dark') {
+                doc.classList.add('dark');
+            } else {
+                doc.classList.remove('dark');
+            }
+            localStorage.setItem('craft-theme', newTheme);
+
+            var icon = document.getElementById('theme-icon');
+            if (newTheme === 'light') {
+                icon.classList.remove('ph-sun');
+                icon.classList.add('ph-moon');
+            } else {
+                icon.classList.remove('ph-moon');
+                icon.classList.add('ph-sun');
+            }
+        }
+
+        // Init icon on load
+        (function () {
+            if (!document.documentElement.classList.contains('dark')) {
+                var icon = document.getElementById('theme-icon');
+                if (icon) {
+                    icon.classList.remove('ph-sun');
+                    icon.classList.add('ph-moon');
                 }
-            };
-            
-            updateThemeIcon();
+            }
+        })();
 
-            themeBtn.addEventListener('click', () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-                const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', nextTheme);
-                localStorage.setItem('craft_theme', nextTheme);
-                updateThemeIcon();
-            });
+        // ===== Command Palette =====
+        document.addEventListener('DOMContentLoaded', function () {
+            var searchContainer = document.getElementById('search-container');
+            var modal = document.getElementById('cmd-palette-modal');
+            var modalContent = document.getElementById('cmd-palette-content');
+            var backdrop = document.getElementById('cmd-palette-backdrop');
+            var cmdInput = document.getElementById('cmd-search-input');
+            var results = document.querySelectorAll('.cmd-result');
+            var selectedIndex = 0;
 
-            // Command Palette Logic
-            const searchContainer = document.getElementById('search-container');
-            const modal = document.getElementById('cmd-palette-modal');
-            const modalContent = document.getElementById('cmd-palette-content');
-            const backdrop = document.getElementById('cmd-palette-backdrop');
-            const cmdInput = document.getElementById('cmd-search-input');
-            const results = document.querySelectorAll('.cmd-result');
-
-            let selectedIndex = 0;
-
-            const openCmdPalette = () => {
+            function openCmdPalette() {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
-                setTimeout(() => {
+                setTimeout(function () {
                     modalContent.classList.remove('scale-95', 'opacity-0');
                     modalContent.classList.add('scale-100', 'opacity-100');
                 }, 10);
                 cmdInput.value = '';
                 cmdInput.focus();
                 filterResults();
-            };
+            }
 
-            const closeCmdPalette = () => {
+            function closeCmdPalette() {
                 modalContent.classList.remove('scale-100', 'opacity-100');
                 modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
+                setTimeout(function () {
                     modal.classList.remove('flex');
                     modal.classList.add('hidden');
                 }, 200);
-            };
+            }
 
-            const filterResults = () => {
-                const query = cmdInput.value.toLowerCase();
-                let visibleResults = [];
-                results.forEach(result => {
-                    const text = result.textContent.toLowerCase();
+            function filterResults() {
+                var query = cmdInput.value.toLowerCase();
+                var visibleResults = [];
+                results.forEach(function (result) {
+                    var text = result.textContent.toLowerCase();
                     if (text.includes(query)) {
                         result.style.display = 'flex';
                         visibleResults.push(result);
@@ -298,20 +458,21 @@
                         result.style.display = 'none';
                     }
                 });
-                
-                // Keyboard navigation styling
-                results.forEach(r => r.classList.remove('bg-surface-border/50'));
+
+                results.forEach(function (r) {
+                    r.classList.remove('bg-gray-50', 'dark:bg-surface-border/50');
+                });
                 if (visibleResults.length > 0) {
                     if (selectedIndex >= visibleResults.length) selectedIndex = 0;
                     if (selectedIndex < 0) selectedIndex = visibleResults.length - 1;
-                    visibleResults[selectedIndex].classList.add('bg-surface-border/50');
+                    visibleResults[selectedIndex].classList.add('bg-gray-50', 'dark:bg-surface-border/50');
                 }
-            };
+            }
 
-            searchContainer.addEventListener('click', openCmdPalette);
-            backdrop.addEventListener('click', closeCmdPalette);
+            if (searchContainer) searchContainer.addEventListener('click', openCmdPalette);
+            if (backdrop) backdrop.addEventListener('click', closeCmdPalette);
 
-            document.addEventListener('keydown', (e) => {
+            document.addEventListener('keydown', function (e) {
                 if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                     e.preventDefault();
                     openCmdPalette();
@@ -321,33 +482,35 @@
                 }
             });
 
-            cmdInput.addEventListener('input', () => {
-                selectedIndex = 0;
-                filterResults();
-            });
+            if (cmdInput) {
+                cmdInput.addEventListener('input', function () {
+                    selectedIndex = 0;
+                    filterResults();
+                });
 
-            cmdInput.addEventListener('keydown', (e) => {
-                const visibleResults = Array.from(results).filter(r => r.style.display !== 'none');
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    selectedIndex++;
-                    filterResults();
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    selectedIndex--;
-                    filterResults();
-                } else if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if (visibleResults.length > 0 && visibleResults[selectedIndex]) {
-                        window.location.href = visibleResults[selectedIndex].getAttribute('href');
+                cmdInput.addEventListener('keydown', function (e) {
+                    var visibleResults = Array.from(results).filter(function (r) { return r.style.display !== 'none'; });
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        selectedIndex++;
+                        filterResults();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        selectedIndex--;
+                        filterResults();
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (visibleResults.length > 0 && visibleResults[selectedIndex]) {
+                            window.location.href = visibleResults[selectedIndex].getAttribute('href');
+                        }
                     }
-                }
-            });
-
+                });
+            }
         });
     </script>
 
     {% block modals %}{% endblock %}
     {% block extra_scripts %}{% endblock %}
 </body>
+
 </html>

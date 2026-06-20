@@ -1,17 +1,17 @@
 {% extends "admin/base.html" %}
 {% load static %}
 
-{% block title %}Craft Admin | {{ title }}{% endblock %}
+{% block title %}Craft Database Admin | {{ title }}{% endblock %}
 
 {% block branding %}
-<div id="craft-brand"
-    style="display:flex;align-items:center;gap:12px;padding:16px 20px;height:64px;box-sizing:border-box;flex-shrink:0;">
+<a href="{% url 'admin:index' %}" id="craft-brand"
+    style="display:flex;align-items:center;gap:12px;padding:16px 20px;height:64px;box-sizing:border-box;flex-shrink:0;text-decoration:none;">
     <img src="{% static 'admin_custom/logo.jpg' %}" alt="Craft"
         style="width:38px;height:38px;border-radius:8px;object-fit:contain;flex-shrink:0;">
     <h1 id="site-name"
         style="margin:0;font-size:20px;font-weight:800;letter-spacing:-0.02em;color:#7fb04f;white-space:nowrap;font-family:'Inter',system-ui,sans-serif;">
-        Craft Admin</h1>
-</div>
+        Database Admin</h1>
+</a>
 {% endblock %}
 
 {% block extrastyle %}{{ block.super }}
@@ -19,9 +19,34 @@
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
 <script>(function () { var t = localStorage.getItem('craft_theme') || 'dark'; document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t); })()</script>
 <link rel="stylesheet" href="{% static 'admin_custom/admin_theme.css' %}">
+<style>
+    #craft-theme-toggle {
+        transition: all 0.2s;
+    }
+
+    #craft-theme-toggle:hover {
+        background: hsla(42, 85%, 55%, 0.15);
+        color: hsl(42, 85%, 55%) !important;
+    }
+
+    #craft-theme-toggle svg {
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: block;
+    }
+
+    #craft-theme-toggle:hover svg {
+        transform: rotate(30deg);
+    }
+</style>
 {% endblock %}
 
-{% block userlinks %}
+{% block usertools %}
+    {% if has_permission %}
+    <div id="welcome-msg" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--atq); font-size: 13px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;">
+        WELCOME, <strong style="color: inherit;">{% firstof user.get_short_name user.get_username %}</strong>
+    </div>
+    <div id="user-tools">
+        {% block userlinks %}
 <button id="craft-theme-toggle" type="button" title="Toggle Theme">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="5" />
@@ -35,48 +60,84 @@
         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
     </svg>
 </button>
-<a href="{% url 'schema-swagger-ui' %}" target="_blank" title="Swagger API Documentation" style="gap:6px; margin-right: 8px;">
+<a href="{% url 'schema-swagger-ui' %}" target="_blank" title="Swagger API Documentation"
+    style="gap:6px; display:flex; align-items:center;">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
         <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
     </svg>
     API Docs
 </a>
+<a id="profile-link" href="{% url 'admin_profile_settings' %}" title="Account Settings"
+    style="gap:6px; display:flex; align-items:center;">
+    ⚙️ Profile
+</a>
 {{ block.super }}
 <script>
-    (function(){
-        var siteUrl = "{{ site_url|default:'/' }}";
-        var links = document.querySelectorAll('#user-tools a');
-        for (var i=0; i<links.length; i++) {
-            if (links[i].getAttribute('href') === siteUrl || links[i].textContent.trim() === 'View site') {
-                links[i].textContent = 'Dashboard';
+        (function () {
+            var siteUrl = "{{ site_url|default:'/' }}";
+            var links = document.querySelectorAll('#user-tools a');
+            for (var i = 0; i < links.length; i++) {
+                if (links[i].getAttribute('href') === siteUrl || links[i].textContent.trim() === 'View site') {
+                    links[i].textContent = 'Dashboard';
+                }
+                if (links[i].getAttribute('href') && links[i].getAttribute('href').indexOf('password_change') !== -1) {
+                    links[i].style.display = 'none';
+                }
             }
-        }
-    })();
+
+            var profileLink = document.getElementById('profile-link');
+            var logoutForm = document.getElementById('logout-form');
+            if (profileLink && logoutForm) {
+                logoutForm.parentNode.insertBefore(profileLink, logoutForm);
+            } else if (profileLink) {
+                var logoutLink = Array.from(document.querySelectorAll('#user-tools a, #user-tools button')).find(el => el.textContent.trim().toLowerCase() === 'log out');
+                if (logoutLink) {
+                    logoutLink.parentNode.insertBefore(profileLink, logoutLink);
+                } else {
+                    var userTools = document.getElementById('user-tools');
+                    if (userTools) userTools.appendChild(profileLink);
+                }
+            }
+
+            // Remove all text nodes (like the slash '/') from #user-tools to prevent them from becoming anonymous flex items and breaking gap spacing
+            var userToolsContainer = document.getElementById('user-tools');
+            if (userToolsContainer) {
+                var childNodes = Array.from(userToolsContainer.childNodes);
+                for (var j = 0; j < childNodes.length; j++) {
+                    if (childNodes[j].nodeType === Node.TEXT_NODE) {
+                        childNodes[j].remove();
+                    }
+                }
+            }
+        })();
 </script>
+        {% endblock %}
+    </div>
+    {% endif %}
 {% endblock %}
 
 {% block footer %}
 <script>
-        (function () {
-            var SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
-            var MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
-            var btn = document.getElementById('craft-theme-toggle');
-            if (!btn) return;
-            function update() {
-                var t = document.documentElement.getAttribute('data-theme') || 'dark';
-                btn.innerHTML = t === 'dark' ? SUN : MOON;
-                btn.title = t === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
-            }
+    (function () {
+        var SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+        var MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+        var btn = document.getElementById('craft-theme-toggle');
+        if (!btn) return;
+        function update() {
+            var t = document.documentElement.getAttribute('data-theme') || 'dark';
+            btn.innerHTML = t === 'dark' ? SUN : MOON;
+            btn.title = t === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        }
+        update();
+        btn.addEventListener('click', function () {
+            var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+            var next = cur === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('craft_theme', next);
+            localStorage.setItem('theme', next);
             update();
-            btn.addEventListener('click', function () {
-                var cur = document.documentElement.getAttribute('data-theme') || 'dark';
-                var next = cur === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', next);
-                localStorage.setItem('craft_theme', next);
-                localStorage.setItem('theme', next);
-                update();
-            });
-        })();
+        });
+    })();
 </script>
 {% endblock %}

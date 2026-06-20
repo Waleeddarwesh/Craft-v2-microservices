@@ -8,7 +8,8 @@ const OverviewPage = (() => {
         
         let chartsHtml = '';
         if (hasRevenueChart || hasStatusChart) {
-            chartsHtml += '<div class="overview-charts">';
+            const gridStyle = (hasRevenueChart && hasStatusChart) ? '' : ' style="grid-template-columns: 1fr;"';
+            chartsHtml += `<div class="overview-charts"${gridStyle}>`;
             if (hasRevenueChart) chartsHtml += `<div class="card"><div class="card-header"><span class="card-title">${window.t('Revenue Trend')}</span></div><div class="chart-container"><canvas id="chart-revenue"></canvas></div></div>`;
             if (hasStatusChart) chartsHtml += `<div class="card"><div class="card-header"><span class="card-title">${window.t('Orders by Status')}</span></div><div class="chart-container"><canvas id="chart-orders-status"></canvas></div></div>`;
             chartsHtml += '</div>';

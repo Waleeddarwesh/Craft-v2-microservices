@@ -68,7 +68,8 @@ class DashboardIdentityView(APIView):
             'is_supplier': getattr(user, 'is_supplier', False),
             'is_delivery': getattr(user, 'is_delivery', False),
             'is_customer': getattr(user, 'is_customer', False),
-            'role_name': primary_group
+            'role_name': primary_group,
+            'profile_picture': user.profile_picture.url if hasattr(user, 'profile_picture') and user.profile_picture else None
         }
         
         return Response({
@@ -134,7 +135,12 @@ def dashboard_view(request, path='index.html'):
             return HttpResponse(f.read(), content_type=content_type)
     else:
         with open(file_path, 'r', encoding='utf-8') as f:
-            return HttpResponse(f.read(), content_type=content_type)
+            response = HttpResponse(f.read(), content_type=content_type)
+            if ext == '.html':
+                response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+                response['Pragma'] = 'no-cache'
+                response['Expires'] = '0'
+            return response
 
 
 # =============================================================================

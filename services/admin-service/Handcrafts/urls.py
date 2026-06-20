@@ -2,8 +2,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls.static import static
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
+from drf_spectacular.views import SpectacularAPIView
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication
 from django.conf import settings
@@ -15,19 +14,7 @@ class IsSuperUser(permissions.BasePermission):
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_superuser)
 
-schema_view = get_schema_view(
-    openapi.Info(
-        title="Craft API",
-        default_version='v2.0',
-        description="API documentation for Craft application",
-        terms_of_service="https://www.example.com/policies/terms/",
-        contact=openapi.Contact(email="Waleeddarwesh2002@gmail.com"),
-        license=openapi.License(name="BSD License"),
-    ),
-    public=False,
-    permission_classes=(IsSuperUser,),
-    authentication_classes=(SessionAuthentication, JWTAuthentication,),
-)
+
 
 from django.conf.urls.i18n import i18n_patterns
 
@@ -38,6 +25,7 @@ from django.views.generic import RedirectView
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, render
 from django.http import HttpResponseForbidden
+from accounts.views import admin_profile_settings
 
 def check_docs_token(view_func):
     def wrapped_view(request, *args, **kwargs):
@@ -125,12 +113,12 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('', include('django_prometheus.urls')),
     path('', RedirectView.as_view(url='/dashboard/', permanent=False), name='index'),
-    path('admin-schema.json', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('admin-schema.json', SpectacularAPIView.as_view(), name='schema-json'),
     path('docs/', check_docs_token(TemplateView.as_view(template_name='admin/central_docs.html')), name='schema-swagger-ui'),
     path('docs/login/', docs_login_view, name='docs-login'),
     path('docs/logout/', docs_logout_view, name='docs-logout'),
+    path('admin/profile-settings/', admin_profile_settings, name='admin_profile_settings'),
     path('admin/', admin.site.urls),
-
 
     # Admin API & Dashboard
     path('admin-api/', include('admin_api.urls')),
