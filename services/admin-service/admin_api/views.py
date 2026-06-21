@@ -155,33 +155,21 @@ class AdminStatsView(APIView):
         now = timezone.now()
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-        # Revenue from succeeded payments
-        succeeded_count = PaymentHistory.objects.filter(payment_status='succeeded').count()
-        if succeeded_count > 0:
-            order_revenue = PaymentHistory.objects.filter(
-                payment_status='succeeded', order__isnull=False
-            ).aggregate(total=Sum('order__final_amount'))['total'] or Decimal('0')
-            course_revenue = PaymentHistory.objects.filter(
-                payment_status='succeeded', course__isnull=False
-            ).aggregate(total=Sum('course__Price'))['total'] or Decimal('0')
-            total_revenue = order_revenue + course_revenue
-        else:
-            # Fallback: sum from product/course purchase transactions
-            total_revenue = Transaction.objects.filter(
-                transaction_type__in=[
-                    Transaction.TransactionType.PURCHASED_PRODUCTS,
-                    Transaction.TransactionType.PURCHASED_COURSE,
-                ]
-            ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
-
+        # Revenue from succeeded payments & paid orders
+        successful_payments = PaymentHistory.objects.filter(payment_status='succeeded')
         from django.db.models import Q
+        paid_orders_all_time = Order.objects.filter(
+            Q(paid=True) | Q(id__in=successful_payments.values('order_id'))
+        ).distinct()
+        
+        order_revenue = paid_orders_all_time.aggregate(total=Sum('final_amount'))['total'] or Decimal('0.0')
+        course_revenue = successful_payments.filter(course__isnull=False).aggregate(total=Sum('course__Price'))['total'] or Decimal('0.0')
+        total_revenue = order_revenue + course_revenue
+
         if not request.user.is_superuser and getattr(request.user, 'is_supplier', False):
-            total_orders = PaymentHistory.objects.filter(payment_status='succeeded', order__items__product__Supplier__user=request.user).distinct().count()
+            total_orders = paid_orders_all_time.filter(items__product__Supplier__user=request.user).distinct().count()
         else:
-            total_orders = PaymentHistory.objects.filter(
-                Q(order__isnull=False) | Q(course__isnull=False),
-                payment_status='succeeded'
-            ).distinct().count()
+            total_orders = paid_orders_all_time.count() + successful_payments.filter(course__isnull=False).count()
         active_users = User.objects.filter(is_active=True).count()
         if not request.user.is_superuser and getattr(request.user, 'is_supplier', False):
             pending_returns = ReturnRequest.objects.filter(status='new', product__Supplier__user=request.user).count()
@@ -197,22 +185,33 @@ class AdminStatsView(APIView):
 
         # Revenue change
         last_month_start = (month_start - timezone.timedelta(days=1)).replace(day=1)
-        this_month_qs = PaymentHistory.objects.filter(
-            payment_status='succeeded',
-            date__gte=month_start
-        )
-        last_month_qs = PaymentHistory.objects.filter(
-            payment_status='succeeded',
-            date__gte=last_month_start,
-            date__lt=month_start
-        )
+        
+        # This month paid orders
+        this_month_payments = successful_payments.filter(date__gte=month_start)
+        this_month_orders_paid = Order.objects.filter(
+            Q(paid=True) | Q(id__in=this_month_payments.values('order_id')),
+            created_at__gte=month_start
+        ).distinct()
+        
+        # Last month paid orders
+        last_month_payments = successful_payments.filter(date__gte=last_month_start, date__lt=month_start)
+        last_month_orders_paid = Order.objects.filter(
+            Q(paid=True) | Q(id__in=last_month_payments.values('order_id')),
+            created_at__gte=last_month_start,
+            created_at__lt=month_start
+        ).distinct()
         
         if not request.user.is_superuser and getattr(request.user, 'is_supplier', False):
-            this_month_qs = this_month_qs.filter(Q(order__items__product__Supplier__user=request.user) | Q(course__Supplier__user=request.user)).distinct()
-            last_month_qs = last_month_qs.filter(Q(order__items__product__Supplier__user=request.user) | Q(course__Supplier__user=request.user)).distinct()
+            this_month_orders_paid = this_month_orders_paid.filter(items__product__Supplier__user=request.user).distinct()
+            last_month_orders_paid = last_month_orders_paid.filter(items__product__Supplier__user=request.user).distinct()
+            this_month_course_revenue = Decimal('0.0')
+            last_month_course_revenue = Decimal('0.0')
+        else:
+            this_month_course_revenue = this_month_payments.filter(course__isnull=False).aggregate(total=Sum('course__Price'))['total'] or Decimal('0.0')
+            last_month_course_revenue = last_month_payments.filter(course__isnull=False).aggregate(total=Sum('course__Price'))['total'] or Decimal('0.0')
             
-        this_month_revenue = this_month_qs.aggregate(total=Sum('order__final_amount'))['total'] or Decimal('0')
-        last_month_revenue = last_month_qs.aggregate(total=Sum('order__final_amount'))['total'] or Decimal('0')
+        this_month_revenue = (this_month_orders_paid.aggregate(total=Sum('final_amount'))['total'] or Decimal('0.0')) + this_month_course_revenue
+        last_month_revenue = (last_month_orders_paid.aggregate(total=Sum('final_amount'))['total'] or Decimal('0.0')) + last_month_course_revenue
         
         revenue_change = 0
         if last_month_revenue > 0:
@@ -336,56 +335,85 @@ class AdminSystemReportsView(APIView):
                 current_start, current_end, prev_start, prev_end = get_date_range_for_period(period_string=period)
             except Exception:
                 return Response({"error": _("Invalid period")}, status=status.HTTP_400_BAD_REQUEST)
-
-        income_types = [
-            Transaction.TransactionType.PURCHASED_PRODUCTS,
-            Transaction.TransactionType.PURCHASED_COURSE
-        ]
-        outcome_types = [
-            Transaction.TransactionType.WITHDRAWAL_REQUEST,
-            Transaction.TransactionType.RETURN_DEBIT,
-            Transaction.TransactionType.REFUND_FAILED
-        ]
-
-        transactions = Transaction.objects.filter(
-            created_at__date__gte=current_start,
-            created_at__date__lte=current_end
+        from Handcrafts.business_config import (
+            PLATFORM_PRODUCT_COMMISSION,
+            PLATFORM_DELIVERY_MARGIN,
+            PLATFORM_COURSE_COMMISSION,
+            DEFAULT_CASHBACK_RATE
         )
+        from django.db.models import Sum, F
 
-        graph_data = transactions.annotate(
-            month=TruncMonth('created_at')
-        ).values('month').annotate(
-            income=Sum('amount', filter=Q(transaction_type__in=income_types)),
-            outcome=Sum('amount', filter=Q(transaction_type__in=outcome_types))
-        ).order_by('month')
+        def calculate_kpis(start_dt, end_dt):
+            successful_payments = PaymentHistory.objects.filter(
+                payment_status='succeeded',
+                date__gte=start_dt,
+                date__lte=end_dt
+            )
+            
+            from django.db.models import Q
+            # Orders: either marked as paid OR have a succeeded PaymentHistory
+            paid_orders = Order.objects.filter(
+                Q(paid=True) | Q(id__in=successful_payments.values('order_id')),
+                created_at__gte=start_dt,
+                created_at__lte=end_dt
+            ).distinct()
+            
+            # Product gross & delivery gross
+            total_product_gross = paid_orders.aggregate(total=Sum('total_amount'))['total'] or Decimal('0.0')
+            total_delivery_gross = paid_orders.aggregate(total=Sum('delivery_fee'))['total'] or Decimal('0.0')
+            total_order_final = paid_orders.aggregate(total=Sum('final_amount'))['total'] or Decimal('0.0')
+            
+            # Company Earnings from orders
+            company_product_earning = total_product_gross * PLATFORM_PRODUCT_COMMISSION
+            company_delivery_earning = total_delivery_gross * PLATFORM_DELIVERY_MARGIN
+            company_loss_from_cashback = total_order_final * DEFAULT_CASHBACK_RATE
+            
+            # Refunds
+            refunds = ReturnRequest.objects.filter(
+                created_at__gte=start_dt,
+                created_at__lte=end_dt,
+                status=ReturnRequest.ReturnStatus.ACCEPTED
+            )
+            total_refunded_products = refunds.aggregate(total=Sum('amount'))['total'] or Decimal('0.0')
+            company_loss_from_refunds = total_refunded_products * PLATFORM_PRODUCT_COMMISSION
+            
+            # Course Earnings
+            total_course_gross = successful_payments.filter(course__isnull=False).aggregate(total=Sum('course__Price'))['total'] or Decimal('0.0')
+            company_course_earning = total_course_gross * PLATFORM_COURSE_COMMISSION
+            
+            # Gross Income = Total Product Value + Total Delivery Fees + Total Course Value
+            total_income = total_product_gross + total_delivery_gross + total_course_gross
+            
+            # Net Earning = Our exact percentages minus our liabilities
+            total_earning = (company_product_earning + company_delivery_earning + company_course_earning) - (company_loss_from_cashback + company_loss_from_refunds)
+            
+            # Total Outcome = What is NOT ours (Suppliers, Drivers, Instructors) + Full Refunds + Cashbacks
+            total_outcome = total_income - total_earning
+            
+            return float(total_income), float(total_outcome), float(total_earning)
 
-        formatted_graph_data = [
-            {
-                "month": item['month'].strftime("%b") if item['month'] else "Unknown",
-                "income": float(item['income'] or 0),
-                "outcome": float(abs(item['outcome'] or 0))
-            }
-            for item in graph_data
-        ]
+        current_total_income, current_total_outcome, current_earning = calculate_kpis(current_start, current_end)
+        prev_total_income, prev_total_outcome, previous_earning = calculate_kpis(prev_start, prev_end)
 
-        current_totals = transactions.aggregate(
-            total_income=Sum('amount', filter=Q(transaction_type__in=income_types)),
-            total_outcome=Sum('amount', filter=Q(transaction_type__in=outcome_types))
-        )
-        current_total_income = current_totals.get('total_income') or Decimal('0.0')
-        current_total_outcome = current_totals.get('total_outcome') or Decimal('0.0')
-        current_earning = current_total_income + current_total_outcome
-
-        prev_totals = Transaction.objects.filter(
-            created_at__date__gte=prev_start,
-            created_at__date__lte=prev_end
-        ).aggregate(
-            total_income=Sum('amount', filter=Q(transaction_type__in=income_types)),
-            total_outcome=Sum('amount', filter=Q(transaction_type__in=outcome_types))
-        )
-        prev_total_income = prev_totals.get('total_income') or Decimal('0.0')
-        prev_total_outcome = prev_totals.get('total_outcome') or Decimal('0.0')
-        previous_earning = prev_total_income + prev_total_outcome
+        # Graph Data Generation
+        # Group by month and calculate dynamically
+        graph_data = []
+        transactions_months = Transaction.objects.filter(
+            created_at__gte=current_start,
+            created_at__lte=current_end
+        ).annotate(month=TruncMonth('created_at')).values('month').distinct().order_by('month')
+        
+        for tm in transactions_months:
+            if not tm['month']: continue
+            m_start = tm['month']
+            import calendar
+            m_end = m_start.replace(day=calendar.monthrange(m_start.year, m_start.month)[1], hour=23, minute=59, second=59)
+            m_inc, m_out, m_earn = calculate_kpis(m_start, m_end)
+            graph_data.append({
+                "month": m_start.strftime("%b"),
+                "income": m_inc,
+                "outcome": m_out
+            })
 
         percentage_change = 0.0
         if previous_earning > 0:
@@ -394,11 +422,17 @@ class AdminSystemReportsView(APIView):
             percentage_change = 100.0
 
         # Payment Method Breakdown
+        successful_payments_current = PaymentHistory.objects.filter(
+            payment_status='succeeded',
+            date__gte=current_start,
+            date__lte=current_end
+        )
+        from django.db.models import Q
         payment_methods = Order.objects.filter(
+            Q(paid=True) | Q(id__in=successful_payments_current.values('order_id')),
             created_at__gte=current_start,
-            created_at__lte=current_end,
-            paid=True
-        ).values('payment_method').annotate(total=Sum('final_amount')).order_by('-total')
+            created_at__lte=current_end
+        ).distinct().values('payment_method').annotate(total=Sum('final_amount')).order_by('-total')
         
         pm_labels = [p['payment_method'] for p in payment_methods]
         pm_data = [float(p['total'] or 0) for p in payment_methods]
@@ -409,11 +443,11 @@ class AdminSystemReportsView(APIView):
         avg_rating = Product.objects.aggregate(avg=Avg('Rating'))['avg'] or 0
 
         return Response({
-            'total_income': float(current_total_income),
-            'total_outcome': float(abs(current_total_outcome)),
-            'total_earning': float(current_earning),
+            'total_income': current_total_income,
+            'total_outcome': current_total_outcome,
+            'total_earning': current_earning,
             'percentage_change': round(percentage_change, 2),
-            'graph_data': formatted_graph_data,
+            'graph_data': graph_data,
             'payment_methods': {
                 'labels': pm_labels if pm_labels else ['No Data'],
                 'data': pm_data if pm_data else [1]
@@ -647,6 +681,7 @@ class AdminWithdrawalsListView(APIView):
             'transfer_number': w.transfer_number,
             'transfer_status': w.transfer_status,
             'risk_score': float(w.risk_score) if hasattr(w, 'risk_score') and w.risk_score else 0,
+            'user_balance': float(w.user.Balance + (w.amount if w.transfer_status in ['Requested', 'Awaiting Approval'] else 0)) if w.user and hasattr(w.user, 'Balance') else 0.0,
             'notes': w.notes if hasattr(w, 'notes') else '',
             'admin_notes': w.admin_notes if hasattr(w, 'admin_notes') else '',
             'created_at': w.created_at.isoformat() if w.created_at else None,
@@ -680,6 +715,7 @@ class AdminNotificationsView(APIView):
             'user_email': n.user.email if n.user else '',
             'department': n.department,
             'message': n.message,
+            'image_url': n.image_url,
             'is_read': n.is_read,
             'timestamp': n.timestamp.isoformat() if n.timestamp else None,
         } for n in notifs]
@@ -894,19 +930,29 @@ class AdminWithdrawalActionView(APIView):
             return Response({'error': _('Withdrawal not found')}, status=status.HTTP_404_NOT_FOUND)
 
         action = request.data.get('action')
-        if action == 'approve':
-            wd.transfer_status = 'Approved'
-        elif action == 'reject':
-            wd.transfer_status = 'Rejected'
-        elif action == 'complete':
-            wd.transfer_status = 'Completed'
-        else:
-            return Response({'error': _('Invalid action')}, status=status.HTTP_400_BAD_REQUEST)
+        admin_notes = request.data.get('admin_notes', '')
 
-        if request.data.get('admin_notes'):
-            wd.admin_notes = request.data['admin_notes']
+        from returnrequest.services import BalanceService
+        from django.core.exceptions import ValidationError
+        
+        try:
+            if action == 'approve':
+                # Since balance is deducted on creation, we just need to approve and complete it
+                BalanceService.approve_withdrawal(wd, request.user.id, admin_notes)
+                # We automatically complete the withdrawal so it appears in the outcome immediately
+                BalanceService.process_approved_request(wd)
+            elif action == 'reject':
+                BalanceService.reject_withdrawal(wd, request.user.id, admin_notes)
+            elif action == 'complete':
+                BalanceService.process_approved_request(wd)
+            else:
+                return Response({'error': _('Invalid action')}, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as e:
+            return Response({'error': str(e.message) if hasattr(e, 'message') else str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        wd.save()
+        wd.refresh_from_db()
         return Response({'status': _('Withdrawal {action}d').format(action=action), 'new_status': wd.transfer_status})
 
 
@@ -1283,42 +1329,54 @@ class AdminGlobalSearchView(APIView):
 class AdminSendNotificationView(APIView):
     """Send a custom notification to a specific user or all users."""
     permission_classes = [IsDashboardUser]
+    from rest_framework.parsers import MultiPartParser, FormParser
+    parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
         from notifications.models import Notification
         from accounts.models import User
         
-        user_id = request.data.get('user_id')
+        user_email = request.data.get('user_email')
+        if not user_email:
+            user_email = request.data.get('user_id')
+            
         title = request.data.get('title')
         message = request.data.get('message')
-        notification_type = request.data.get('type', 'system')
+        notification_type = request.data.get('type') or 'system'
+        image = request.FILES.get('image')
         
         if not title or not message:
             return Response({"error": "Title and message are required"}, status=400)
             
-        if user_id and str(user_id).lower() != 'all':
+        full_message = f"[{notification_type.upper()}] **{title}**\n\n{message}"
+        
+        if image:
+            # We must use image.read() to get content, but then we must use the saved name for the DB
+            image_name = default_storage.save(f"notifications/{datetime.now().strftime('%Y%m%d%H%M%S')}_{image.name}", ContentFile(image.read()))
+        else:
+            image_name = None
+
+        if user_email and str(user_email).lower() != 'all':
             try:
-                user = User.objects.get(id=user_id)
+                user = User.objects.get(email__iexact=user_email)
                 Notification.objects.create(
                     user=user,
-                    title=title,
-                    message=message,
-                    notification_type=notification_type
+                    message=full_message,
+                    image=image_name
                 )
+                return Response({'success': True, 'message': 'Notification sent successfully'})
             except User.DoesNotExist:
-                return Response({"error": "User not found"}, status=404)
+                return Response({'error': f'User with email {user_email} not found'}, status=404)
         else:
-            # Send to all active users
             users = User.objects.filter(is_active=True)
             notifications = [
                 Notification(
                     user=u,
-                    title=title,
-                    message=message,
-                    notification_type=notification_type
+                    message=full_message,
+                    image=image_name
                 ) for u in users
             ]
-            Notification.objects.bulk_create(notifications)
+            Notification.objects.bulk_create(notifications, batch_size=100)
             
         return Response({"status": "success", "message": "Notification sent successfully"})
 
@@ -1565,13 +1623,17 @@ class AdminProductModerationView(APIView):
 
     def get(self, request):
         from products.models import Product
-        products = Product.objects.select_related('Supplier__user').filter(publish_status=Product.PublishStatus.PENDING)
+        products = Product.objects.select_related('Supplier__user').prefetch_related('images').filter(publish_status=Product.PublishStatus.PENDING)
         data = [{
             'id': p.id,
             'ProductName': p.ProductName,
+            'ProductDescription': p.ProductDescription,
             'Supplier': p.Supplier.user.email if p.Supplier and p.Supplier.user else 'Unknown',
             'UnitPrice': float(p.UnitPrice),
+            'Stock': p.Stock,
+            'Category': p.Category.Title if p.Category else 'N/A',
             'Publish_Date': p.Publish_Date.isoformat() if p.Publish_Date else None,
+            'images': [img.image.url for img in p.images.all() if img.image]
         } for p in products]
         return Response(data)
 
@@ -1602,6 +1664,33 @@ class AdminAuditLogsView(APIView):
     permission_classes = [IsDashboardUser, require_permission('accounts.can_view_audit_logs')]
 
     def get(self, request):
+        from django.utils import timezone
+        from datetime import timedelta
+        from django.db.models import Count
+        from django.db.models.functions import TruncDate
+        
+        # Aggregations
+        total_logs = AuditLog.objects.count()
+        today_start = timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0)
+        logs_today = AuditLog.objects.filter(timestamp__gte=today_start).count()
+        unique_actors = AuditLog.objects.values('user').distinct().count()
+        
+        sevendays = timezone.localtime() - timedelta(days=7)
+        activity_qs = AuditLog.objects.filter(timestamp__gte=sevendays).annotate(date=TruncDate('timestamp')).values('date').annotate(count=Count('id')).order_by('date')
+        
+        activity_dict = {item['date']: item['count'] for item in activity_qs if item['date']}
+        activity_7_days = []
+        for i in range(6, -1, -1):
+            dt = (timezone.localtime() - timedelta(days=i)).date()
+            activity_7_days.append({
+                'date': dt.isoformat(),
+                'count': activity_dict.get(dt, 0)
+            })
+        
+        action_qs = AuditLog.objects.values('action').annotate(count=Count('id')).order_by('-count')
+        action_distribution = [{'action': item['action'], 'count': item['count']} for item in action_qs]
+
+        # Recent logs
         logs = AuditLog.objects.select_related('user').all()[:200]
         data = []
         for log in logs:
@@ -1614,7 +1703,19 @@ class AdminAuditLogsView(APIView):
                 'ip_address': log.ip_address,
                 'timestamp': log.timestamp.isoformat(),
             })
-        return Response(data)
+            
+        return Response({
+            'kpis': {
+                'total_logs': total_logs,
+                'logs_today': logs_today,
+                'unique_actors': unique_actors,
+            },
+            'charts': {
+                'activity_7_days': activity_7_days,
+                'action_distribution': action_distribution,
+            },
+            'logs': data
+        })
 
 # =============================================================================
 # Resolution Endpoints (Tickets & Disputes)
