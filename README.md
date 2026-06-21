@@ -263,14 +263,17 @@ Other services validate incoming tokens using shared utilities from `craft_commo
 - Refund tracking
 - Payment reconciliation-ready structure
 
-### Platform Operations
+### Platform Operations & System Health
 
-- Product and course reviews
-- Review moderation
-- Support tickets
-- Ticket replies
-- Dispute resolution
-- Notification preferences
+- Comprehensive Admin Panel & RBAC Dashboard
+- Deep system management and emergency controls
+- Department-based workflows and assignment routing
+- Centralized Audit Logs for security and accountability
+- Real-time internal Notifications system for SLA breaches and operational alerts
+- System Health Dashboard (PostgreSQL, Redis, RabbitMQ, Celery monitoring)
+- Product and course reviews moderation
+- Support tickets and dispute resolution
+- Automated notification preferences
 
 ### Real-Time System
 

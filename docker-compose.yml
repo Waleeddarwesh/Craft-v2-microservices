@@ -83,6 +83,49 @@ services:
     volumes:
       - ./services/admin-service/media:/app/media
     restart: unless-stopped
+
+  admin_worker:
+    networks:
+      default:
+        aliases:
+          - admin-worker
+    build:
+      context: ./services/admin-service
+      dockerfile: Dockerfile
+    command: celery -A Handcrafts worker -l info
+    environment:
+      - OTEL_SERVICE_NAME=admin_worker
+      - DJANGO_SETTINGS_MODULE=Handcrafts.settings
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  admin_beat:
+    networks:
+      default:
+        aliases:
+          - admin-beat
+    build:
+      context: ./services/admin-service
+      dockerfile: Dockerfile
+    command: celery -A Handcrafts beat -l info
+    environment:
+      - OTEL_SERVICE_NAME=admin_beat
+      - DJANGO_SETTINGS_MODULE=Handcrafts.settings
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
   auth_service:
     networks:
       default:
