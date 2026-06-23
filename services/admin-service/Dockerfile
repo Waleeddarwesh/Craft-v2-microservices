@@ -1,6 +1,6 @@
 # ============================================================
 # Craft Project Dockerfile
-# Django + Daphne + SQLite
+# Django + Postgres
 # Multi-stage Docker build for smaller and cleaner image
 # ============================================================
 
@@ -91,25 +91,9 @@ RUN useradd --system --create-home --shell /bin/bash appuser
 COPY --chown=appuser:0 --from=builder /app/.venv ./.venv
 
 # Copy application source code.
-# This should include db.sqlite3 if you want to ship your existing SQLite file.
 COPY --chown=appuser:0 . .
 
-# Fix permissions for the EXISTING SQLite database.
-# We use test -f to make the build fail clearly if db.sqlite3 is missing.
-#
-# SQLite needs write permission on:
-# 1) The database file itself: /app/db.sqlite3
-# 2) The parent directory: /app
-#
-# Because SQLite may create temporary files like:
-# db.sqlite3-journal
-# db.sqlite3-wal
-# db.sqlite3-shm
-RUN if [ -f /app/db.sqlite3 ]; then \
-        chown appuser:0 /app/db.sqlite3 && \
-        chmod 664 /app/db.sqlite3; \
-    fi && \
-    chown appuser:0 /app && \
+RUN chown appuser:0 /app && \
     chmod 775 /app
 
 # Switch to non-root user
@@ -118,8 +102,8 @@ USER appuser
 # Use the virtual environment by default
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Expose Django/Daphne port
+# Expose Django port
 EXPOSE 8000
 
-# Start the ASGI application using Daphne
-CMD ["opentelemetry-instrument", "daphne", "-b", "0.0.0.0", "-p", "8000", "Handcrafts.asgi:application"]
+# Start the WSGI application using Gunicorn
+CMD ["opentelemetry-instrument", "gunicorn", "--bind", "0.0.0.0:8000", "Handcrafts.wsgi:application"]
