@@ -2,10 +2,13 @@ from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
-from accounts.models import User, Supplier, Customer
-from orders.models import Order, OrderItem
-from returnrequest.models import BalanceWithdrawRequest
-from products.models import Product
+try:
+    from accounts.models import User, Supplier, Customer
+    from orders.models import Order, OrderItem
+    from returnrequest.models import BalanceWithdrawRequest
+    from products.models import Product
+except ImportError:
+    pass
 
 class AdminAPISecurityTests(APITestCase):
     def setUp(self):

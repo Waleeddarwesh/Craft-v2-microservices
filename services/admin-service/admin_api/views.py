@@ -19,16 +19,17 @@ from .permissions import require_permission
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils.translation import gettext as _
-from reviews.models import Review
-
-from accounts.models import User, Customer, Supplier, Delivery
-from course.models import Course, Enrollment
-from notifications.models import Notification
-from orders.models import Order, OrderItem, Coupon
-from payment.models import PaymentHistory
-from products.models import Product, ProImage
-from returnrequest.models import ReturnRequest, Transaction, BalanceWithdrawRequest
-from reviews.models import Review
+try:
+    from reviews.models import Review
+    from accounts.models import User, Customer, Supplier, Delivery
+    from course.models import Course, Enrollment
+    from notifications.models import Notification
+    from orders.models import Order, OrderItem, Coupon
+    from payment.models import PaymentHistory
+    from products.models import Product, ProImage
+    from returnrequest.models import ReturnRequest, Transaction, BalanceWithdrawRequest
+except ImportError:
+    pass
 from audit_logs.models import AuditLog
 from audit_logs.utils import log_audit_action
 

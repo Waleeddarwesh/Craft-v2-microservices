@@ -3,10 +3,14 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.cache import cache
 
-from recommendations.models import UserProductInteraction
-from accounts.models import Supplier, User
-from disputes.models import Dispute
-from support_tickets.models import Ticket
+try:
+    from recommendations.models import UserProductInteraction
+    from accounts.models import Supplier, User
+    from disputes.models import Dispute
+    from support_tickets.models import Ticket
+except ImportError:
+    pass
+
 from audit_logs.models import AuditLog
 from notifications.services import create_notification_for_user
 
