@@ -84,6 +84,7 @@
         Router.register('settings', SettingsPage.render);
         Router.register('api-docs', ApiDocsPage.render);
         Router.register('system-health', SystemHealthPage.render);
+        Router.register('team-management', TeamManagementPage.render);
         Router.register('servers', window.ServersPage.render);
         Router.register('services', window.ServicesPage.render);
         Router.register('users-linux', window.UsersLinuxPage.render);

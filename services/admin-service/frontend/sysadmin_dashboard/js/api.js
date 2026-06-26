@@ -58,5 +58,5 @@ const API = (() => {
     const put = (ep, body) => request(ep, { method: 'PUT', body: JSON.stringify(body) });
     const del = (ep) => request(ep, { method: 'DELETE' });
 
-    return { get, post, patch, put, del, request };
+    return { get, post, patch, put, del, delete: del, request };
 })();

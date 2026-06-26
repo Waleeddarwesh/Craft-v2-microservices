@@ -211,7 +211,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'first_name', 'is_staff', 'access', 'refresh']
+        fields = ['email', 'password', 'first_name', 'is_staff', 'access', 'refresh', 'team_role']
 
 
     def validate(self, attrs):
@@ -263,6 +263,13 @@ class LoginSerializer(serializers.ModelSerializer):
             'is_supplier': getattr(user, 'is_supplier', False),
             'is_delivery': getattr(user, 'is_delivery', False),
             'must_change_password': getattr(user, 'must_change_password', False),
+            'team_role': user.team_role,
+            'is_team_sysadmin': user.is_team_sysadmin,
+            'is_team_support': user.is_team_support,
+            'is_team_operations': user.is_team_operations,
+            'is_team_developer': user.is_team_developer,
+            'is_team_db_admin': user.is_team_db_admin,
+            'is_team_test': user.is_team_test,
             "access":str(tokens.get('access')),
             "refresh":str(tokens.get('refresh'))
         }

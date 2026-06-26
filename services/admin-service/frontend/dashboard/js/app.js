@@ -96,21 +96,21 @@
         Router.register('disputes', DisputesPage.render);
         Router.register('audit-logs', AuditLogsPage.render);
         Router.register('settings', SettingsPage.render);
-        Router.register('api-docs', ApiDocsPage.render);
-        Router.register('system-health', SystemHealthPage.render);
-        Router.register('servers', window.ServersPage.render);
-        Router.register('services', window.ServicesPage.render);
-        Router.register('users-linux', window.UsersLinuxPage.render);
-        Router.register('system-logs', window.SystemLogsPage.render);
-        Router.register('storage', window.StoragePage.render);
-        Router.register('backups', window.BackupsPage.render);
-        Router.register('cron-jobs', window.CronJobsPage.render);
-        Router.register('security-center', window.SecurityCenterPage.render);
-        Router.register('config-management', window.ConfigManagementPage.render);
-        Router.register('file-explorer', window.FileExplorerPage.render);
-        Router.register('containers', window.ContainersPage.render);
-        Router.register('incidents', window.IncidentsPage.render);
-        Router.register('automation', window.AutomationPage.render);
+        if (typeof ApiDocsPage !== 'undefined') Router.register('api-docs', ApiDocsPage.render);
+        if (typeof SystemHealthPage !== 'undefined') Router.register('system-health', SystemHealthPage.render);
+        if (window.ServersPage) Router.register('servers', window.ServersPage.render);
+        if (window.ServicesPage) Router.register('services', window.ServicesPage.render);
+        if (window.UsersLinuxPage) Router.register('users-linux', window.UsersLinuxPage.render);
+        if (window.SystemLogsPage) Router.register('system-logs', window.SystemLogsPage.render);
+        if (window.StoragePage) Router.register('storage', window.StoragePage.render);
+        if (window.BackupsPage) Router.register('backups', window.BackupsPage.render);
+        if (window.CronJobsPage) Router.register('cron-jobs', window.CronJobsPage.render);
+        if (window.SecurityCenterPage) Router.register('security-center', window.SecurityCenterPage.render);
+        if (window.ConfigManagementPage) Router.register('config-management', window.ConfigManagementPage.render);
+        if (window.FileExplorerPage) Router.register('file-explorer', window.FileExplorerPage.render);
+        if (window.ContainersPage) Router.register('containers', window.ContainersPage.render);
+        if (window.IncidentsPage) Router.register('incidents', window.IncidentsPage.render);
+        if (window.AutomationPage) Router.register('automation', window.AutomationPage.render);
 
         // Start router
         Router.init();

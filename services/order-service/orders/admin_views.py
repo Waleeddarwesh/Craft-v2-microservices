@@ -8,13 +8,24 @@ from returnrequest.models import ReturnRequest
 
 
 class AdminOrdersView(APIView):
-    permission_classes = [IsAuthenticated, HasRole("admin")]
+    permission_classes = [IsAuthenticated, HasRole("SYSADMIN", "SUPPORT", "OPERATIONS")]
 
     def get(self, request):
-        orders = Order.objects.all().order_by('-created_at')[:100]
+        orders = Order.objects.all()
+        
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date:
+            orders = orders.filter(created_at__date__gte=start_date)
+        if end_date:
+            orders = orders.filter(created_at__date__lte=end_date)
+            
+        orders = orders.order_by('-created_at')[:200]
+        
         data = [{
             'id': str(o.id),
             'order_number': o.order_number,
+            'user_id': o.user_id,
             'user_email': f"User {o.user_id}",
             'total_amount': float(o.total_amount),
             'discount_amount': float(o.discount_amount),
@@ -23,7 +34,12 @@ class AdminOrdersView(APIView):
             'payment_method': o.payment_method,
             'status': o.status,
             'paid': o.paid,
-            'created_at': o.created_at,
+            'created_at': o.created_at.isoformat() if hasattr(o.created_at, 'isoformat') else o.created_at,
+            'items': [{
+                'product_name': f"Product {item.product_id}",
+                'quantity': item.quantity,
+                'price': float(item.price),
+            } for item in o.items.all()],
         } for o in orders]
         return Response(data)
 

@@ -1,10 +1,12 @@
 from django.urls import path
-from .admin_views import AdminUsersView, AdminUserDetailView, AdminMeView, AdminSupplierActionView, AdminDeliveryActionView
+from .admin_views import AdminUsersView, AdminUserDetailView, AdminMeView, AdminSupplierActionView, AdminDeliveryActionView, AdminTeamManagementView
 
 urlpatterns = [
     path('users/', AdminUsersView.as_view()),
     path('users/<int:pk>/', AdminUserDetailView.as_view()),
     path('users/supplier/<int:pk>/', AdminSupplierActionView.as_view()),
     path('users/delivery/<int:pk>/', AdminDeliveryActionView.as_view()),
+    path('team-management/', AdminTeamManagementView.as_view()),
+    path('team-management/<int:pk>/', AdminTeamManagementView.as_view()),
     path('me/', AdminMeView.as_view()),
 ]

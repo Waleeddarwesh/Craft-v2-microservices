@@ -45,15 +45,16 @@ const Auth = (() => {
             const tokens = data.tokens || (data.access ? { access: data.access, refresh: data.refresh } : null);
             if (res.ok && tokens) {
                 // Reject non-admin users before storing tokens
-                if (data.is_staff === false) {
-                    return { success: false, error: 'Access denied. This dashboard is for administrators only.' };
+                if (data.is_team_sysadmin === false && data.is_team_support === false && data.is_team_operations === false && data.is_staff === false) {
+                    return { success: false, error: 'Access denied. You are not authorized to access the SysAdmin Portal.' };
                 }
                 setTokens(tokens);
                 setUser({
                     email: data.email || email,
                     full_name: data.full_name || data.first_name || email.split('@')[0],
                     is_staff: data.is_staff === true,
-                    must_change_password: data.must_change_password === true
+                    must_change_password: data.must_change_password === true,
+                    team_role: data.team_role
                 });
                 return { success: true };
             }
@@ -96,7 +97,7 @@ const Auth = (() => {
     }
 
     function getApiBase() {
-        return localStorage.getItem('craft_api_base') || 'http://127.0.0.1:8000';
+        return window.location.origin;
     }
 
     return { getTokens, setTokens, getUser, setUser, getAccessToken, isLoggedIn, login, refreshToken, logout, setApiBase, getApiBase };

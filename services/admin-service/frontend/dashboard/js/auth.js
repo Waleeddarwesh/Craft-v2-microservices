@@ -96,7 +96,7 @@ const Auth = (() => {
     }
 
     function getApiBase() {
-        return localStorage.getItem('craft_api_base') || 'http://127.0.0.1:8000';
+        return window.location.origin;
     }
 
     return { getTokens, setTokens, getUser, setUser, getAccessToken, isLoggedIn, login, refreshToken, logout, setApiBase, getApiBase };

@@ -3,29 +3,29 @@ window.Timeline = (() => {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        container.innerHTML = \`
+        container.innerHTML = `
             <div class="timeline-container">
                 <div class="timeline-header">
-                    <h4>\${window.t('Audit Timeline')}</h4>
-                    <button class="btn btn-sm btn-secondary" onclick="Timeline.load('\${containerId}', '\${entityType}', '\${entityId}')">
-                        \${window.t('Refresh')}
+                    <h4>${window.t('Audit Timeline')}</h4>
+                    <button class="btn btn-sm btn-secondary" onclick="Timeline.load('${containerId}', '${entityType}', '${entityId}')">
+                        ${window.t('Refresh')}
                     </button>
                 </div>
-                <div class="timeline-content" id="\${containerId}-content">
-                    <div class="text-center text-muted" style="padding: 20px;">\${window.t('Loading timeline...')}</div>
+                <div class="timeline-content" id="${containerId}-content">
+                    <div class="text-center text-muted" style="padding: 20px;">${window.t('Loading timeline...')}</div>
                 </div>
             </div>
-        \`;
+        `;
 
         load(containerId, entityType, entityId);
     }
 
     async function load(containerId, entityType, entityId) {
-        const content = document.getElementById(\`\${containerId}-content\`);
+        const content = document.getElementById(`${containerId}-content`);
         if (!content) return;
 
         try {
-            const res = await API.get(\`/api/audit/logs/?entity_type=\${entityType}&entity_id=\${entityId}\`);
+            const res = await API.get(`/api/audit/logs/?entity_type=${entityType}&entity_id=${entityId}`);
             
             let logs = [];
             if (res && res.results) {
@@ -35,35 +35,35 @@ window.Timeline = (() => {
             }
 
             if (!logs || logs.length === 0) {
-                content.innerHTML = \`<div class="text-center text-muted" style="padding: 20px;">\${window.t('No events recorded for this entity.')}</div>\`;
+                content.innerHTML = `<div class="text-center text-muted" style="padding: 20px;">${window.t('No events recorded for this entity.')}</div>`;
                 return;
             }
 
             let html = '<ul class="timeline-list">';
             logs.forEach(log => {
                 const actionColor = getActionColor(log.action);
-                const userText = log.user_details ? \`\${log.user_details.first_name} \${log.user_details.last_name}\` : 'System';
+                const userText = log.user_details ? `${log.user_details.first_name} ${log.user_details.last_name}` : 'System';
                 
-                html += \`
+                html += `
                     <li class="timeline-item">
-                        <div class="timeline-marker bg-\${actionColor}"></div>
+                        <div class="timeline-marker bg-${actionColor}"></div>
                         <div class="timeline-item-content">
-                            <div class="timeline-time">\${Utils.formatDate(log.timestamp, true)}</div>
+                            <div class="timeline-time">${Utils.formatDate(log.timestamp, true)}</div>
                             <div class="timeline-title">
-                                <span class="badge badge-\${actionColor}">\${window.t(log.action)}</span>
+                                <span class="badge badge-${actionColor}">${window.t(log.action)}</span>
                             </div>
                             <div class="timeline-desc">
-                                \${window.t('Performed by')}: <strong>\${userText}</strong>
+                                ${window.t('Performed by')}: <strong>${userText}</strong>
                             </div>
                         </div>
                     </li>
-                \`;
+                `;
             });
             html += '</ul>';
             
             content.innerHTML = html;
         } catch (err) {
-            content.innerHTML = \`<div class="text-center text-danger" style="padding: 20px;">\${window.t('Failed to load timeline.')}</div>\`;
+            content.innerHTML = `<div class="text-center text-danger" style="padding: 20px;">${window.t('Failed to load timeline.')}</div>`;
         }
     }
 
@@ -80,7 +80,7 @@ window.Timeline = (() => {
     if (!document.getElementById('timeline-styles')) {
         const style = document.createElement('style');
         style.id = 'timeline-styles';
-        style.innerHTML = \`
+        style.innerHTML = `
             .timeline-container { border: 1px solid var(--clr-border); border-radius: var(--radius-md); background: var(--clr-surface); }
             .timeline-header { padding: 15px; border-bottom: 1px solid var(--clr-border); display: flex; justify-content: space-between; align-items: center; }
             .timeline-header h4 { margin: 0; font-size: 16px; }
@@ -98,7 +98,7 @@ window.Timeline = (() => {
             .bg-warning { background-color: var(--clr-warning); }
             .bg-primary { background-color: var(--clr-primary); }
             .bg-secondary { background-color: var(--clr-text-muted); }
-        \`;
+        `;
         document.head.appendChild(style);
     }
 

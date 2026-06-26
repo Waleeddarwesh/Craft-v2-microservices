@@ -209,7 +209,7 @@ class AdminMeView(APIView):
                 {"key": "fraud-alerts"}, {"key": "support-tickets"}, {"key": "disputes"},
                 {"key": "courses"}, {"key": "product-moderation"}, {"key": "reviews"},
                 {"key": "notifications"}, {"key": "reconciliation"}, {"key": "audit-logs"},
-                {"key": "settings"}
+                {"key": "settings"}, {"key": "team-management"}
             ]
             widgets = [
                 "revenue_chart", "status_chart", "total_orders", "active_users",
@@ -229,3 +229,72 @@ class AdminMeView(APIView):
             "modules": modules,
             "widgets": widgets
         })
+
+class AdminTeamManagementView(APIView):
+    permission_classes = [IsAuthenticated, HasRole("admin")]
+
+    def get(self, request):
+        users = User.objects.filter(team_role__isnull=False).exclude(team_role='')
+        data = []
+        for u in users:
+            data.append({
+                'id': u.id,
+                'email': u.email,
+                'first_name': u.first_name,
+                'last_name': u.last_name,
+                'full_name': f"{u.first_name} {u.last_name}",
+                'team_role': u.team_role,
+                'is_active': u.is_active,
+                'date_joined': str(u.date_joined),
+            })
+        return Response({'team_members': data})
+
+    def post(self, request):
+        email = request.data.get('email', '').strip().lower()
+        first_name = request.data.get('first_name', '')
+        last_name = request.data.get('last_name', '')
+        team_role = request.data.get('team_role')
+        password = request.data.get('password')
+
+        if not email or not team_role:
+            return Response({'detail': 'Email and team_role are required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            u = User.objects.get(email=email)
+            u.team_role = team_role
+            if first_name: u.first_name = first_name
+            if last_name: u.last_name = last_name
+            if password: 
+                from django.contrib.auth.hashers import make_password
+                u.password = make_password(password)
+            u.save(update_fields=['team_role', 'first_name', 'last_name', 'password'])
+            return Response({'status': 'updated'})
+        except User.DoesNotExist:
+            if not password:
+                return Response({'detail': 'Password is required for new users'}, status=status.HTTP_400_BAD_REQUEST)
+            u = User.objects.create(
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                team_role=team_role,
+                is_active=True
+            )
+            from django.contrib.auth.hashers import make_password
+            u.password = make_password(password)
+            u.save()
+            return Response({'status': 'created'})
+
+    def patch(self, request, pk=None):
+        if pk is None:
+            return Response({'detail': 'Method not allowed without pk'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        try:
+            u = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+        team_role = request.data.get('team_role')
+        u.team_role = team_role if team_role else None
+        u.save(update_fields=['team_role'])
+        return Response({'status': 'success'})
+
+

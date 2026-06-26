@@ -34,6 +34,7 @@ const Sidebar = (() => {
         },
         {
             section: window.t('Security'), items: [
+                { route: 'team-management', label: window.t('Team Management'), icon: 'users' },
                 { route: 'users-linux', label: window.t('Linux Users'), icon: 'users' },
                 { route: 'security-center', label: window.t('Security Center'), icon: 'audit' },
             ]
@@ -55,7 +56,6 @@ const Sidebar = (() => {
         },
         {
             section: window.t('System'), items: [
-                { route: 'settings', label: window.t('Settings'), icon: 'settings' },
                 { route: 'api-docs', label: window.t('API Docs'), icon: 'audit' },
                 { route: 'system-health', label: window.t('System Health'), icon: 'overview' },
             ]

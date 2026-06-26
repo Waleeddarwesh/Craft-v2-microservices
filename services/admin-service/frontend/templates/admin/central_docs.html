@@ -505,6 +505,79 @@
       background: var(--clr-primary-glow);
       color: var(--clr-text);
     }
+
+    /* ─── Method Filter Buttons ─── */
+    .method-filters {
+      display: inline-flex;
+      gap: 4px;
+      background: var(--clr-bg-secondary);
+      border: 1px solid var(--clr-surface-border);
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .method-btn {
+      background: transparent;
+      border: none;
+      color: var(--clr-text-secondary);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .method-btn[data-method="all"]:hover {
+      background: hsla(210, 10%, 28%, 0.2);
+      color: var(--clr-text);
+    }
+    .method-btn[data-method="all"].active {
+      background: var(--clr-surface);
+      color: var(--clr-text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .method-btn[data-method="get"]:hover {
+      background: hsla(217, 91%, 60%, 0.1);
+      color: hsl(217, 91%, 60%);
+    }
+    .method-btn[data-method="get"].active {
+      background: var(--clr-surface);
+      color: hsl(217, 91%, 60%);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .method-btn[data-method="post"]:hover {
+      background: hsla(142, 71%, 45%, 0.1);
+      color: hsl(142, 71%, 45%);
+    }
+    .method-btn[data-method="post"].active {
+      background: var(--clr-surface);
+      color: hsl(142, 71%, 45%);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .method-btn[data-method="put"]:hover {
+      background: hsla(45, 93%, 47%, 0.1);
+      color: hsl(45, 93%, 47%);
+    }
+    .method-btn[data-method="put"].active {
+      background: var(--clr-surface);
+      color: hsl(45, 93%, 47%);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .method-btn[data-method="delete"]:hover {
+      background: hsla(0, 84%, 60%, 0.1);
+      color: hsl(0, 84%, 60%);
+    }
+    .method-btn[data-method="delete"].active {
+      background: var(--clr-surface);
+      color: hsl(0, 84%, 60%);
+      box-shadow: var(--shadow-sm);
+    }
   </style>
 </head>
 
@@ -517,6 +590,15 @@
       Craft API Central Docs
     </div>
     <div class="header-actions">
+      <!-- Method Filters -->
+      <div class="method-filters" id="method-filters">
+        <button data-method="all" class="method-btn active">ALL</button>
+        <button data-method="get" class="method-btn">GET</button>
+        <button data-method="post" class="method-btn">POST</button>
+        <button data-method="put" class="method-btn">PUT</button>
+        <button data-method="delete" class="method-btn">DEL</button>
+      </div>
+
       <!-- Theme Toggle Button -->
       <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
         <!-- Sun Icon -->
@@ -579,6 +661,29 @@
         }
       });
       window.ui = ui;
+
+      // Method filtering logic
+      const methodBtns = document.querySelectorAll('.method-btn');
+      const dynamicStyle = document.createElement('style');
+      document.head.appendChild(dynamicStyle);
+
+      methodBtns.forEach(btn => {
+          btn.addEventListener('click', function() {
+              // Update button styles
+              methodBtns.forEach(b => b.classList.remove('active'));
+              this.classList.add('active');
+
+              const method = this.getAttribute('data-method');
+              if (method === 'all') {
+                  dynamicStyle.innerHTML = '';
+              } else {
+                  // Hide all opblocks except the selected method
+                  dynamicStyle.innerHTML = `
+                      .swagger-ui .opblock:not(.opblock-${method}) { display: none !important; }
+                  `;
+              }
+          });
+      });
     };
   </script>
 </body>

@@ -17,6 +17,14 @@ AUTH_PROVIDERS = {'email': 'email', 'google': 'google', 'github': 'github', 'lin
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    class TeamRole(models.TextChoices):
+        SYSADMIN = 'SYSADMIN', 'System Admin'
+        SUPPORT = 'SUPPORT', 'Support Team'
+        OPERATIONS = 'OPERATIONS', 'Operations Team'
+        DEVELOPER = 'DEVELOPER', 'Developer'
+        DB_ADMIN = 'DB_ADMIN', 'Database Admin'
+        TEST = 'TEST', 'Test Team'
+        
     id = models.BigAutoField(primary_key=True, editable=False)
     email = models.EmailField(max_length=255, verbose_name=_("Email Address"), unique=True)
     first_name = models.CharField(max_length=100, verbose_name=_("First Name"))
@@ -39,6 +47,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     failed_login_attempts = models.IntegerField(default=0)
     locked_until = models.DateTimeField(null=True, blank=True)
     must_change_password = models.BooleanField(default=False)
+    
+    team_role = models.CharField(max_length=20, choices=TeamRole.choices, null=True, blank=True, verbose_name="Team Role")
 
     REQUIRED_FIELDS = ["first_name", "last_name", "password"]
     objects = UserManager()
@@ -63,6 +73,30 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_full_name(self):
         return f"{self.first_name.title()} {self.last_name.title()}"
 
+    @property
+    def is_team_sysadmin(self):
+        return self.team_role == self.TeamRole.SYSADMIN or self.is_superuser
+
+    @property
+    def is_team_support(self):
+        return self.team_role == self.TeamRole.SUPPORT or self.is_team_sysadmin
+
+    @property
+    def is_team_operations(self):
+        return self.team_role == self.TeamRole.OPERATIONS or self.is_team_sysadmin
+
+    @property
+    def is_team_developer(self):
+        return self.team_role == self.TeamRole.DEVELOPER or self.is_team_sysadmin
+
+    @property
+    def is_team_db_admin(self):
+        return self.team_role == self.TeamRole.DB_ADMIN or self.is_team_sysadmin
+
+    @property
+    def is_team_test(self):
+        return self.team_role == self.TeamRole.TEST or self.is_team_sysadmin
+
     def tokens(self):
         refresh = RefreshToken.for_user(self)
         
@@ -70,6 +104,23 @@ class User(AbstractBaseUser, PermissionsMixin):
         roles = []
         if self.is_superuser or getattr(self, 'is_staff', False):
             roles.append('admin')
+            
+        if getattr(self, 'is_team_sysadmin', False):
+            if 'admin' not in roles: roles.append('admin')
+            roles.append('sysadmin')
+        if getattr(self, 'is_team_support', False):
+            if 'admin' not in roles: roles.append('admin')
+            roles.append('support')
+        if getattr(self, 'is_team_operations', False):
+            if 'admin' not in roles: roles.append('admin')
+            roles.append('operations')
+        if getattr(self, 'is_team_developer', False):
+            roles.append('developer')
+        if getattr(self, 'is_team_db_admin', False):
+            roles.append('db_admin')
+        if getattr(self, 'is_team_test', False):
+            roles.append('test')
+
         if getattr(self, 'is_supplier', False):
             roles.append('supplier')
         if getattr(self, 'is_delivery', False):
