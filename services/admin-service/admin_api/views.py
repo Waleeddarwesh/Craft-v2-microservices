@@ -32,10 +32,12 @@ class GenericProxyView(APIView):
     # Enforce authentication and authorization for all proxied endpoints
     permission_classes = [permissions.IsAuthenticated, IsSuperUser] 
     
-    def __init__(self, client=None, downstream_prefix=None, *args, **kwargs):
+    # Class attributes required by Django's as_view()
+    client = None
+    downstream_prefix = None
+    
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.client = client
-        self.downstream_prefix = downstream_prefix
 
     def proxy_request(self, request, *args, **kwargs):
         if not self.client:
