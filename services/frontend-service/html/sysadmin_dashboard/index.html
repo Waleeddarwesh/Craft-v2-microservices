@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Craft Dashboard — Sign in to manage your marketplace">
+    <title>Craft Dashboard — Sign In</title>
+    <link rel="stylesheet" href="/sysadmin/css/variables.css">
+    <link rel="stylesheet" href="/sysadmin/css/base.css">
+    <link rel="stylesheet" href="/sysadmin/css/components.css">
+    <link rel="stylesheet" href="/sysadmin/css/pages.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+    <script>(function(){var t=localStorage.getItem('craft_theme')||'dark';document.documentElement.setAttribute('data-theme',t)})()</script>
+    <style>
+        .theme-toggle-btn {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--clr-text-secondary);
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 100;
+        }
+        .theme-toggle-btn:hover {
+            background: hsla(42, 85%, 55%, 0.15);
+            color: hsl(42, 85%, 55%);
+            border-color: hsl(42, 85%, 55%);
+        }
+        .theme-toggle-btn svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .theme-toggle-btn:hover svg {
+            transform: rotate(30deg);
+        }
+        [data-theme="dark"] .icon-moon { display: none; }
+        [data-theme="dark"] .icon-sun { display: block; }
+        [data-theme="light"] .icon-moon { display: block; }
+        [data-theme="light"] .icon-sun { display: none; }
+    </style>
+</head>
+<body>
+    <div class="login-page" id="login-page">
+        <div class="login-card">
+            <div class="login-brand">
+                <img src="/logo.jpg" alt="Craft" class="login-brand-logo">
+                <h1>Craft SysAdmin</h1>
+                <p>Sign in to manage system infrastructure</p>
+            </div>
+            <div id="login-error" class="login-error hidden"></div>
+            <form class="login-form" id="login-form" autocomplete="on">
+                <div class="form-group">
+                    <label class="form-label" for="login-email">Email Address</label>
+                    <input class="form-input" type="email" id="login-email" name="email" placeholder="admin@craft.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="login-password">Password</label>
+                    <input class="form-input" type="password" id="login-password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="login-btn" id="login-btn">
+                    <span id="login-btn-text">Sign In</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- Header Actions -->
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; gap: 8px; align-items: center;">
+        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+            <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+        </button>
+    </div>
+
+    <script src="/sysadmin/js/i18n.js"></script>
+    <script src="/sysadmin/js/auth.js"></script>
+    <script>
+        function toggleTheme() {
+            var current = document.documentElement.getAttribute('data-theme') || 'dark';
+            var next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('craft_theme', next);
+        }
+
+        I18n.translateDOM();
+        // Check if already logged in
+        const tokens = JSON.parse(localStorage.getItem('craft_tokens') || 'null');
+        if (tokens && tokens.access) {
+            window.location.href = 'app.html?_=' + new Date().getTime();
+        }
+
+        const form = document.getElementById('login-form');
+        const errorDiv = document.getElementById('login-error');
+        const loginBtn = document.getElementById('login-btn');
+        const btnText = document.getElementById('login-btn-text');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorDiv.classList.add('hidden');
+            loginBtn.disabled = true;
+            btnText.textContent = 'Signing in...';
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const result = await Auth.login(email, password);
+                if (result.success) {
+                    window.location.href = 'app.html?_=' + new Date().getTime();
+                } else {
+                    errorDiv.textContent = result.error || 'Invalid credentials. Please try again.';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Connection error. Please check the API server.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                loginBtn.disabled = false;
+                btnText.textContent = 'Sign In';
+            }
+        });
+    </script>
+</body>
+</html>
