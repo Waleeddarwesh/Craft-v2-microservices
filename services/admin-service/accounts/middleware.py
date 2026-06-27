@@ -12,6 +12,7 @@ class ForcePasswordChangeMiddleware:
             allowed_paths = [
                 reverse('admin_profile_settings'),
                 reverse('docs-logout'),
+                reverse('developer-logout'),
                 '/admin/logout/',
                 '/static/',
                 '/media/',

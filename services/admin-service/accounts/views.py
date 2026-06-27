@@ -10,9 +10,7 @@ def admin_profile_settings(request):
         updated = False
 
         # Handle Profile Picture Upload
-        if "profile_picture" in request.FILES:
-            user.profile_picture = request.FILES["profile_picture"]
-            updated = True
+
 
         # Handle Password Change
         password = request.POST.get("password")

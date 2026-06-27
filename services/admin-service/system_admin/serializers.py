@@ -1,5 +1,9 @@
 from rest_framework import serializers
-from .models import Server, AuditLog, Service, LinuxUser, CronJob, Incident, OperationalScript
+from .models import (
+    Server, AuditLog, Service, LinuxUser, CronJob, Incident, OperationalScript,
+    DiskVolume, LogicalVolume, BackupJob, FirewallRule, SecurityAlert, SELinuxContext,
+    Container, SystemLog
+)
 
 class ServerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,21 +16,25 @@ class AuditLogSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ServiceSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True)
     class Meta:
         model = Service
         fields = '__all__'
 
 class LinuxUserSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True)
     class Meta:
         model = LinuxUser
         fields = '__all__'
 
 class CronJobSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True)
     class Meta:
         model = CronJob
         fields = '__all__'
 
 class IncidentSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True, default=None)
     class Meta:
         model = Incident
         fields = '__all__'
@@ -36,48 +44,50 @@ class OperationalScriptSerializer(serializers.ModelSerializer):
         model = OperationalScript
         fields = '__all__'
 
-from .models import DiskVolume, LogicalVolume, BackupJob
-
 class DiskVolumeSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True)
     class Meta:
         model = DiskVolume
         fields = '__all__'
 
 class LogicalVolumeSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True)
     class Meta:
         model = LogicalVolume
         fields = '__all__'
 
 class BackupJobSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True)
     class Meta:
         model = BackupJob
         fields = '__all__'
 
-from .models import FirewallRule, SecurityAlert, SELinuxContext
-
 class FirewallRuleSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True)
     class Meta:
         model = FirewallRule
         fields = '__all__'
 
 class SecurityAlertSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True)
     class Meta:
         model = SecurityAlert
         fields = '__all__'
 
 class SELinuxContextSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True)
     class Meta:
         model = SELinuxContext
         fields = '__all__'
 
-from .models import Container, SystemLog
-
 class ContainerSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True, default=None)
     class Meta:
         model = Container
         fields = '__all__'
 
 class SystemLogSerializer(serializers.ModelSerializer):
+    server_hostname = serializers.CharField(source='server.hostname', read_only=True, default=None)
     class Meta:
         model = SystemLog
         fields = '__all__'

@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 
 class Server(models.Model):
     hostname = models.CharField(max_length=255, unique=True)
@@ -22,7 +22,7 @@ class Server(models.Model):
         return f"{self.hostname} ({self.ip_address})"
 
 class AuditLog(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     action = models.CharField(max_length=255)
     resource = models.CharField(max_length=255)
     details = models.JSONField(null=True, blank=True)
@@ -60,7 +60,7 @@ class Incident(models.Model):
     severity = models.CharField(max_length=50, choices=[('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('critical', 'Critical')])
     status = models.CharField(max_length=50, choices=[('open', 'Open'), ('investigating', 'Investigating'), ('resolved', 'Resolved'), ('closed', 'Closed')], default='open')
     server = models.ForeignKey(Server, on_delete=models.SET_NULL, null=True, blank=True)
-    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     resolved_at = models.DateTimeField(null=True, blank=True)
 

@@ -8,7 +8,7 @@ class UserAdmin(admin.ModelAdmin):
     ordering = ('email',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'PhoneNO', 'profile_picture', 'Balance')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'PhoneNO', 'Balance')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_verified', 'groups', 'user_permissions')}),
         ('Role flags', {'fields': ('is_customer', 'is_supplier', 'is_delivery')}),
         ('Security & Auth', {

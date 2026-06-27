@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     
     # Local apps
     'payment',
-    'returnrequest',
 ]
 
 MIDDLEWARE = [

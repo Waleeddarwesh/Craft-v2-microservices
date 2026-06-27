@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from craft_common.auth.permissions import HasRole
-from returnrequest.models import BalanceWithdrawRequest, Transaction
+from payment.models import BalanceWithdrawRequest, Transaction
 
 
 class AdminWithdrawalsView(APIView):

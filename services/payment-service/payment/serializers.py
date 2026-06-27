@@ -1,9 +1,7 @@
 import datetime
 from rest_framework import serializers
-# Mock imports for missing microservice dependencies
-# from course.models import Course
-# from orders.models import Order
 from django.conf import settings
+from .models import PaymentHistory, BalanceWithdrawRequest, Transaction
 
 class OrderInformationSerializer(serializers.Serializer):
     order_id = serializers.UUIDField()
@@ -19,15 +17,40 @@ class CourseInformationSerializer(serializers.Serializer):
         # Microservice validation would be an API call
         return value
 
-        return value
-from .models import PaymentHistory, WithdrawalRequest
 class PaymentHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentHistory
         fields = '__all__'
 
-class WithdrawalRequestSerializer(serializers.ModelSerializer):
+class BalanceWithdrawRequestSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+    transfer_status = serializers.CharField(source='get_transfer_status_display', read_only=True)
+    admin_notes = serializers.CharField(read_only=True)
+
     class Meta:
-        model = WithdrawalRequest
-        fields = '__all__'
-        read_only_fields = ['status', 'created_at', 'updated_at', 'user_id']
+        model = BalanceWithdrawRequest
+        fields = [
+            'id', 'user', 'amount', 'transfer_number', 'transfer_type', 
+            'notes', 'transfer_status', 'admin_notes', 'created_at', 'updated_at'
+        ]
+        read_only_fields = [
+            'id', 'user', 'transfer_status', 'admin_notes', 
+            'created_at', 'updated_at'
+        ]
+        extra_kwargs = {
+            'transfer_type': {'required': True},
+            'transfer_number': {'required': True}
+        }
+
+    def validate_amount(self, value):
+        from django.utils.translation import gettext_lazy as _
+        if value <= 0:
+            raise serializers.ValidationError(_("Withdrawal amount must be positive."))
+        return value
+
+class TransactionSerializer(serializers.ModelSerializer):
+    transaction_type = serializers.CharField(source='get_transaction_type_display', read_only=True)
+    
+    class Meta:
+        model = Transaction
+        fields = ['id', 'transaction_type', 'amount', 'created_at']

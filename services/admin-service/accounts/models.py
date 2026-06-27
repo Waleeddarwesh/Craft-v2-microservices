@@ -17,6 +17,14 @@ AUTH_PROVIDERS = {'email': 'email', 'google': 'google', 'github': 'github', 'lin
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    class TeamRole(models.TextChoices):
+        SYSADMIN = 'SYSADMIN', 'System Admin'
+        SUPPORT = 'SUPPORT', 'Support Team'
+        OPERATIONS = 'OPERATIONS', 'Operations Team'
+        DEVELOPER = 'DEVELOPER', 'Developer'
+        DB_ADMIN = 'DB_ADMIN', 'Database Admin'
+        TEST = 'TEST', 'Test Team'
+        
     id = models.BigAutoField(primary_key=True, editable=False)
     email = models.EmailField(max_length=255, verbose_name=_("Email Address"), unique=True)
     first_name = models.CharField(max_length=100, verbose_name=_("First Name"))
@@ -32,7 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_customer = models.BooleanField(default=False)
     is_supplier = models.BooleanField(default=False)
     is_delivery = models.BooleanField(default=False)
-    profile_picture = models.ImageField(upload_to='admin_photos/%y/%m/%d', blank=True, null=True, verbose_name="Profile Picture")
+
     fcm_token = models.CharField(max_length=255, null=True, blank=True, verbose_name="FCM Token")
     last_password_reset_request = models.DateTimeField(null=True, blank=True)
     auth_provider = models.CharField(max_length=50, blank=False, null=False, default=AUTH_PROVIDERS.get('email'))
@@ -40,6 +48,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     failed_login_attempts = models.IntegerField(default=0)
     locked_until = models.DateTimeField(null=True, blank=True)
     must_change_password = models.BooleanField(default=False)
+    
+    team_role = models.CharField(max_length=20, choices=TeamRole.choices, null=True, blank=True, verbose_name="Team Role")
 
     REQUIRED_FIELDS = ["first_name", "last_name", "password"]
     objects = UserManager()
@@ -63,6 +73,30 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def get_full_name(self):
         return f"{self.first_name.title()} {self.last_name.title()}"
+
+    @property
+    def is_team_sysadmin(self):
+        return self.team_role == self.TeamRole.SYSADMIN or self.is_superuser
+
+    @property
+    def is_team_support(self):
+        return self.team_role == self.TeamRole.SUPPORT or self.is_team_sysadmin
+
+    @property
+    def is_team_operations(self):
+        return self.team_role == self.TeamRole.OPERATIONS or self.is_team_sysadmin
+
+    @property
+    def is_team_developer(self):
+        return self.team_role == self.TeamRole.DEVELOPER or self.is_team_sysadmin
+
+    @property
+    def is_team_db_admin(self):
+        return self.team_role == self.TeamRole.DB_ADMIN or self.is_team_sysadmin
+
+    @property
+    def is_team_test(self):
+        return self.team_role == self.TeamRole.TEST or self.is_team_sysadmin
 
     def tokens(self):
         refresh = RefreshToken.for_user(self)

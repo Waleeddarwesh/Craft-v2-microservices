@@ -195,15 +195,15 @@ class PaymentHistoryView(APIView):
 # ─── Withdrawal Requests ─────────────────────────────────────────────────────
 
 from rest_framework import viewsets
-from .models import WithdrawalRequest
-from .serializers import WithdrawalRequestSerializer
+from .models import BalanceWithdrawRequest
+from .serializers import BalanceWithdrawRequestSerializer
 
-class WithdrawalRequestViewSet(viewsets.ModelViewSet):
-    serializer_class = WithdrawalRequestSerializer
+class BalanceWithdrawRequestViewSet(viewsets.ModelViewSet):
+    serializer_class = BalanceWithdrawRequestSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return WithdrawalRequest.objects.filter(user_id=self.request.user.id)
+        return BalanceWithdrawRequest.objects.filter(user_id=self.request.user.id)
 
     def perform_create(self, serializer):
         withdrawal = serializer.save(user_id=self.request.user.id)
@@ -226,3 +226,12 @@ class WithdrawalRequestViewSet(viewsets.ModelViewSet):
         except requests.RequestException as e:
             import logging
             logging.error(f"Failed to trigger withdrawal approval: {e}")
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Sum
+
+class InternalPaymentRevenueView(APIView):
+    permission_classes = []
+    def get(self, request):
+        total = PaymentHistory.objects.filter(payment_status='succeeded').aggregate(Sum('amount'))['amount__sum'] or 0
+        return Response({'total': total})

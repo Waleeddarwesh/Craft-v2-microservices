@@ -10,6 +10,7 @@ setup(
         "djangorestframework-simplejwt>=5.3.0",
         "pika>=1.3.2",
         "pydantic>=2.0.0",
+        "redis>=4.0.0",
         "cryptography>=41.0.0",
         "deep-translator>=1.11.4",
         "drf-spectacular>=0.26.0",
