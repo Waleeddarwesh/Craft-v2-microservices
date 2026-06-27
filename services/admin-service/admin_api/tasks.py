@@ -9,6 +9,7 @@ try:
     from disputes.models import Dispute
     from support_tickets.models import Ticket
     from notifications.services import create_notification_for_user
+    from audit_logs.models import AuditLog
 except ImportError:
     # These modules belong to other microservices and are not available locally.
     # Tasks referencing them will be no-ops until inter-service communication is wired up.
@@ -18,8 +19,7 @@ except ImportError:
     Dispute = None
     Ticket = None
     create_notification_for_user = None
-
-from audit_logs.models import AuditLog
+    AuditLog = None
 
 @shared_task
 def recalculate_recommendations():
@@ -68,6 +68,8 @@ def cleanup_invalid_fcm_tokens():
 
 @shared_task
 def archive_old_audit_logs():
+    if AuditLog is None:
+        return "Skipped: audit_logs module not available in this service."
     old_date = timezone.now() - timedelta(days=90)
     old_logs = AuditLog.objects.filter(timestamp__lt=old_date)
     count = old_logs.count()

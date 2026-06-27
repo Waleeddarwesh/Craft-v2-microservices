@@ -61,7 +61,8 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Copy requirements first to use Docker layer caching.
 # If source code changes but requirements.txt does not,
 # Docker can reuse the dependency installation layer.
-COPY requirements.txt ./
+COPY services/admin-service/requirements.txt ./
+COPY shared/craft-common /shared/craft-common
 
 # Install Python dependencies inside .venv
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
@@ -91,7 +92,8 @@ RUN useradd --system --create-home --shell /bin/bash appuser
 COPY --chown=appuser:0 --from=builder /app/.venv ./.venv
 
 # Copy application source code.
-COPY --chown=appuser:0 . .
+COPY shared/craft-common /shared/craft-common
+COPY --chown=appuser:0 services/admin-service/ .
 
 RUN chown appuser:0 /app && \
     chmod 775 /app

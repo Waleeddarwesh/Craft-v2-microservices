@@ -67,8 +67,8 @@ services:
         aliases:
           - admin-service
     build:
-      context: ./services/admin-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/admin-service/Dockerfile
     environment:
       - OTEL_SERVICE_NAME=admin_service
       - DJANGO_SETTINGS_MODULE=Handcrafts.settings
@@ -91,8 +91,8 @@ services:
         aliases:
           - admin-worker
     build:
-      context: ./services/admin-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/admin-service/Dockerfile
     command: celery -A Handcrafts worker -l info
     environment:
       - OTEL_SERVICE_NAME=admin_worker
@@ -112,8 +112,8 @@ services:
         aliases:
           - admin-beat
     build:
-      context: ./services/admin-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: services/admin-service/Dockerfile
     command: celery -A Handcrafts beat -l info
     environment:
       - OTEL_SERVICE_NAME=admin_beat
